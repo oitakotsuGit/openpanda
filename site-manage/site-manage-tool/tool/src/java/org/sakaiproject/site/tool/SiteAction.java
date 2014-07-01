@@ -1,6 +1,6 @@
 /**********************************************************************************
 
- * $URL: https://source.sakaiproject.org/svn/site-manage/tags/sakai-10.0/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java $
+ * $URL: https://source.sakaiproject.org/svn/site-manage/branches/sakai-10.x/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java $
  * $Id: SiteAction.java 308857 2014-04-26 00:06:41Z enietzel@anisakai.com $
  ***********************************************************************************
  *

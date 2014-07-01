@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/kernel/tags/sakai-10.0/kernel-impl/src/main/java/org/sakaiproject/content/impl/DbContentService.java $
+ * $URL: https://source.sakaiproject.org/svn/kernel/branches/sakai-10.x/kernel-impl/src/main/java/org/sakaiproject/content/impl/DbContentService.java $
  * $Id: DbContentService.java 306037 2014-02-17 16:51:13Z matthew.buckett@it.ox.ac.uk $
  ***********************************************************************************
  *

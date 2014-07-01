@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/emailtemplateservice/tags/sakai-10.0/api/src/java/org/sakaiproject/emailtemplateservice/model/RenderedTemplate.java $
+ * $URL: https://source.sakaiproject.org/svn/emailtemplateservice/branches/sakai-10.x/api/src/java/org/sakaiproject/emailtemplateservice/model/RenderedTemplate.java $
  * $Id: RenderedTemplate.java 105077 2012-02-24 22:54:29Z ottenhoff@longsight.com $
  ***********************************************************************************
  *

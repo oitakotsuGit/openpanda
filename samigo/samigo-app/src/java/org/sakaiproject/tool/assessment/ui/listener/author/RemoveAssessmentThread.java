@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.0/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/author/RemoveAssessmentThread.java $
+ * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/author/RemoveAssessmentThread.java $
  * $Id: RemoveAssessmentThread.java 115707 2012-11-05 13:09:54Z david.horwitz@uct.ac.za $
  ***********************************************************************************
  *

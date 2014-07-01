@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/portal/tags/sakai-10.0/portal-impl/impl/src/java/org/sakaiproject/portal/charon/handlers/SiteHandler.java $
+ * $URL: https://source.sakaiproject.org/svn/portal/branches/sakai-10.x/portal-impl/impl/src/java/org/sakaiproject/portal/charon/handlers/SiteHandler.java $
  * $Id: SiteHandler.java 134284 2014-02-08 21:39:55Z ottenhoff@longsight.com $
  ***********************************************************************************
  *

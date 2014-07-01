@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.0/samigo-qti/src/java/org/sakaiproject/tool/assessment/qti/helper/AttachmentHelper.java $
+ * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-qti/src/java/org/sakaiproject/tool/assessment/qti/helper/AttachmentHelper.java $
  * $Id: AttachmentHelper.java 110817 2012-07-26 20:19:30Z ktsao@stanford.edu $
  ***********************************************************************************
  *

@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/search/tags/sakai-10.0/elasticsearch/impl/src/java/org/sakaiproject/search/elasticsearch/ElasticSearchIndexBuilder.java $
+ * $URL: https://source.sakaiproject.org/svn/search/branches/sakai-10.x/elasticsearch/impl/src/java/org/sakaiproject/search/elasticsearch/ElasticSearchIndexBuilder.java $
  * $Id: ElasticSearchIndexBuilder.java 134252 2014-02-07 22:46:00Z jbush@anisakai.com $
  ***********************************************************************************
  *

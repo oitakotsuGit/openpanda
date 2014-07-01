@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/textarea/tags/sakai-10.0/FCKeditor/connector/src/java/org/sakaiproject/connector/fck/FCKConnectorServlet.java $
+ * $URL: https://source.sakaiproject.org/svn/textarea/branches/sakai-10.x/FCKeditor/connector/src/java/org/sakaiproject/connector/fck/FCKConnectorServlet.java $
  * $Id: FCKConnectorServlet.java 130297 2013-10-09 21:02:55Z matthew@longsight.com $
  ***********************************************************************************
  *

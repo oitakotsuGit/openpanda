@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.0/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/bean/delivery/DeliveryBeanie.java $
+ * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/bean/delivery/DeliveryBeanie.java $
  * $Id: DeliveryBeanie.java 107781 2012-05-02 17:37:33Z ktsao@stanford.edu $
  ***********************************************************************************
  *

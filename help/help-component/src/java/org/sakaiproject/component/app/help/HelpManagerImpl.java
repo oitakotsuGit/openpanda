@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/help/tags/sakai-10.0/help-component/src/java/org/sakaiproject/component/app/help/HelpManagerImpl.java $
+ * $URL: https://source.sakaiproject.org/svn/help/branches/sakai-10.x/help-component/src/java/org/sakaiproject/component/app/help/HelpManagerImpl.java $
  * $Id: HelpManagerImpl.java 309242 2014-05-06 20:14:38Z enietzel@anisakai.com $
  ***********************************************************************************
  *

@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.0/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/author/PublishAssessmentListener.java $
+ * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/author/PublishAssessmentListener.java $
  * $Id: PublishAssessmentListener.java 132501 2013-12-11 21:18:24Z holladay@longsight.com $
  ***********************************************************************************
  *

@@ -1,5 +1,5 @@
 /**********************************************************************************
-* $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.0/samigo-app/src/java/org/sakaiproject/jsf/renderer/RichTextEditArea.java $
+* $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-app/src/java/org/sakaiproject/jsf/renderer/RichTextEditArea.java $
 * $Id: RichTextEditArea.java 308239 2014-04-16 05:17:37Z ktsao@stanford.edu $
 ***********************************************************************************
 *

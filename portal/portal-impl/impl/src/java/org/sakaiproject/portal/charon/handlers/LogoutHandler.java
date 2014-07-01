@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/portal/tags/sakai-10.0/portal-impl/impl/src/java/org/sakaiproject/portal/charon/handlers/LogoutHandler.java $
+ * $URL: https://source.sakaiproject.org/svn/portal/branches/sakai-10.x/portal-impl/impl/src/java/org/sakaiproject/portal/charon/handlers/LogoutHandler.java $
  * $Id: LogoutHandler.java 132923 2013-12-26 21:35:50Z csev@umich.edu $
  ***********************************************************************************
  *

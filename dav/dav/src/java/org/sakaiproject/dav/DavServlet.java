@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/dav/tags/sakai-10.0/dav/src/java/org/sakaiproject/dav/DavServlet.java $
+ * $URL: https://source.sakaiproject.org/svn/dav/branches/sakai-10.x/dav/src/java/org/sakaiproject/dav/DavServlet.java $
  * $Id: DavServlet.java 308543 2014-04-23 20:32:49Z enietzel@anisakai.com $
  ***********************************************************************************
  *

@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/search/tags/sakai-10.0/search-impl/impl/src/test/org/sakaiproject/search/mock/MockSecurityService.java $
+ * $URL: https://source.sakaiproject.org/svn/search/branches/sakai-10.x/search-impl/impl/src/test/org/sakaiproject/search/mock/MockSecurityService.java $
  * $Id: MockSecurityService.java 126062 2013-06-20 21:32:44Z ottenhoff@longsight.com $
  ***********************************************************************************
  *

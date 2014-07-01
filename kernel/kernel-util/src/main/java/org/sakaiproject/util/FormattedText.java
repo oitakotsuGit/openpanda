@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/kernel/tags/sakai-10.0/kernel-util/src/main/java/org/sakaiproject/util/FormattedText.java $
+ * $URL: https://source.sakaiproject.org/svn/kernel/branches/sakai-10.x/kernel-util/src/main/java/org/sakaiproject/util/FormattedText.java $
  * $Id: FormattedText.java 133761 2014-01-28 19:12:38Z azeckoski@unicon.net $
  ***********************************************************************************
  *

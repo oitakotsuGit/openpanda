@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/kernel/tags/sakai-10.0/kernel-impl/src/main/java/org/sakaiproject/content/impl/BaseContentService.java $
+ * $URL: https://source.sakaiproject.org/svn/kernel/branches/sakai-10.x/kernel-impl/src/main/java/org/sakaiproject/content/impl/BaseContentService.java $
  * $Id: BaseContentService.java 310331 2014-06-20 15:51:18Z enietzel@anisakai.com $
  ***********************************************************************************
  *

@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/kernel/tags/sakai-10.0/kernel-impl/src/main/java/org/sakaiproject/authz/impl/DbAuthzGroupService.java $
+ * $URL: https://source.sakaiproject.org/svn/kernel/branches/sakai-10.x/kernel-impl/src/main/java/org/sakaiproject/authz/impl/DbAuthzGroupService.java $
  * $Id: DbAuthzGroupService.java 310335 2014-06-20 16:19:07Z enietzel@anisakai.com $
  ***********************************************************************************
  *

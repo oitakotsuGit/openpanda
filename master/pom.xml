@@ -13,7 +13,7 @@
   <packaging>pom</packaging>
   <name>Sakai Master</name>
   <description>Corporate POM for the Sakai Open Source Collaborative Learning Environment/Learning Management System</description>
-  <version>10.0</version>
+  <version>10-SNAPSHOT</version>
   <organization>
     <name>Sakai Project</name>
     <url>http://sakaiproject.org/</url>
@@ -70,9 +70,9 @@
   </scm>
 
   <properties>
-    <sakai.version>10.0</sakai.version>
+    <sakai.version>10-SNAPSHOT</sakai.version>
     <!-- kernel only versions -->
-    <sakai.kernel.version>10.0</sakai.kernel.version>
+    <sakai.kernel.version>10-SNAPSHOT</sakai.kernel.version>
     <kernel.spring.version>3.2.3.RELEASE</kernel.spring.version>
     <kernel.hibernate.version>3.6.10.Final</kernel.hibernate.version>
     <kernel.hibernate.annotations.version>3.2.0.Final</kernel.hibernate.annotations.version>
@@ -103,14 +103,14 @@
     <sakai.xerces.impl.version>2.6.2</sakai.xerces.impl.version>
     <sakai.xerces.api.version>2.6.2</sakai.xerces.api.version>
     <sakai.slf4j.version>1.7.5</sakai.slf4j.version>
-    <rsfutil.version>0.8.0</rsfutil.version>
-    <sakairsf.components.version>10.0</sakairsf.components.version>
-    <sakairsf.version>10.0</sakairsf.version>
+    <rsfutil.version>0.8.1-SNAPSHOT</rsfutil.version>
+    <sakairsf.components.version>10-SNAPSHOT</sakairsf.components.version>
+    <sakairsf.version>10-SNAPSHOT</sakairsf.version>
     <generic-dao.version>0.9.18</generic-dao.version>
     <reflectutils.version>0.9.19</reflectutils.version>
     <!-- Sakai modules that are versioned separately -->
     <!-- lessonbuilder tool pom depends on msgcntr ver prop. Need to add a profile to the LB tool pom to mark change between 10.x master and earlier versions -->
-    <sakai.msgcntr.version>10.0</sakai.msgcntr.version> 
+    <sakai.msgcntr.version>10-SNAPSHOT</sakai.msgcntr.version> 
     <!-- Set the source encoding to avoid maven warnings -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <sakai.jdk.version>1.6</sakai.jdk.version>

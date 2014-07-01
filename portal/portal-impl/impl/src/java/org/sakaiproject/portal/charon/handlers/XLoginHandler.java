@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/portal/tags/sakai-10.0/portal-impl/impl/src/java/org/sakaiproject/portal/charon/handlers/XLoginHandler.java $
+ * $URL: https://source.sakaiproject.org/svn/portal/branches/sakai-10.x/portal-impl/impl/src/java/org/sakaiproject/portal/charon/handlers/XLoginHandler.java $
  * $Id: XLoginHandler.java 111881 2012-08-27 23:11:05Z matthew@longsight.com $
  ***********************************************************************************
  *

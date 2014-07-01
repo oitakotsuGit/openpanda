@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.0/samigo-cp/src/java/org/sakaiproject/tool/assessment/contentpackaging/ManifestGenerator.java $
+ * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-cp/src/java/org/sakaiproject/tool/assessment/contentpackaging/ManifestGenerator.java $
  * $Id: ManifestGenerator.java 110693 2012-07-24 23:27:54Z ktsao@stanford.edu $
  ***********************************************************************************
  *

@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.0/samigo-qti/src/java/org/sakaiproject/tool/assessment/qti/helper/ExtractionHelper.java $
+ * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-qti/src/java/org/sakaiproject/tool/assessment/qti/helper/ExtractionHelper.java $
  * $Id: ExtractionHelper.java 309681 2014-05-20 18:49:14Z ktsao@stanford.edu $
  ***********************************************************************************
  *

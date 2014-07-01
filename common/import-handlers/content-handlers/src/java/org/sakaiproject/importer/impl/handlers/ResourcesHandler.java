@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/common/tags/sakai-10.0/import-handlers/content-handlers/src/java/org/sakaiproject/importer/impl/handlers/ResourcesHandler.java $
+ * $URL: https://source.sakaiproject.org/svn/common/branches/sakai-10.x/import-handlers/content-handlers/src/java/org/sakaiproject/importer/impl/handlers/ResourcesHandler.java $
  * $Id: ResourcesHandler.java 106351 2012-03-28 20:21:21Z matthew@longsight.com $
  ***********************************************************************************
  *

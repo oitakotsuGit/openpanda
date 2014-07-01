@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/search/tags/sakai-10.0/search-impl/impl/src/test/org/sakaiproject/search/mock/MockSession.java $
+ * $URL: https://source.sakaiproject.org/svn/search/branches/sakai-10.x/search-impl/impl/src/test/org/sakaiproject/search/mock/MockSession.java $
  * $Id: MockSession.java 105078 2012-02-24 23:00:38Z ottenhoff@longsight.com $
  ***********************************************************************************
  *
