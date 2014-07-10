@@ -7,6 +7,7 @@ var insist = false;
 var delbutton;
 var mm_testing = 0;
 var editrow;
+var delete_orphan_enabled = true;
 
 // in case user includes the URL of a site that replaces top,
 // give them a way out. Handler is set up in the html file.
@@ -262,6 +263,14 @@ $(function() {
 			importccactive = true;
 			$('#import-cc-dialog').dialog('open');
 			checksize($('#import-cc-dialog'));
+			return false;
+		});
+
+		$('#delete-orphan-link').click(function(){
+			if (delete_orphan_enabled) {
+			    delete_orphan_enabled = false;
+			    $('#delete-orphan').click();
+			}
 			return false;
 		});
 		
@@ -557,10 +566,10 @@ $(function() {
 			$("#movie-height").val(row.find(".mm-height").text());
 			$("#movie-width").val(row.find(".mm-width").text());
 			$("#description3").val(row.find(".description").text());
-			if(row.find(".movie-prerequisite").text() === 'true') {
-			    $('#mm-prerequisite').attr('checked','checked');
+			if (row.find(".movie-prerequisite").text() == 'true') {
+			    $('#movie-prerequisite').attr('checked','checked');
 			} else {
-			    $('#mm-prerequisite').removeAttr('checked');
+			    $('#movie-prerequisite').removeAttr('checked');
 			}
 			$("#mimetype4").val(row.find(".mm-type").text());
 			var position =  row.position();
@@ -2332,6 +2341,7 @@ function buttonRemoveHighlightc() {
 function addHighlight(dropDiv) {
 	if(!lessonBuilderAnimationLocked) {
 		if(!dropDiv.is(":visible")) {
+			closeDropdowns();
 			lessonBuilderAnimationLocked = true;
 			hideMultimedia();
 			reposition();
@@ -2376,6 +2386,7 @@ function toggleDropdown(dropDiv, button) {
 			dropdownViaClick = false;
 			button.focus();
 		}else {
+			closeDropdowns();
 			lessonBuilderAnimationLocked = true;
 			hideMultimedia();
 			reposition();

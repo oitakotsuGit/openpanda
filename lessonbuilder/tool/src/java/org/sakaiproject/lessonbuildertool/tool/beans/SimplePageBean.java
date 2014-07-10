@@ -54,6 +54,7 @@ import org.sakaiproject.lessonbuildertool.model.SimplePageToolDao;
 import org.sakaiproject.lessonbuildertool.service.*;
 import org.sakaiproject.lessonbuildertool.tool.producers.ShowItemProducer;
 import org.sakaiproject.lessonbuildertool.tool.producers.ShowPageProducer;
+import org.sakaiproject.lessonbuildertool.tool.producers.PagePickerProducer;
 import org.sakaiproject.lessonbuildertool.tool.view.GeneralViewParameters;
 import org.sakaiproject.memory.api.Cache;
 import org.sakaiproject.memory.api.MemoryService;
@@ -498,8 +499,19 @@ public class SimplePageBean {
 		if (resourceCache == null) {
 			resourceCache = memoryService.newCache("org.sakaiproject.lessonbuildertool.tool.beans.SimplePageBean.resourceCache");
 		}
-	
 	}
+
+	static PagePickerProducer pagePickerProducer = null;
+       // need the bean, because findallpages uses a global that's in the class */
+	public PagePickerProducer pagePickerProducer() {
+	    if (pagePickerProducer == null) {
+		pagePickerProducer = new PagePickerProducer();
+		pagePickerProducer.setSimplePageBean(this);
+		pagePickerProducer.setSimplePageToolDao(simplePageToolDao);
+	    }
+	    return pagePickerProducer;
+	}
+
 
     // no destroy. We want to leave the cache intact when we exit, because there's one of us
     // per request. 
@@ -2217,6 +2229,50 @@ public class SimplePageBean {
 	}
 
 
+	public String deleteOrphanPages() {
+	    if (getEditPrivs() != 0)
+	    	return "permission-failed";
+
+	    // code is mostly from PagePickerProducer
+	    // list we're going to display
+	    List<PagePickerProducer.PageEntry> entries = new ArrayList<PagePickerProducer.PageEntry> ();
+	    // build map of all pages, so we can see if any are left over
+	    Map<Long,SimplePage> pageMap = new HashMap<Long,SimplePage>();
+	    Set<Long> sharedPages = new HashSet<Long>();
+
+	    // all pages
+	    List<SimplePage> pages = simplePageToolDao.getSitePages(getCurrentSiteId());
+	    for (SimplePage p: pages)
+		pageMap.put(p.getPageId(), p);
+
+	    List<SimplePageItem> sitePages =  simplePageToolDao.findItemsInSite(getCurrentSiteId());
+	    Set<Long> topLevelPages = new HashSet<Long>();
+	    for (SimplePageItem i : sitePages)
+		topLevelPages.add(Long.valueOf(i.getSakaiId()));
+
+	    // this adds everything you can find from top level pages to entries
+	    for (SimplePageItem sitePageItem : sitePages) {
+		// System.out.println("findallpages " + sitePageItem.getName() + " " + true);
+		pagePickerProducer().findAllPages(sitePageItem, entries, pageMap, topLevelPages, sharedPages, 0, true);
+	    }
+		    
+	    // everything we didn't find should be deleted. It's items remaining in pagemap
+	    List<String> orphans = new ArrayList<String>();
+	    if (pageMap.size() > 0) {
+		for (SimplePage p: pageMap.values()) {
+		    // non-null owner are student pages
+		    if(p.getOwner() == null) {
+			orphans.add(Long.toString(p.getPageId()));
+		    }
+		}
+		// do the deletetion
+		// selectedEntities is the argument for deletePages
+		selectedEntities = orphans.toArray(selectedEntities);
+		deletePages();
+	    }	    
+	    return "success";
+	}
+
 	public String deletePages() {
 	    if (getEditPrivs() != 0)
 	    	return "permission-failed";
@@ -2225,6 +2281,12 @@ public class SimplePageBean {
 
 	    for (int i = 0; i < selectedEntities.length; i++) {
 		deletePage(siteId, Long.valueOf(selectedEntities[i]));
+		if ((i % 10) == 0) {
+		    // we've seen situations with a million orphan pages
+		    // we don't want to leave those all in cache
+		    simplePageToolDao.flush();
+		    simplePageToolDao.clear();
+		}
 	    }
 	    return "success";
 	}
@@ -4176,7 +4238,32 @@ public class SimplePageBean {
 
 		Collection<String>itemGroups = null;
 		try {
-		    itemGroups = getItemGroups(item, null, false);
+		    LessonEntity entity = null;
+		    if (!canSeeAll()) {
+			switch (item.getType()) {
+			case SimplePageItem.ASSIGNMENT:
+			    entity = assignmentEntity.getEntity(item.getSakaiId());
+			    if (entity == null || entity.notPublished())
+				return false;
+			    break;
+			case SimplePageItem.ASSESSMENT:
+			    if (quizEntity.notPublished(item.getSakaiId()))
+				return false;
+			    break;
+			case SimplePageItem.FORUM:
+			    entity = forumEntity.getEntity(item.getSakaiId());
+			    if (entity == null || entity.notPublished())
+				return false;
+			    break;
+			case SimplePageItem.BLTI:
+			    if (bltiEntity != null)
+				entity = bltiEntity.getEntity(item.getSakaiId());
+			    if (entity == null || entity.notPublished())
+				return false;
+			}
+		    }
+		    // entity can be null. passing the actual entity just avoids a second lookup
+		    itemGroups = getItemGroups(item, entity, false);
 		} catch (IdUnusedException exc) {
 		    visibleCache.put(item.getId(), false);
 		    return false; // underlying entity missing, don't show it
@@ -5220,6 +5307,8 @@ public class SimplePageBean {
 			
 			// remember who added it, for permission checks
 			item.setAttribute("addedby", getCurrentUserId());
+
+			item.setPrerequisite(this.prerequisite);
 
 			if (mimeType != null) {
 				item.setHtml(mimeType);
