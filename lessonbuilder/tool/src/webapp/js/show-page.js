@@ -3,6 +3,7 @@ var lessonBuilderAnimationLocked = false;
 var oldloc;
 var requirementType = 0;
 var importccactive = false;
+var mmactive = false;
 var insist = false;
 var delbutton;
 var mm_testing = 0;
@@ -260,6 +261,7 @@ $(function() {
 			var position =  $(this).position();
 			$("#import-cc-dialog").dialog("option", "position", [position.left, position.top]);
 			oldloc = $(".dropdown a");
+			$("#import-cc-loading").hide();
 			importccactive = true;
 			$('#import-cc-dialog').dialog('open');
 			checksize($('#import-cc-dialog'));
@@ -288,6 +290,8 @@ $(function() {
 			// jquery click doesn't actually click, so get the js object and do a native click call
                         if ($('#export-cc-v11').attr('checked') == 'checked') {
                             $("#export-cc-link").attr('href', $("#export-cc-link").attr('href').replace(/version=[0-9.]*/, "version=1.1"));
+			} else if ($('#export-cc-v13').attr('checked') == 'checked') {
+                            $("#export-cc-link").attr('href', $("#export-cc-link").attr('href').replace(/version=[0-9.]*/, "version=1.3"));
                         } else {
                             $("#export-cc-link").attr('href', $("#export-cc-link").attr('href').replace(/version=[0-9.]*/, "version=1.2"));
                         }
@@ -306,7 +310,7 @@ $(function() {
 			if (!importccactive)
 			    return false;
 			importccactive = false;
-			$('#loading').show();
+			$("#import-cc-loading").show();
 			return true;
 	    	});
 
@@ -383,6 +387,11 @@ $(function() {
 			    //  there's another button to try the other alterantive
 
 			}
+			// prevent double click
+			if (!mmactive)
+			    return false;
+			mmactive = false;
+			$('#mm-loading').show();
 			// actually do the submit
 			return true;
 	    	});
@@ -1169,6 +1178,8 @@ $(function() {
 			$(".mm-additional-website").hide();
 			$(".mm-url-section").show();
 			$("#checkingwithhost").hide();
+			$("#mm-loading").hide();
+			mmactive = true;
 			$("#mm-error-container").hide();
 			insist = false;
 			$("#add-multimedia-dialog").dialog('open');
@@ -1492,6 +1503,8 @@ $(function() {
 			$(".mm-additional-website").hide();
 			$(".mm-url-section").show();
 			$("#checkingwithhost").hide();
+			$("#mm-loading").hide();
+			mmactive = true;
 			$("#mm-error-container").hide();
 			insist = false;
 			$("#add-multimedia-dialog").dialog('open');
@@ -1521,6 +1534,8 @@ $(function() {
 			$(".mm-additional-website").hide();
 			$(".mm-url-section").show();
 			$("#checkingwithhost").hide();
+			$("#mm-loading").hide();
+			mmactive = true;
 			$("#mm-error-container").hide();
 			insist = false;
 			oldloc = $(this);
@@ -1549,6 +1564,8 @@ $(function() {
 			$(".mm-additional-website").hide();
 			$(".mm-url-section").show();
 			$("#checkingwithhost").hide();
+			$("#mm-loading").hide();
+			mmactive = true;
 			$("#mm-error-container").hide();
 			insist = false;
 			oldloc = $(this);
@@ -1577,6 +1594,8 @@ $(function() {
 			$(".mm-url-section").hide();
 			oldloc = $(".dropdown a");
 			$("#checkingwithhost").hide();
+			$("#mm-loading").hide();
+			mmactive = true;
 			$("#mm-error-container").hide();
 			insist = false;
 			$("#add-multimedia-dialog").dialog('open');
@@ -1692,6 +1711,8 @@ $(function() {
 			$(".mm-additional-website").hide();
 			$(".mm-url-section").show();
 			$("#checkingwithhost").hide();
+			$("#mm-loading").hide();
+			mmactive = true;
 			$("#mm-error-container").hide();
 			insist = false;
 			$("#add-multimedia-dialog").dialog('open');

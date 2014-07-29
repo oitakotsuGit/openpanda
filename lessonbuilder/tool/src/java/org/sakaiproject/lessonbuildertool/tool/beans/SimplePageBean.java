@@ -2498,6 +2498,8 @@ public class SimplePageBean {
 					if (lessonEntity != null) {
 					    String groups = getItemGroupString (i, lessonEntity, true);
 					    ourGroupName = messageLocator.getMessage("simplepage.access-group").replace("{}", getNameOfSakaiItem(i));
+					    // backup in case group was created by old code
+					    String oldGroupName = "Access: " + getNameOfSakaiItem(i);
 					    // this can produce duplicate names. Searches are actually done based
 					    // on entity reference, not title, so this is acceptable though confusing
 					    // to users. But using object ID's for the name would be just as confusing.
@@ -2505,7 +2507,7 @@ public class SimplePageBean {
 						ourGroupName = utf8truncate(ourGroupName, 99);
 					    else if (ourGroupName.length() > 99) 
 						ourGroupName = ourGroupName.substring(0, 99);
-					    String groupId = GroupPermissionsService.makeGroup(getCurrentPage().getSiteId(), ourGroupName, i.getSakaiId(), this);
+					    String groupId = GroupPermissionsService.makeGroup(getCurrentPage().getSiteId(), ourGroupName, oldGroupName, i.getSakaiId(), this);
 					    saveItem(simplePageToolDao.makeGroup(i.getSakaiId(), groupId, groups, getCurrentPage().getSiteId()));
 
 					    // update the tool access control to point to our access control group
@@ -3635,6 +3637,37 @@ public class SimplePageBean {
 		}
 	}
 	
+	private boolean uploadSizeOk(MultipartFile file) {
+	    long uploadedFileSize = file.getSize();
+
+	    if (uploadedFileSize == 0) {
+		setErrMessage(messageLocator.getMessage("simplepage.filezero"));
+		return false;
+	    }
+
+	    // implement precedence rules: ceiling if set, else max, else 20
+	    String max = ServerConfigurationService.getString("content.upload.max", null);
+	    String ceiling = ServerConfigurationService.getString("content.upload.ceiling", null);
+	    String effective = ceiling;
+	    if (effective == null)
+		effective = max;
+	    if (effective == null)
+		effective = "20";
+	    long maxFileSizeInBytes = 20 * 1024 * 1024;
+	    try {
+		maxFileSizeInBytes = Long.parseLong(effective) * 1024 * 1024;
+	    } catch(NumberFormatException e) {
+		log.warn("Unable to parse content.upload.max retrieved from properties file during upload");
+	    }
+
+	    if (uploadedFileSize > maxFileSizeInBytes) {
+		String limit = Long.toString(maxFileSizeInBytes / (1024*1024));
+		setErrMessage(messageLocator.getMessage("simplepage.filetoobig").replace("{}", limit));
+		return false;
+	    }
+	    return true;
+	}
+
 	private String uploadFile(String collectionId) {
 		String name = null;
 		String mimeType = null;
@@ -3643,11 +3676,12 @@ public class SimplePageBean {
 		if (multipartMap.size() > 0) {
 			// 	user specified a file, create it
 			file = multipartMap.values().iterator().next();
-			if (file.isEmpty())
-				file = null;
 		}
 		
 		if (file != null) {
+			if (!uploadSizeOk(file))
+			    return null;
+
 			try {
 				contentHostingService.checkCollection(collectionId);
 			}catch(Exception ex) {
@@ -4237,7 +4271,10 @@ public class SimplePageBean {
 		}
 
 		Collection<String>itemGroups = null;
+		boolean pushed = false;
 		try {
+		    pushAdvisorAlways();
+		    pushed = true;
 		    LessonEntity entity = null;
 		    if (!canSeeAll()) {
 			switch (item.getType()) {
@@ -4267,6 +4304,8 @@ public class SimplePageBean {
 		} catch (IdUnusedException exc) {
 		    visibleCache.put(item.getId(), false);
 		    return false; // underlying entity missing, don't show it
+		} finally {
+		    if (pushed) popAdvisor();
 		}
 		if (itemGroups == null || itemGroups.size() == 0) {
 		    // this includes items for which for which visibility doesn't apply
@@ -4718,6 +4757,7 @@ public class SimplePageBean {
 			List<SimplePageItem> items = getItemsOnPage(pageId);
 
 			for (SimplePageItem i : items) {
+			    // System.out.println(i.getSequence() + " " + i.isRequired() + " " + isItemVisible(i) + " " + isItemComplete(i));
 				if (i.getSequence() >= item.getSequence()) {
 				    break;
 				} else if (i.isRequired() && isItemVisible(i)) {
@@ -5151,11 +5191,16 @@ public class SimplePageBean {
 			if (multipartMap.size() > 0) {
 				// 	user specified a file, create it
 				file = multipartMap.values().iterator().next();
+				// zero length is valid. We get that if it's not a file upload
 				if (file.isEmpty())
-					file = null;
+				    file = null;
+
 			}
 			
 			if (file != null) {
+				if (!uploadSizeOk(file))
+				    return;
+
 				String collectionId = getCollectionId(false);
 				// 	user specified a file, create it
 				name = file.getOriginalFilename();
@@ -5369,11 +5414,12 @@ public class SimplePageBean {
 	    if (multipartMap.size() > 0) {
 		// user specified a file, create it
 		file = multipartMap.values().iterator().next();
-		if (file.isEmpty())
-		    file = null;
 	    }
 
 	    if (file != null) {
+		if (!uploadSizeOk(file))
+		    return;
+
 		File cc = null;
 		File root = null;
 		try {

@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/help/branches/sakai-10.x/help-component/src/java/org/sakaiproject/component/app/help/HelpManagerImpl.java $
- * $Id: HelpManagerImpl.java 309242 2014-05-06 20:14:38Z enietzel@anisakai.com $
+ * $Id: HelpManagerImpl.java 310967 2014-07-21 15:39:42Z ottenhoff@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2003, 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -110,7 +110,7 @@ import org.xml.sax.SAXException;
 /**
  * HelpManager provides database and search capabilitites for the Sakai help tool.
  * @author <a href="mailto:jlannan.iupui.edu">Jarrod Lannan</a>
- * @version $Id: HelpManagerImpl.java 309242 2014-05-06 20:14:38Z enietzel@anisakai.com $
+ * @version $Id: HelpManagerImpl.java 310967 2014-07-21 15:39:42Z ottenhoff@longsight.com $
  *
  */
 public class HelpManagerImpl extends HibernateDaoSupport implements HelpManager
@@ -1307,6 +1307,12 @@ public class HelpManagerImpl extends HibernateDaoSupport implements HelpManager
 				Set<Category> sortedCategories = new TreeSet<Category>();		    
 				Set<Category> categories = localizedToc.getCategories();
 				sortedCategories.addAll(categories);
+				
+				for (Category cat : categories) {
+					if (hideHelp.contains(cat.getName())) {
+						sortedCategories.remove(cat);
+					}
+				}
 				localizedToc.setCategories(sortedCategories);
 			}
 		}
