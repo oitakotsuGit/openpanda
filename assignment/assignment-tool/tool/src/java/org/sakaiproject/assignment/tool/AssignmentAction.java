@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/assignment/branches/sakai-10.x/assignment-tool/tool/src/java/org/sakaiproject/assignment/tool/AssignmentAction.java $
- * $Id: AssignmentAction.java 311086 2014-07-23 23:57:28Z enietzel@anisakai.com $
+ * $Id: AssignmentAction.java 311429 2014-07-31 02:22:44Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  *
@@ -2484,7 +2484,14 @@ public class AssignmentAction extends PagedResourceActionII
 					state.setAttribute(SORTED_BY, sort);
 					state.setAttribute(SORTED_ASC, asc);
 				}
-				context.put("groups", new SortedIterator(groupsAllowAddAssignment.iterator(), new AssignmentComparator(state, sort, asc)));
+				
+                                
+				// SAK-26349 - need to add the collection; the iterator added below is only usable once in the velocity template
+				AssignmentComparator comp = new AssignmentComparator(state, sort, asc);
+				Collections.sort((List<Group>) groupsAllowAddAssignment, comp);
+				context.put("groupsList", groupsAllowAddAssignment);
+                                
+				context.put("groups", new SortedIterator(groupsAllowAddAssignment.iterator(), comp));
 				context.put("assignmentGroups", state.getAttribute(NEW_ASSIGNMENT_GROUPS));
 			}
 		}
@@ -8059,10 +8066,12 @@ public class AssignmentAction extends PagedResourceActionII
 
 		try
 		{
+			// SAK-26349 - clear group selection before changing, otherwise it can result in a PermissionException
+			a.clearGroupAccess();
+
 			if ("site".equals(range))
 			{
 				a.setAccess(Assignment.AssignmentAccess.SITE);
-				a.clearGroupAccess();
 			}
 			else if ("groups".equals(range))
 			{

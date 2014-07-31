@@ -1,6 +1,6 @@
  /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/announcement/branches/sakai-10.x/announcement-tool/tool/src/java/org/sakaiproject/announcement/tool/AnnouncementAction.java $
- * $Id: AnnouncementAction.java 307880 2014-04-07 15:56:25Z enietzel@anisakai.com $
+ * $Id: AnnouncementAction.java 311400 2014-07-31 01:29:31Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2003, 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -1284,7 +1284,7 @@ public class AnnouncementAction extends PagedResourceActionII
 	
 		context.put("showMessagesList", showMessagesList.iterator());
 		context.put("messageListVector", showMessagesList);
-
+		context.put("showMessagesList2", showMessagesList.iterator());
 		context.put("totalPageNumber", sstate.getAttribute(STATE_TOTAL_PAGENUMBER));
 		context.put("formPageNumber", FORM_PAGE_NUMBER);
 		context.put("prev_page_exists", sstate.getAttribute(STATE_PREV_PAGE_EXISTS));
@@ -2734,6 +2734,9 @@ public class AnnouncementAction extends PagedResourceActionII
 	 */
 	public void doAnnouncement_form(RunData data, Context context)
 	{
+		if (!"POST".equals(data.getRequest().getMethod())) {
+			return;
+		}
 
 		ParameterParser params = data.getParameters();
 
