@@ -120,7 +120,7 @@ public class LessonsAccess {
     public class Path implements Cloneable{
 	Long itemId;
 	boolean topLevel;
-	Set<String>groups;
+	List<Set<String>>groups;
 	public Path clone() {
 	    Path ret = new Path();
 	    ret.itemId = this.itemId;
@@ -128,6 +128,22 @@ public class LessonsAccess {
 	    ret.groups = this.groups;
 	    return ret;
 	}
+    }
+
+    public String printPath(Set<Path> paths) {
+	String ret = "";
+	if (paths == null)
+	    return "null";
+	for (Path path: paths) {
+	    if (ret.length() > 0) {
+		ret = ret + ",";
+	    }
+	    if (path.groups == null)
+		ret = ret + "null";
+	    else
+		ret = ret + path.groups.toString();
+	}
+	return ret;
     }
 
     // the code for access is broken into 3 parts:
@@ -144,11 +160,22 @@ public class LessonsAccess {
     // the right way to check items.
 
 
-    Set<Path> getPagePaths (long pageId) {
-	return getPagePaths(pageId, new HashSet<Long>());
+    public Set<Path> getPagePaths (long pageId) {
+	return getPagePaths(pageId, new HashSet<Long>(), true);
     }
 
-    Set<Path> getPagePaths(long pageId, Set<Long>seen) {
+    public Set<Path> getPagePaths (long pageId, Set<Long>seen) {
+	return getPagePaths(pageId, seen, true);
+    }
+
+    public Set<Path> getPagePaths(long pageId, boolean usePrerequisites) {
+	return getPagePaths(pageId, new HashSet<Long>(), usePrerequisites);
+    }
+
+    // usePrerequisites is normally used. However for GradebookInfo, we just
+    // use group restrictions. We count an item for the student even if 
+    // they can't get there yet because of prerequisites
+    Set<Path> getPagePaths(long pageId, Set<Long>seen, boolean usePrerequisites) {
 	/// System.out.println("page " + pageId + " getgroups");
 	// if pageid is 0 this is a top level page. No further constraints
 	Set<Path> ret = new HashSet<Path>();
@@ -165,7 +192,13 @@ public class LessonsAccess {
 	if (page == null) // should be impossible
 	    return ret;
 
-	if (page.isHidden() || (page.getReleaseDate() != null && page.getReleaseDate().after(new Date()))) {
+	// if we've seen it already, we're pursuing a path that goes back through the same page.
+	// this can't affect the outcome, but will cause infinite recursion
+	if (seen.contains(pageId))
+	    return ret;
+
+	if (usePrerequisites && 
+	    (page.isHidden() || (page.getReleaseDate() != null && page.getReleaseDate().after(new Date())))) {
 	    // not released. Say inaccessible. The assumption is that this is being used only
 	    // for students. Obviously the instructor can bypass release control.
 	    return ret;
@@ -175,6 +208,7 @@ public class LessonsAccess {
 	List<SimplePageItem> items = null;
 
 	// if it's a student page, have to handle specially. Find item that has the student content section
+	// if usePrerequistes false, this can't happen, since no graded items will occur there
 	if (page.getOwner() != null) {
 	    SimpleStudentPage student = dao.findStudentPage(page.getTopParent());
 	    SimplePageItem item = dao.findItem(student.getItemId());
@@ -193,7 +227,7 @@ public class LessonsAccess {
 	    if (itemGroupString != null && itemGroupString.length() > 0)
 		itemGroups = new HashSet<String>(Arrays.asList(itemGroupString.split(",")));
 
-	    if (item.isPrerequisite()) {
+	    if (usePrerequisites && item.isPrerequisite()) {
 		// we don't do a recursive call for groups. because of the restriction on prerequisites,
 		// we will only allow access to this page if there is a log entry. But in that case
 		// we don't need further tests because the user had at some point gotten to the containing
@@ -203,7 +237,10 @@ public class LessonsAccess {
 		Path path = new Path();
 		path.itemId = item.getId();
 		path.topLevel = (item.getPageId() == 0);
-		path.groups = itemGroups;
+		if (itemGroups != null) {
+		    path.groups = new ArrayList<Set<String>>();
+		    path.groups.add(itemGroups);
+		}
 		// TODO: check for duplicates
 		ret.add(path);
 	    } else {
@@ -212,15 +249,15 @@ public class LessonsAccess {
 		    // the values will end up cached. That means we can't
 		    // modify the values in place, but have to copy them first
 		    path = path.clone();
-		    if (path.groups == null)
-			path.groups = itemGroups;
-		    else if (itemGroups == null)
+		    if (itemGroups == null)
 			; // use path.groups as is
-		    else {
+		    else if (path.groups == null) {
+			path.groups = new ArrayList<Set<String>>();
+			path.groups.add(itemGroups);
+		    } else {
 			// note: we can't modify that set in path.groups, because it coudl be shared
 			// with other copies of this Path
-			itemGroups.retainAll(path.groups);  // intersect
-			path.groups = itemGroups;
+			path.groups.add(itemGroups);  // add to list or constraints, i.e. you have to be in all the groups
 		    }
 		    ret.add(path);
 		}
@@ -230,6 +267,32 @@ public class LessonsAccess {
 	seen.remove(pageId);
 
 	return ret;
+    }
+
+    public Set<Path> getItemPaths(long itemId) {
+
+	SimplePageItem item = dao.findItem(itemId);
+
+	String itemGroupString = item.getGroups();
+	Set<String>itemGroups = null;
+	if (itemGroupString != null && itemGroupString.length() > 0)
+	    itemGroups = new HashSet<String>(Arrays.asList(itemGroupString.split(",")));
+	
+	long pageId = item.getPageId();
+	
+	Set<Path> paths = getPagePaths(pageId, false);
+
+	for (Path path: paths) {
+	    if (itemGroups == null)
+		; // leave path.groups as is
+	    else if (path.groups == null) {
+		path.groups = new ArrayList<Set<String>>();
+		path.groups.add(itemGroups);
+	    } else
+		path.groups.add(itemGroups);
+	}
+
+	return paths;
     }
 
     // in testing this code, not that ispageaccessible will sometimes return true
@@ -252,6 +315,7 @@ public class LessonsAccess {
 
 	Set<Path> paths = getPagePaths(pageId);
 
+	nextpath:
 	for (Path path: paths) {
 	    if (path.itemId != null) {
 		// page needs to be marked available. When the containing page
@@ -304,14 +368,17 @@ public class LessonsAccess {
 	    if (path.groups == null) 
 		return true;
 	    else {
-		Set<String>groupIds = path.groups;
-		ArrayList<String> groups = new ArrayList<String>();
-		for (String groupId: groupIds)
-		    groups.add("/site/" + siteId + "/group/" + groupId);
-		
-		List<AuthzGroup> matched = authzGroupService.getAuthzUserGroupIds(groups, currentUserId);
-		if (matched.size() > 0)
-		    return true;
+		for (Set<String>groupIds: path.groups) {
+		    ArrayList<String> groups = new ArrayList<String>();
+		    for (String groupId: groupIds)
+			groups.add("/site/" + siteId + "/group/" + groupId);
+		    List<AuthzGroup> matched = authzGroupService.getAuthzUserGroupIds(groups, currentUserId);
+		    // must match at least one
+		    if (matched.size() < 1)
+			continue nextpath;
+		}
+		// matched all of the items o the path
+		return true;
 	    }
 
 	}

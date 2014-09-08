@@ -1,7 +1,7 @@
 /**********************************************************************************
 
  * $URL: https://source.sakaiproject.org/svn/site-manage/branches/sakai-10.x/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java $
- * $Id: SiteAction.java 311456 2014-07-31 15:07:19Z enietzel@anisakai.com $
+ * $Id: SiteAction.java 311881 2014-08-12 18:51:31Z ottenhoff@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2003, 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -6777,7 +6777,9 @@ private Map<String,List> getTools(SessionState state, String type, Site site) {
 		// get the request email from configuration
 		String requestEmail = getSetupRequestEmailAddress();
 		User currentUser = UserDirectoryService.getCurrentUser();
-		if (requestEmail != null && currentUser != null) {
+		// read from configuration whether to send out site notification emails, which defaults to be true
+		boolean sendSiteNotificationChoice = ServerConfigurationService.getBoolean("site.setup.creation.notification", true);
+		if (requestEmail != null && currentUser != null && sendSiteNotificationChoice) {
 			userNotificationProvider.notifySiteCreation(site, notifySites, courseSite, term_name, requestEmail);
 		} // if
 

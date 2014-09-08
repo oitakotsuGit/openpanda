@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/assignment/branches/sakai-10.x/assignment-tool/tool/src/java/org/sakaiproject/assignment/tool/AssignmentAction.java $
- * $Id: AssignmentAction.java 311452 2014-07-31 14:40:14Z enietzel@anisakai.com $
+ * $Id: AssignmentAction.java 311804 2014-08-11 14:07:44Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  *
@@ -11192,9 +11192,9 @@ public class AssignmentAction extends PagedResourceActionII
 		HashMap n = new HashMap();
 		n.put(Integer.valueOf(2), rb.getString("letter"));
 		n.put(Integer.valueOf(3), rb.getString("points"));
-		n.put(Integer.valueOf(4), rb.getString("pass"));
+		n.put(Integer.valueOf(4), rb.getString("passfail"));
 		n.put(Integer.valueOf(5), rb.getString("check"));
-		n.put(Integer.valueOf(1), rb.getString("ungra"));
+		n.put(Integer.valueOf(1), rb.getString("gen.nograd"));
 		return n;
 
 	} // gradeTypeTable

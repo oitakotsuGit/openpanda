@@ -1,5 +1,5 @@
 /* $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-services/src/java/org/sakaiproject/tool/assessment/facade/ItemFacade.java $
- * $Id: ItemFacade.java 311366 2014-07-31 00:38:05Z enietzel@anisakai.com $
+ * $Id: ItemFacade.java 311533 2014-08-04 14:28:18Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -49,7 +49,6 @@ import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
 import org.sakaiproject.tool.assessment.osid.assessment.impl.ItemImpl;
 import org.sakaiproject.tool.assessment.services.PersistenceService;
-import org.sakaiproject.util.FormattedText;
 
 /**
  *
@@ -931,16 +930,9 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable<ItemDat
    */
   public String getTextHtmlStripped() throws DataFacadeException
   {
-    /* old way
     String regexHTMLTag = "\\<.*?\\>";
     String regexLineBreaks = "(\\r|\\n)";
     return getText().replaceAll(regexLineBreaks,"").replaceAll(regexHTMLTag," ");
-    */
-    String text = getText();
-    if (text != null) {
-      text = FormattedText.stripHtmlFromText(text, true); // SAM-2274
-    }
-    return text;
   }
 
   /**
@@ -956,15 +948,8 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable<ItemDat
    */
   public String getTextHtmlStrippedAll() throws DataFacadeException
   {
-    /*
     String regex = "\\<.*?\\>|\\n|\\r\\n";
     return getText().replaceAll(regex,"");
-    */
-    String text = getText();
-    if (text != null) {
-      text = FormattedText.stripHtmlFromText(text, false); // SAM-2274
-    }
-    return text;
   }
   
   public ArrayList getItemTextArray() {
