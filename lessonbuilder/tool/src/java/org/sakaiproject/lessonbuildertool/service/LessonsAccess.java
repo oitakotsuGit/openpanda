@@ -85,6 +85,10 @@ public class LessonsAccess {
     // care about it during a single transaction. But I'm using the normal
     // default of 10 min
     protected static final int DEFAULT_EXPIRATION = 60 * 10;
+    // I have tested with useCache = true. I believe it works.
+    // But there's been such a long history of problems caused by it that I
+    // it's safest to leave it off for 2.10
+    static final boolean useCache = false;
 
     // Sakai Service Beans
     private SimplePageToolDao dao;
@@ -93,15 +97,19 @@ public class LessonsAccess {
     private MemoryService memoryService;
 
     public void init() {
+	if (useCache) {
 	cache = memoryService
 	    .newCache("org.sakaiproject.lessonbuildertool.service.LessonsAccess.cache");
+	}
         log.info("init()");
     }
 
     public void destroy() {
         log.info("destroy()");
+	if (useCache) {
 	cache.destroy();
 	cache = null;
+	}
     }
 
     // my best estimate is about 100 bytes / call. The maximum likely chain is 
@@ -116,19 +124,74 @@ public class LessonsAccess {
       pageId == null if path has no prerequisites
     */
     
+    /*
+
+      A path represents all the group constraints on getting to an item.
+      Generally there's more than one way you can get to a page. Each way represents
+      a path through pages and subpages. To get to the item you have to pass the
+      group restrictions for every page in the path. However if there's more than
+      one path, any path will work. 
+
+      There are two sets of methods to apply a path set. The one here has to check
+      not just group constraints but prerequisites. The one in LessonsGradeInfoProvider 
+      is purely group constraints.
+
+      itemId is used only when prerequisites are being checked. In tracing the path,
+      if we find a page has prerequesites, we put its item Id is this field and stop
+      tracing the path. isPageAccessible will check whether the user has actually
+      accessed that page. If so, we assume it is accessible. That's a lot cheaper than
+      doing the actual prerequisiet checking, and good enough for the places we're 
+      using this code. We prefer to let users explore the site, so if there aren't any
+      prerequsites, we can afford a full check of accessibility. But if there are prerequisites, we simplify
+      our job. That won't let them look ahead, unfortunately, but that's inherent in using
+      prerequisites.
+
+      Note that the path is independent of user, so we can usefully cache the values.
+
+    */
 
     public class Path implements Cloneable{
 	Long itemId;
 	boolean topLevel;
-	List<Set<String>>groups;
-	public Path clone() {
-	    Path ret = new Path();
-	    ret.itemId = this.itemId;
-	    ret.topLevel = this.topLevel;
-	    ret.groups = this.groups;
-	    return ret;
-	}
+	ArrayList<Set<String>>groups;
     }
+
+    /* 
+     * clone a set of paths.
+     * The code in getPagePaths and getItemPaths modifies paths.
+     * For that reason when we pull something from the cache we have to clone it,
+     *   so changes aren't made to the cached copy
+     * Similarly, we have to clone the copy we put in the cache, since other code
+     *   is going to modify the copy we return
+     */
+
+    public Set<Path>clonePath(Set<Path> paths) {
+	if (paths == null)
+	    return null;
+
+	Set<Path> ret = new HashSet<Path>();
+
+	for (Path path:paths) {
+	    Path newPath = new Path();
+	    newPath.itemId = path.itemId;
+	    newPath.topLevel = path.topLevel;
+	    if (path.groups == null)
+		newPath.groups = null;
+	    else {
+		newPath.groups = new ArrayList<Set<String>>();
+		for (Set<String>groupIds: path.groups) {
+		    Set<String>newGroups = new HashSet<String>();
+		    for (String group: groupIds)
+			newGroups.add(group);
+		    newPath.groups.add(newGroups);
+		}
+	    }
+	    ret.add(newPath);
+	}
+	
+	return ret;
+    }
+
 
     public String printPath(Set<Path> paths) {
 	String ret = "";
@@ -175,8 +238,10 @@ public class LessonsAccess {
     // usePrerequisites is normally used. However for GradebookInfo, we just
     // use group restrictions. We count an item for the student even if 
     // they can't get there yet because of prerequisites
+    //   Cache only if usePrerequisites = false. We can't cache both or the cache
+    // can have more than one value for a given page, and it's really the case
+    // without we care about because of the gradebook
     Set<Path> getPagePaths(long pageId, Set<Long>seen, boolean usePrerequisites) {
-	/// System.out.println("page " + pageId + " getgroups");
 	// if pageid is 0 this is a top level page. No further constraints
 	Set<Path> ret = new HashSet<Path>();
 	if (pageId == 0) {
@@ -189,13 +254,24 @@ public class LessonsAccess {
 	}
 
 	SimplePage page = dao.getPage(pageId);
-	if (page == null) // should be impossible
+	if (page == null) {// should be impossible
 	    return ret;
+	}
 
 	// if we've seen it already, we're pursuing a path that goes back through the same page.
 	// this can't affect the outcome, but will cause infinite recursion
-	if (seen.contains(pageId))
+	if (seen.contains(pageId)) {
 	    return ret;
+	}
+
+	if (useCache && !usePrerequisites) {
+	    Set<Path> cached = (Set<Path>)cache.get(Long.toString(pageId));
+	    // need to copy the cached object because some of the code changes it
+	    // unfortunately clone of a hashset is shallow, so have to do this ourselves
+	    if (cached != null) {
+		return clonePath(cached);
+	    }
+	}
 
 	if (usePrerequisites && 
 	    (page.isHidden() || (page.getReleaseDate() != null && page.getReleaseDate().after(new Date())))) {
@@ -221,7 +297,6 @@ public class LessonsAccess {
 
 	for (SimplePageItem item: items) {
 	    // union all their groups
-
 	    String itemGroupString = item.getGroups();
 	    Set<String>itemGroups = null;
 	    if (itemGroupString != null && itemGroupString.length() > 0)
@@ -248,7 +323,7 @@ public class LessonsAccess {
 		for (Path path: paths) {
 		    // the values will end up cached. That means we can't
 		    // modify the values in place, but have to copy them first
-		    path = path.clone();
+		    path = path;
 		    if (itemGroups == null)
 			; // use path.groups as is
 		    else if (path.groups == null) {
@@ -266,8 +341,14 @@ public class LessonsAccess {
 
 	seen.remove(pageId);
 
+	// only cache final results, not intermediate computations
+	// in some situations with loops the intermediate calculations can be wrong
+	if (useCache && !usePrerequisites && seen.size() == 0)
+	    cache.put(Long.toString(pageId), clonePath(ret));
 	return ret;
     }
+
+    /* for the moment, no one calling this needs prerequsite checking */
 
     public Set<Path> getItemPaths(long itemId) {
 
@@ -310,6 +391,8 @@ public class LessonsAccess {
     // check at all. lb.read needs to be true or this test is irrelevant.
     // I assume this method will mostly be used by code that wants to do item
     // checks on its own, so most likely it's already doign the permissions checks
+
+    /* this always needs prerequisite checking */
 
     public boolean isPageAccessible(long pageId, String siteId, String currentUserId, SimplePageBean simplePageBean) {
 
@@ -357,25 +440,28 @@ public class LessonsAccess {
 				break;
 			    }
 			}
-			if (!ok)
+			if (!ok) {
 			    continue;
+			}
 		    }
-		} else if (dao.getLogEntry(currentUserId, path.itemId, -1L) == null)
+		} else if (dao.getLogEntry(currentUserId, path.itemId, -1L) == null) {
 		    continue;
+		}
 
 	    }
 
-	    if (path.groups == null) 
+	    if (path.groups == null) {
 		return true;
-	    else {
+	    } else {
 		for (Set<String>groupIds: path.groups) {
 		    ArrayList<String> groups = new ArrayList<String>();
 		    for (String groupId: groupIds)
 			groups.add("/site/" + siteId + "/group/" + groupId);
 		    List<AuthzGroup> matched = authzGroupService.getAuthzUserGroupIds(groups, currentUserId);
 		    // must match at least one
-		    if (matched.size() < 1)
+		    if (matched.size() < 1) {
 			continue nextpath;
+		    }
 		}
 		// matched all of the items o the path
 		return true;
