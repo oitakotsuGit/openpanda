@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/dav/branches/sakai-10.x/dav/src/java/org/sakaiproject/dav/DavServlet.java $
- * $Id: DavServlet.java 311259 2014-07-29 20:34:59Z ottenhoff@longsight.com $
+ * $Id: DavServlet.java 314794 2014-10-22 17:50:42Z matthew@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2003, 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -117,7 +117,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.catalina.util.DOMWriter;
-import org.apache.catalina.util.MD5Encoder;
+import org.sakaiproject.dav.MD5Encoder;
 import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.XMLWriter;
 import org.apache.commons.logging.Log;

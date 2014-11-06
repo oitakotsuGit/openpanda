@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/assignment/branches/sakai-10.x/assignment-impl/impl/src/java/org/sakaiproject/assignment/impl/BaseAssignmentService.java $
- * $Id: BaseAssignmentService.java 313735 2014-09-18 23:58:17Z enietzel@anisakai.com $
+ * $Id: BaseAssignmentService.java 314948 2014-10-28 15:39:59Z jjmerono@um.es $
  ***********************************************************************************
  *
  * Copyright (c) 2003, 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -974,7 +974,13 @@ public abstract class BaseAssignmentService implements AssignmentService, Entity
 		{
 			// show not deleted, not draft, opened assignments
 			Time openTime = assignment.getOpenTime();
-			if (openTime != null && TimeService.newTime().after(openTime) && !assignment.getDraft())
+			Time visibleTime = assignment.getVisibleTime();
+			if (
+				(
+				(openTime != null && TimeService.newTime().after(openTime))||
+				(visibleTime != null && TimeService.newTime().after(visibleTime))
+				)
+				&& !assignment.getDraft())
 			{
 				accessible = true;
 			}

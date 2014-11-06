@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/delivery/DeliveryActionListener.java $
- * $Id: DeliveryActionListener.java 309682 2014-05-20 18:52:15Z ktsao@stanford.edu $
+ * $Id: DeliveryActionListener.java 314640 2014-10-20 19:26:26Z matthew@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -45,6 +45,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.math.util.MathUtils;
 import org.sakaiproject.component.cover.ComponentManager;
 import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.event.api.Event;
@@ -106,7 +107,7 @@ import org.sakaiproject.util.ResourceLoader;
  * <p>Purpose:  this module creates the lists of published assessments for the select index
  * <p>Description: Sakai Assessment Manager</p>
  * @author Ed Smiley
- * @version $Id: DeliveryActionListener.java 309682 2014-05-20 18:52:15Z ktsao@stanford.edu $
+ * @version $Id: DeliveryActionListener.java 314640 2014-10-20 19:26:26Z matthew@longsight.com $
  */
 
 public class DeliveryActionListener
@@ -1193,6 +1194,12 @@ public class DeliveryActionListener
       }
       //itemBean.setItemGradingAttachmentList(data.getItemGradingAttachmentList());
     }
+    
+    //If the value close enough to the maximum value just set it to the maximum value (precision issue)
+    if (MathUtils.equalsIncludingNaN(itemBean.getExactPoints(),itemBean.getMaxPoints(),0.001d)) {
+      itemBean.setPoints(itemBean.getMaxPoints());
+    }
+    
     itemBean.setItemGradingAttachmentList(itemGradingAttachmentList);
 
     // set question feedback.
