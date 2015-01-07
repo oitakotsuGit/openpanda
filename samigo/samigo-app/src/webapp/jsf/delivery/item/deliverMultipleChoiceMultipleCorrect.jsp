@@ -1,4 +1,4 @@
-<%-- $Id: deliverMultipleChoiceMultipleCorrect.jsp 96833 2011-08-11 17:04:08Z ktsao@stanford.edu $
+<%-- $Id: deliverMultipleChoiceMultipleCorrect.jsp 308481 2014-04-22 17:32:29Z ottenhoff@longsight.com $
 include file for delivering multiple choice questions
 should be included in file importing DeliveryMessages
 --%>
@@ -117,7 +117,7 @@ should be included in file importing DeliveryMessages
         <h:column>
           <f:verbatim>&nbsp;&nbsp;&nbsp;&nbsp;</f:verbatim>
           <h:outputLink value="#{attach.location}" target="new_window">
-            <h:outputText escape="false" value="#{attach.filename}" />
+            <h:outputText value="#{attach.filename}" />
           </h:outputLink>
         </h:column>
         <h:column>

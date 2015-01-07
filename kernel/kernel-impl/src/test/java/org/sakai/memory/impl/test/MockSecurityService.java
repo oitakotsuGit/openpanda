@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/kernel/tags/kernel-1.3.3/kernel-impl/src/test/java/org/sakai/memory/impl/test/MockSecurityService.java $
+ * $URL: https://source.sakaiproject.org/svn/kernel/branches/kernel-1.3.x/kernel-impl/src/test/java/org/sakai/memory/impl/test/MockSecurityService.java $
  * $Id: MockSecurityService.java 126049 2013-06-20 18:06:33Z ottenhoff@longsight.com $
  ***********************************************************************************
  *

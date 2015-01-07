@@ -582,8 +582,7 @@ public class DiscussionForumTool
 	    	 Set<Long> topicIdsForCounts = new HashSet<Long>();
 	    	 for (DiscussionForum forum: tempForums) {
 	    		 if ((!forum.getDraft() && forum.getAvailability())
-	    				 || hasOverridingPermissions
-	    				 || forum.getCreatedBy().equals(getUserId()))
+	    				 || hasOverridingPermissions)
 	    		 { // this is the start of the big forum if
 
 	    			 tempSortedForums.add(forum);
@@ -592,9 +591,7 @@ public class DiscussionForumTool
 	    				 DiscussionTopic currTopic = (DiscussionTopic)itor.next();
 
 	    				 if ((currTopic.getDraft().equals(Boolean.FALSE) && currTopic.getAvailability())
-	    						 || isInstructor()
-	    						 || SecurityService.isSuperUser()
-	    						 || currTopic.getCreatedBy().equals(getUserId()))
+	    						 || hasOverridingPermissions)
 	    				 { // this is the start of the big topic if
 	    					 DiscussionTopicBean decoTopic = new DiscussionTopicBean(currTopic, (DiscussionForum)currTopic.getOpenForum(), uiPermissionsManager, forumManager);
 	    					 if (readFullDescription) decoTopic.setReadFullDesciption(true);
@@ -2389,7 +2386,12 @@ public class DiscussionForumTool
 	  String currentUserId = getUserId();
 	  List<String> currentUser = new ArrayList<String>();
 	  currentUser.add(currentUserId);
+	  if (selectedTopic == null) {
+	      LOG.warn("selectedTopic null in getNeedToPostFirst");
+	      return true;
+	  } else {
 	  return getNeedToPostFirst(currentUser, selectedTopic.getTopic(), selectedTopic.getMessages()).contains(currentUserId);
+  }
   }
 
   /**
@@ -3636,17 +3638,16 @@ public class DiscussionForumTool
 	  if(updateCurrentUser && !recipients.contains(currentUser)){
 		  recipients.add(currentUser);
 	  }
-
-	  for (String user : recipients) {
-		  if(updateCurrentUser || (!updateCurrentUser && !currentUser.equals(user))){
-			  incrementForumSynopticToolInfo(user, siteId, SynopticMsgcntrManager.NUM_OF_ATTEMPTS);
-		  }
+	  //make sure current user isn't in the list if they shouldn't be updated
+	  if(!updateCurrentUser){
+		  recipients.remove(currentUser);
 	  }
+	  incrementForumSynopticToolInfo(new ArrayList<String>(recipients), siteId, SynopticMsgcntrManager.NUM_OF_ATTEMPTS);
   }
   
-  public void incrementForumSynopticToolInfo(String userId, String siteId, int numOfAttempts){
+  public void incrementForumSynopticToolInfo(List<String> userIds, String siteId, int numOfAttempts){
 	  try {
-		  getSynopticMsgcntrManager().incrementForumSynopticToolInfo(userId, siteId);
+		  getSynopticMsgcntrManager().incrementForumSynopticToolInfo(userIds, siteId);
 		} catch (HibernateOptimisticLockingFailureException holfe) {
 
 			// failed, so wait and try again
@@ -3666,7 +3667,7 @@ public class DiscussionForumTool
 				System.out
 						.println("DiscussionForumTool: incrementForumSynopticToolInfo: HibernateOptimisticLockingFailureException: attempts left: "
 								+ numOfAttempts);
-				incrementForumSynopticToolInfo(userId, siteId, numOfAttempts);
+				incrementForumSynopticToolInfo(userIds, siteId, numOfAttempts);
 			}
 		}
   }
@@ -7770,6 +7771,8 @@ public class DiscussionForumTool
 	 
 	 //Checks for the showShortDescription property and existence of forum's short description
 	 public boolean getShowForumShortDescription() {
+		 if (this.selectedForum == null || this.selectedForum.getForum() == null)
+			 return false;
 
 		 String shortDescription= this.selectedForum.getForum().getShortDescription();
 		 if (shortDescription!=null){
@@ -7785,6 +7788,8 @@ public class DiscussionForumTool
 	 
 	 //Checks for the showShortDescription property and existence of topic's short description
 	 public boolean getShowTopicShortDescription() {
+		 if (this.selectedTopic == null || this.selectedTopic.getTopic() == null)
+			 return false;
 
 		 String shortDescription= this.selectedTopic.getTopic().getShortDescription();
 		 if (shortDescription!=null){

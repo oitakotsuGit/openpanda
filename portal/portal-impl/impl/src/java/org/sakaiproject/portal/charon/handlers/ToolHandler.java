@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/portal/tags/portal-base-2.9.3/portal-impl/impl/src/java/org/sakaiproject/portal/charon/handlers/ToolHandler.java $
- * $Id: ToolHandler.java 110562 2012-07-19 23:00:20Z ottenhoff@longsight.com $
+ * $URL: https://source.sakaiproject.org/svn/portal/branches/portal-2.9.x/portal-impl/impl/src/java/org/sakaiproject/portal/charon/handlers/ToolHandler.java $
+ * $Id: ToolHandler.java 130479 2013-10-15 17:27:14Z ottenhoff@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2003, 2004, 2005, 2006, 2007, 2008 The Sakai Foundation
@@ -48,13 +48,14 @@ import org.sakaiproject.tool.cover.ActiveToolManager;
 import org.sakaiproject.tool.cover.SessionManager;
 import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.util.Web;
+import org.sakaiproject.portal.util.URLUtils;
 
 
 /**
  * 
  * @author ieb
  * @since Sakai 2.4
- * @version $Rev: 110562 $
+ * @version $Rev: 130479 $
  * 
  */
 public class ToolHandler extends BasePortalHandler
@@ -176,7 +177,7 @@ public class ToolHandler extends BasePortalHandler
 				// if not logged in, give them a chance
 				if (session.getUserId() == null)
 				{
-					portal.doLogin(req, res, session, req.getPathInfo(), false);
+					portal.doLogin(req, res, session, URLUtils.getSafePathInfo(req), false);
 				}
 				else
 				{

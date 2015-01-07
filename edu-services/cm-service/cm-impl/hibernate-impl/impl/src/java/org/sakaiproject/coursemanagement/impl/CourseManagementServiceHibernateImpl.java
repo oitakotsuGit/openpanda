@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/edu-services/tags/edu-services-1.2.3/cm-service/cm-impl/hibernate-impl/impl/src/java/org/sakaiproject/coursemanagement/impl/CourseManagementServiceHibernateImpl.java $
- * $Id: CourseManagementServiceHibernateImpl.java 83759 2010-10-26 14:51:22Z david.horwitz@uct.ac.za $
+ * $URL: https://source.sakaiproject.org/svn/edu-services/branches/edu-services-1.2.x/cm-service/cm-impl/hibernate-impl/impl/src/java/org/sakaiproject/coursemanagement/impl/CourseManagementServiceHibernateImpl.java $
+ * $Id: CourseManagementServiceHibernateImpl.java 129016 2013-08-23 17:58:21Z ottenhoff@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2006, 2007, 2008 The Sakai Foundation
@@ -136,12 +136,27 @@ public class CourseManagementServiceHibernateImpl extends HibernateDaoSupport im
 		return ((CourseSetCmImpl)getCourseSet(courseSetEid)).getCanonicalCourses();
 	}
 
-	public List<AcademicSession> getAcademicSessions() {
-		return getHibernateTemplate().findByNamedQuery("findAcademicSessions");
+	public List <AcademicSession> getAcademicSessions() {
+	    return (List <AcademicSession>) getHibernateTemplate().execute(new HibernateCallback() {
+		@Override
+		public List <AcademicSession> doInHibernate(Session session) {
+		    Query query = session.getNamedQuery("findAcademicSessions");
+		    query.setCacheable(true);
+		    return query.list();
+		}
+	    });
+
 	}
 
-	public List<AcademicSession> getCurrentAcademicSessions() {
-		return getHibernateTemplate().findByNamedQuery("findCurrentAcademicSessions");
+	public List <AcademicSession> getCurrentAcademicSessions() {
+	    return (List <AcademicSession>) getHibernateTemplate().execute(new HibernateCallback() {
+		@Override
+		public List <AcademicSession> doInHibernate(Session session) {
+		    Query query = session.getNamedQuery("findCurrentAcademicSessions");
+		    query.setCacheable(true);
+		    return query.list();
+		}
+	    });
 	}
 
 	public AcademicSession getAcademicSession(final String eid) throws IdNotFoundException {

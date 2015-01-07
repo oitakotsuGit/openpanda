@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/portal/trunk/portal-render-engine-impl/impl/src/java/org/sakaiproject/portal/charon/velocity/VelocityPortalRenderContext.java $
- * $Id: PortletRegistry.java 110562 2012-07-19 23:00:20Z ottenhoff@longsight.com $
+ * $Id: PortletRegistry.java 311114 2014-07-24 15:21:55Z ottenhoff@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2005, 2006, 2007, 2008 The Sakai Foundation
@@ -21,9 +21,9 @@
 
 package org.sakaiproject.portal.render.portlet;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.sakaiproject.portal.api.PortalService;
 import org.sakaiproject.portal.render.api.ToolRenderException;
@@ -34,7 +34,7 @@ import org.sakaiproject.tool.api.Placement;
  * A cache of all portlets windows.
  * 
  * @since Sakai 2.2.4
- * @version $Rev: 110562 $
+ * @version $Rev: 311114 $
  */
 public class PortletRegistry
 {
@@ -46,7 +46,7 @@ public class PortletRegistry
 
 	public PortletRegistry()
 	{
-		this.portletWindows = new HashMap<String, SakaiPortletWindow>();
+		this.portletWindows = new ConcurrentHashMap<String, SakaiPortletWindow>();
 	}
 
 	/**

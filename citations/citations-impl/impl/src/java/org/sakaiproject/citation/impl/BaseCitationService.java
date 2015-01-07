@@ -1,6 +1,6 @@
 /*******************************************************************************
- * $URL: https://source.sakaiproject.org/svn/citations/tags/sakai-2.9.3/citations-impl/impl/src/java/org/sakaiproject/citation/impl/BaseCitationService.java $
- * $Id: BaseCitationService.java 118387 2013-01-16 15:30:14Z holladay@longsight.com $
+ * $URL: https://source.sakaiproject.org/svn/citations/branches/sakai-2.9.x/citations-impl/impl/src/java/org/sakaiproject/citation/impl/BaseCitationService.java $
+ * $Id: BaseCitationService.java 132205 2013-12-04 16:39:16Z ottenhoff@longsight.com $
  * **********************************************************************************
  *
  * Copyright (c) 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -1253,7 +1253,7 @@ public abstract class BaseCitationService implements CitationService
 
 			ContextObject co = m_openURLService.convert(this);
 			StringBuilder openUrl = new StringBuilder();
-			openUrl.append("?");
+			//openUrl.append("?");
 			if (co != null)
 			{
 				String openUrlParams = m_openURLService.toURL(co);

@@ -72,7 +72,7 @@ import org.sakaiproject.tool.assessment.ui.bean.evaluation.ItemBarBean;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * @version $Id: HistogramListener.java 113854 2012-10-01 18:42:30Z ktsao@stanford.edu $
+ * @version $Id: HistogramListener.java 314091 2014-10-07 15:06:16Z ottenhoff@longsight.com $
  */
 
 public class HistogramListener
@@ -541,7 +541,13 @@ public class HistogramListener
 				  if (questionScores.getQuestionType().equals("1") 
 						  || questionScores.getQuestionType().equals("2")
 						  || questionScores.getQuestionType().equals("3")
-						  || questionScores.getQuestionType().equals("4")) {
+						  || questionScores.getQuestionType().equals("4")
+						  || questionScores.getQuestionType().equals("8")
+						  || questionScores.getQuestionType().equals("9")
+						  || questionScores.getQuestionType().equals("11")
+						  || questionScores.getQuestionType().equals("12")
+						  || questionScores.getQuestionType().equals("15")
+						) {
 					  detailedStatistics.add(questionScores);
 					  if (questionScores.getHistogramBars() != null) {
 						  maxNumOfAnswers = questionScores.getHistogramBars().length >maxNumOfAnswers ? questionScores.getHistogramBars().length : maxNumOfAnswers;

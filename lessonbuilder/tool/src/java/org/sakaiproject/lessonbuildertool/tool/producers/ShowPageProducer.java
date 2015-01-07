@@ -460,7 +460,10 @@ public class ShowPageProducer implements ViewComponentProducer, DefaultView, Nav
 		SimplePageToolDao.PageData lastPage = simplePageBean.toolWasReset();
 
 		// if this page was copied from another site we may have to update links
-		simplePageBean.maybeUpdateLinks();
+		// can only do the fixups if you can write. We could hack permissions, but
+		// I assume a site owner will access the site first
+		if (canEditPage)
+		    simplePageBean.maybeUpdateLinks();
 
 		// if starting the tool, sendingpage isn't set. the following call
 		// will give us the top page.
@@ -768,8 +771,6 @@ public class ShowPageProducer implements ViewComponentProducer, DefaultView, Nav
 			}
 		}
 
-		UIOutput.make(tofill, "pagetitle", currentPage.getTitle());
-		
 		if(currentPage.getOwner() != null && simplePageBean.getEditPrivs() == 0) {
 			SimpleStudentPage student = simplePageToolDao.findStudentPageByPageId(currentPage.getPageId());
 			
@@ -860,7 +861,15 @@ public class ShowPageProducer implements ViewComponentProducer, DefaultView, Nav
 
 					index++;
 				    }
+				else {
+				    UIBranchContainer crumb = UIBranchContainer.make(tofill, "crumb:");
+				    UIOutput.make(crumb, "crumb-follow", currentPage.getTitle()).decorate(new UIStyleDecorator("bold"));
+				}
+			} else {
+			    UIOutput.make(tofill, "pagetitle", currentPage.getTitle());
 			}
+		} else {
+		    UIOutput.make(tofill, "pagetitle", currentPage.getTitle());
 		}
 
 		// see if there's a next item in sequence.
@@ -1375,7 +1384,7 @@ public class ShowPageProducer implements ViewComponentProducer, DefaultView, Nav
 						UIOutput.make(tableRow, "description2", i.getDescription());
 
 					} else if ((youtubeKey = simplePageBean.getYoutubeKey(i)) != null) {
-						String youtubeUrl = "https://www.youtube.com/embed/" + youtubeKey + "?wmode=opaque";
+						String youtubeUrl = SimplePageBean.getYoutubeUrlFromKey(youtubeKey);
 
 						UIOutput.make(tableRow, "youtubeSpan");
 
@@ -2398,7 +2407,9 @@ public class ShowPageProducer implements ViewComponentProducer, DefaultView, Nav
 
 	/**
 	 * Checks for the version of IE. Returns 0 if we're not running IE.
-	 * 
+	 * But there's a problem. IE 11 doesn't have the MSIE tag. But it stiill
+	 * needs to be treated as IE, because the OBJECT tag won't work with Quicktime
+	 * Since all I test is > 0, I use a simplified version that returns 0 or 1
 	 * @return
 	 */
 	public int checkIEVersion() {
@@ -2408,26 +2419,30 @@ public class ShowPageProducer implements ViewComponentProducer, DefaultView, Nav
 		browserString = usageSession.getUserAgent();
 		if (browserString == null)
 		    return 0;
-		int ieIndex = browserString.indexOf(" MSIE ");
-		int ieVersion = 0;
-		if (ieIndex >= 0) {
-			String ieV = browserString.substring(ieIndex + 6);
-			int i = 0;
-			int e = ieV.length();
-			while (i < e) {
-				if (Character.isDigit(ieV.charAt(i))) {
-					i++;
-				} else {
-					break;
-				}
-			}
-			if (i > 0) {
-				ieV = ieV.substring(0, i);
-				ieVersion = Integer.parseInt(ieV);
-			}
-		}
+		int ieIndex = browserString.indexOf("Trident/");
+		if (ieIndex >= 0)
+		    return 1;
+		else
+		    return 0;
 
-		return ieVersion;
+		// int ieVersion = 0;
+		// if (ieIndex >= 0) {
+		//	String ieV = browserString.substring(ieIndex + 6);
+		//	int i = 0;
+		//	int e = ieV.length();
+		//	while (i < e) {
+		//		if (Character.isDigit(ieV.charAt(i))) {
+		//			i++;
+		//		} else {
+		//			break;
+		//		}
+		//	}
+		//	if (i > 0) {
+		//		ieV = ieV.substring(0, i);
+		//		ieVersion = Integer.parseInt(ieV);
+		//}			}
+		//
+		//		return ieVersion;
 	}
 
 	private void createToolBar(UIContainer tofill, SimplePage currentPage, boolean isStudent) {
@@ -3271,6 +3286,7 @@ public class ShowPageProducer implements ViewComponentProducer, DefaultView, Nav
     // this can be either a fully specified URL starting with http: or https: 
     // or something relative to the servlet base, e.g. /sakai-lessonbuildertool-tool/template/instructions/general.html
 	private boolean UrlOk(String url) {
+		String origurl = url;
 		Boolean cached = (Boolean) urlCache.get(url);
 		if (cached != null)
 		    return (boolean) cached;
@@ -3284,17 +3300,17 @@ public class ShowPageProducer implements ViewComponentProducer, DefaultView, Nav
 			con.setRequestMethod("HEAD");
 			con.setConnectTimeout(30 * 1000);
 			boolean ret = (con.getResponseCode() == HttpURLConnection.HTTP_OK);
-			urlCache.put(url, (Boolean) ret);
+			urlCache.put(origurl, (Boolean) ret);
 			return ret;
 		    } catch (java.net.SocketTimeoutException e) {
 			log.error("Internationalization url lookup timed out for " + url + ": Please check lessonbuilder.helpfolder. It appears that the host specified is not responding.");
-			urlCache.put(url, (Boolean) false);
+			urlCache.put(origurl, (Boolean) false);
 			return false;
 		    } catch (ProtocolException e) {
-			urlCache.put(url, (Boolean) false);
+			urlCache.put(origurl, (Boolean) false);
 			return false;
 		    } catch (IOException e) {
-			urlCache.put(url, (Boolean) false);
+			urlCache.put(origurl, (Boolean) false);
 			return false;
 		    }
 		} else {
@@ -3307,15 +3323,15 @@ public class ShowPageProducer implements ViewComponentProducer, DefaultView, Nav
 			// with odd deployments behind load balancers, where the user's URL may not
 			// work from one of the front ends
 			if (httpServletRequest.getSession().getServletContext().getResource(url) == null) {
-			    urlCache.put(url, (Boolean) false);
+			    urlCache.put(origurl, (Boolean) false);
 			    return false;
 			} else {
-			    urlCache.put(url, (Boolean) true);
+			    urlCache.put(origurl, (Boolean) true);
 			    return true;
 			}
 		    } catch (Exception e) {  // probably malfformed url
 			log.error("Internationalization url lookup failed for " + url + ": " + e);
-			urlCache.put(url, (Boolean) true);
+			urlCache.put(origurl, (Boolean) true);
 			return true;
 		    }
 

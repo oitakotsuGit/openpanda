@@ -1,6 +1,6 @@
 /**
- * $URL: https://source.sakaiproject.org/svn/basiclti/tags/basiclti-2.1.1/basiclti-common/src/java/org/sakaiproject/basiclti/util/SakaiBLTIUtil.java $
- * $Id: SakaiBLTIUtil.java 127586 2013-07-23 14:46:56Z csev@umich.edu $
+ * $URL: https://source.sakaiproject.org/svn/basiclti/branches/basiclti-2.1.x/basiclti-common/src/java/org/sakaiproject/basiclti/util/SakaiBLTIUtil.java $
+ * $Id: SakaiBLTIUtil.java 129201 2013-08-29 03:05:08Z csev@umich.edu $
  *
  * Copyright (c) 2006-2009 The Sakai Foundation
  *
@@ -22,6 +22,8 @@ package org.sakaiproject.basiclti.util;
 import java.util.Properties;
 import java.util.Map;
 import java.net.URL;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.imsglobal.basiclti.BasicLTIUtil;
 import org.imsglobal.basiclti.BasicLTIConstants;
@@ -58,10 +60,15 @@ public class SakaiBLTIUtil {
 	public static final boolean verbosePrint = false;
 
 	public static final String BASICLTI_OUTCOMES_ENABLED = "basiclti.outcomes.enabled";
+	public static final String BASICLTI_OUTCOMES_ENABLED_DEFAULT = "true";
 	public static final String BASICLTI_SETTINGS_ENABLED = "basiclti.settings.enabled";
+	public static final String BASICLTI_SETTINGS_ENABLED_DEFAULT = "true";
 	public static final String BASICLTI_ROSTER_ENABLED = "basiclti.roster.enabled";
+	public static final String BASICLTI_ROSTER_ENABLED_DEFAULT = "true";
 	public static final String BASICLTI_LORI_ENABLED = "basiclti.lori.enabled";
+	public static final String BASICLTI_LORI_ENABLED_DEFAULT = "true";
 	public static final String BASICLTI_CONTENTLINK_ENABLED = "basiclti.contentlink.enabled";
+	public static final String BASICLTI_CONTENTLINK_ENABLED_DEFAULT = null; // i.e. false
 	public static final String BASICLTI_CONSUMER_USERIMAGE_ENABLED = "basiclti.consumer.userimage.enabled";
 	public static final String BASICLTI_ENCRYPTION_KEY = "basiclti.encryption.key";
 
@@ -76,16 +83,16 @@ public class SakaiBLTIUtil {
 			String propName, Placement placement)
 	{
 		// Check for global overrides in properties
-		String allowSettings = ServerConfigurationService.getString(BASICLTI_SETTINGS_ENABLED, null);
+		String allowSettings = ServerConfigurationService.getString(BASICLTI_SETTINGS_ENABLED, BASICLTI_SETTINGS_ENABLED_DEFAULT);
 		if ( "allowsettings".equals(propName) && ! "true".equals(allowSettings) ) return "false";
 
-		String allowRoster = ServerConfigurationService.getString(BASICLTI_ROSTER_ENABLED, null);
+		String allowRoster = ServerConfigurationService.getString(BASICLTI_ROSTER_ENABLED, BASICLTI_ROSTER_ENABLED_DEFAULT);
 		if ( "allowroster".equals(propName) && ! "true".equals(allowRoster) ) return "false";
 
-		String allowLori = ServerConfigurationService.getString(BASICLTI_LORI_ENABLED, null);
+		String allowLori = ServerConfigurationService.getString(BASICLTI_LORI_ENABLED, BASICLTI_LORI_ENABLED_DEFAULT);
 		if ( "allowlori".equals(propName) && ! "true".equals(allowLori) ) return "false";
 
-		String allowContentLink = ServerConfigurationService.getString(BASICLTI_CONTENTLINK_ENABLED, null);
+		String allowContentLink = ServerConfigurationService.getString(BASICLTI_CONTENTLINK_ENABLED, BASICLTI_CONTENTLINK_ENABLED_DEFAULT);
 		if ( "contentlink".equals(propName) && ! "true".equals(allowContentLink) ) return null;
 
 		// Check for explicit setting in properties
@@ -344,7 +351,7 @@ public class SakaiBLTIUtil {
 			if ( ! "off".equals(allowOutcomes) ) {
 				assignment = toNull(getCorrectProperty(config,"assignment", placement));
 				allowOutcomes = ServerConfigurationService.getString(
-						SakaiBLTIUtil.BASICLTI_OUTCOMES_ENABLED, null);
+						SakaiBLTIUtil.BASICLTI_OUTCOMES_ENABLED, BASICLTI_OUTCOMES_ENABLED_DEFAULT);
 				if ( ! "true".equals(allowOutcomes) ) allowOutcomes = null;
 			}
 
@@ -809,14 +816,30 @@ public class SakaiBLTIUtil {
 		return default_secret;
 	}
 
-	static private String getOurServerUrl() {
-		String ourUrl = ServerConfigurationService.getString("sakai.rutgers.linktool.serverUrl");
+	// Since ServerConfigurationService.getServerUrl() is wonky because it sometimes looks
+	// at request.getServerName() instead of the serverUrl property we have our own 
+	// priority to determine our current url.
+	// BLTI-273
+	static public String getOurServerUrl() {
+		String ourUrl = ServerConfigurationService.getString("sakai.lti.serverUrl");
+		if (ourUrl == null || ourUrl.equals(""))
+			ourUrl = ServerConfigurationService.getString("serverUrl");
 		if (ourUrl == null || ourUrl.equals(""))
 			ourUrl = ServerConfigurationService.getServerUrl();
 		if (ourUrl == null || ourUrl.equals(""))
 			ourUrl = "http://127.0.0.1:8080";
 
+		if ( ourUrl.endsWith("/")  && ourUrl.length() > 2 ) 
+			ourUrl = ourUrl.substring(0,ourUrl.length()-1);
+
 		return ourUrl;
+	}
+
+	static public String getOurServletPath(HttpServletRequest request)
+	{
+		String URLstr = request.getRequestURL().toString();
+		String retval = URLstr.replaceFirst("^https??://[^/]*",getOurServerUrl());
+		return retval;
 	}
 
 	public static String toNull(String str)

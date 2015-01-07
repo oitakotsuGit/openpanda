@@ -1,7 +1,7 @@
 /**********************************************************************************
 
- * $URL: https://source.sakaiproject.org/svn/site-manage/tags/sakai-2.9.3/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java $
- * $Id: SiteAction.java 127227 2013-07-18 15:10:21Z ottenhoff@longsight.com $
+ * $URL: https://source.sakaiproject.org/svn/site-manage/branches/sakai-2.9.x/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java $
+ * $Id: SiteAction.java 308568 2014-04-24 14:46:14Z ottenhoff@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2003, 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -46,6 +46,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.velocity.tools.generic.SortTool;
 import org.sakaiproject.alias.api.Alias;
 import org.sakaiproject.alias.cover.AliasService;
@@ -2056,6 +2057,7 @@ public class SiteAction extends PagedResourceActionII {
 				{
 					// filter out only those groups that are manageable by site-info
 					Collection<Group> filteredGroups = new ArrayList<Group>();
+					Collection<Group> filteredSections = new ArrayList<Group>();
 					for (Group g : groups)
 					{
 						Object gProp = g.getProperties().getProperty(SiteConstants.GROUP_PROP_WSETUP_CREATED);
@@ -2063,8 +2065,13 @@ public class SiteAction extends PagedResourceActionII {
 						{
 							filteredGroups.add(g);
 						}
+						else
+						{
+							filteredSections.add(g);
+					}
 					}
 					context.put("groups", filteredGroups);
+					context.put("sections", filteredSections);
 				}
 			} catch (Exception e) {
 				M_log.warn(this + " buildContextForTemplate chef_site-siteInfo-list.vm ", e);
@@ -8577,12 +8584,7 @@ public class SiteAction extends PagedResourceActionII {
 		String email = StringUtils.trimToEmpty(params
 				.getString("siteContactEmail"));
 		if (email != null) {
-			String[] parts = email.split("@");
-
-			if (email.length() > 0
-					&& (email.indexOf("@") == -1 || parts.length != 2
-							|| parts[0].length() == 0 || !Validator
-							.checkEmailLocal(parts[0]))) {
+			if (!EmailValidator.getInstance().isValid(email)) {
 				// invalid email
 				addAlert(state, rb.getFormattedMessage("java.invalid.email", new Object[]{email}));
 			}
@@ -12144,6 +12146,10 @@ public class SiteAction extends PagedResourceActionII {
 					addRequestedSection(state);
 				}
 				if (state.getAttribute(STATE_MESSAGE) == null) {
+					// no manual add
+					state.removeAttribute(STATE_MANUAL_ADD_COURSE_NUMBER);
+					state.removeAttribute(STATE_MANUAL_ADD_COURSE_FIELDS);
+
 					if (getStateSite(state) == null) {
 						if (state.getAttribute(STATE_TEMPLATE_SITE) != null)
 						{

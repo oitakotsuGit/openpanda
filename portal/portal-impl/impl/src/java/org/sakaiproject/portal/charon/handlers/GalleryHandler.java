@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/portal/tags/portal-base-2.9.3/portal-impl/impl/src/java/org/sakaiproject/portal/charon/handlers/GalleryHandler.java $
- * $Id: GalleryHandler.java 110562 2012-07-19 23:00:20Z ottenhoff@longsight.com $
+ * $URL: https://source.sakaiproject.org/svn/portal/branches/portal-2.9.x/portal-impl/impl/src/java/org/sakaiproject/portal/charon/handlers/GalleryHandler.java $
+ * $Id: GalleryHandler.java 130479 2013-10-15 17:27:14Z ottenhoff@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2003, 2004, 2005, 2006, 2007, 2008 The Sakai Foundation
@@ -33,6 +33,7 @@ import org.sakaiproject.portal.api.PortalRenderContext;
 import org.sakaiproject.site.cover.SiteService;
 import org.sakaiproject.tool.api.Session;
 import org.sakaiproject.tool.api.ToolException;
+import org.sakaiproject.portal.util.URLUtils;
 
 /**
  * The Gallery is effecively the main portal without the header.
@@ -40,7 +41,7 @@ import org.sakaiproject.tool.api.ToolException;
  * 
  * @author ieb
  * @since Sakai 2.4
- * @version $Rev: 110562 $
+ * @version $Rev: 130479 $
  * 
  */
 public class GalleryHandler extends SiteHandler
@@ -111,7 +112,7 @@ public class GalleryHandler extends SiteHandler
 				if (forceLogin == null || "yes".equalsIgnoreCase(forceLogin)
 						|| "true".equalsIgnoreCase(forceLogin))
 				{
-					portal.doLogin(req, res, session, req.getPathInfo(), false);
+					portal.doLogin(req, res, session, URLUtils.getSafePathInfo(req), false);
 					return;
 				}
 				siteId = ServerConfigurationService.getGatewaySiteId();

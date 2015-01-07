@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/web/tags/sakai-2.9.3/web-portlet/src/java/org/sakaiproject/portlets/PortletIFrame.java $
- * $Id: PortletIFrame.java 127107 2013-07-17 15:21:31Z arwhyte@umich.edu $
+ * $URL: https://source.sakaiproject.org/svn/web/branches/sakai-2.9.x/web-portlet/src/java/org/sakaiproject/portlets/PortletIFrame.java $
+ * $Id: PortletIFrame.java 130616 2013-10-18 16:04:14Z matthew@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2005-2013 The Sakai Foundation.
@@ -337,6 +337,12 @@ public class PortletIFrame extends GenericPortlet {
             //System.out.println("special="+special+" source="+source+" pgc="+placement.getContext()+" macroExpansion="+macroExpansion+" passPid="+passPid+" PGID="+placement.getId()+" sakaiPropertiesUrlKey="+sakaiPropertiesUrlKey+" url="+url);
 
 			if ( url != null && url.trim().length() > 0 ) {
+				if ( ! validateUrl(url) ) {
+					M_log.warn("invalid URL suppressed placement="+placement.getId()+" site="+placement.getContext()+" url="+url);
+					url = "about:blank";
+				}
+
+				// Check if the site sets X-Frame options
                 popup = popup || popupXFrame(placement, url);
 				Context context = new VelocityContext();
 
@@ -528,7 +534,7 @@ public class PortletIFrame extends GenericPortlet {
 					    String description = StringUtils.trimToNull(s.getDescription());
 					    if (description != null)
 					    {
-	                        description = FormattedText.escapeHtmlFormattedTextarea(description);
+					  	    description = FormattedText.processEscapedHtml(description);
 						    context.put("description", description);
 					    }
 				    }
@@ -573,6 +579,7 @@ public class PortletIFrame extends GenericPortlet {
 			    context.put("custom_height", strings[0]);
 			    height = rb.getString("gen.heisomelse");
 		    }
+		    context.put("height", height);
 
 	    	// TODO: tracking event
 		
@@ -653,26 +660,19 @@ public class PortletIFrame extends GenericPortlet {
             // Get and verify the source
 			String source = StringUtils.trimToEmpty(request.getParameter("source"));
 
-            // If this is a normal placement (i.e. not special)
+            // If this is a normal placement we do not allow blank (i.e. not special)
             if ( special == null ) {
                 if (StringUtils.isBlank(source))
                 {
                     addAlert(request, rb.getString("gen.url.empty"));
                     return;
                 }
+            }
 
-                if ((!source.startsWith("/")) && (source.indexOf("://") == -1))
-                {
-                    source = "http://" + source;
-                }
-
-                // Validate the url
-                UrlValidator urlValidator = new UrlValidator();
-                if (!urlValidator.isValid(source))
-                {
-                    addAlert(request, rb.getString("gen.url.invalid"));
-                    return;
-                }
+            // If we have a URL from the user, lets validate it
+            if ((!StringUtils.isBlank(source)) && (!validateUrl(source)) ) {
+                addAlert(request, rb.getString("gen.url.invalid"));
+                return;
             }
 
             // update state
@@ -684,6 +684,12 @@ public class PortletIFrame extends GenericPortlet {
             if (infoUrl != null && infoUrl.length() > MAX_SITE_INFO_URL_LENGTH)
             {
                 addAlert(request, rb.getString("gen.info.url.toolong"));
+                return;
+            }
+
+            // If we have an infourl from the user, lets validate it
+            if ((!StringUtils.isBlank(infoUrl)) && (!validateUrl(infoUrl)) ) {
+                addAlert(request, rb.getString("gen.url.invalid"));
                 return;
             }
 
@@ -784,7 +790,6 @@ public class PortletIFrame extends GenericPortlet {
                     infoUrl = "http://" + infoUrl;
                 }
                 String description = StringUtils.trimToNull(request.getParameter("description"));
-                description = FormattedText.processEscapedHtml(description);
     
                 // update the site info
                 try
@@ -1233,6 +1238,33 @@ public class PortletIFrame extends GenericPortlet {
             config.setProperty(key,mconfig.getProperty(key));
         }
         return config;
+    }
+
+    // General utility to validate a URL - move this to Kernel 
+    // The idea is to encode the rules we have for URLs we are willing
+    // to put in src= or href= places within our code
+    // relative URLs must start with "/"
+    private boolean validateUrl(String urlToValidate)
+    {
+        if (StringUtils.isBlank(urlToValidate)) return false;
+
+        // For a protocol-relative URL, we validate with protocol attached 
+        // RFC 1808 Section 4
+        if ((urlToValidate.startsWith("//")) && (urlToValidate.indexOf("://") == -1))
+        {
+            urlToValidate = "http:" + urlToValidate;
+        }
+
+        // For a site-relative URL, we validate with host name and protocol attached 
+        // SAK-13787 SAK-23752
+        if ((urlToValidate.startsWith("/")) && (urlToValidate.indexOf("://") == -1))
+        {
+            urlToValidate = "http://127.0.0.1:8080" + urlToValidate;
+        }
+
+        // Validate the url
+        UrlValidator urlValidator = new UrlValidator();
+        return urlValidator.isValid(urlToValidate);
     }
 
     /**

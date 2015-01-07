@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/kernel/tags/kernel-1.3.3/kernel-impl/src/main/java/org/sakaiproject/event/impl/BaseEventTrackingService.java $
+ * $URL: https://source.sakaiproject.org/svn/kernel/branches/kernel-1.3.x/kernel-impl/src/main/java/org/sakaiproject/event/impl/BaseEventTrackingService.java $
  * $Id: BaseEventTrackingService.java 117696 2012-12-14 14:24:13Z ottenhoff@longsight.com $
  ***********************************************************************************
  *

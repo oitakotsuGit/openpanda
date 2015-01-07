@@ -39,6 +39,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.net.URLDecoder;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,6 +49,7 @@ import org.sakaiproject.content.api.ContentCollection;
 import org.sakaiproject.content.api.ContentEntity;
 import org.sakaiproject.content.api.ContentHostingService;
 import org.sakaiproject.content.api.ContentResource;
+import org.sakaiproject.entity.api.ResourceProperties;
 import org.sakaiproject.component.cover.ServerConfigurationService;
 
 import org.sakaiproject.lessonbuildertool.SimplePageItem;
@@ -57,6 +59,7 @@ import org.sakaiproject.lessonbuildertool.ccexport.ForumsExport;
 import org.sakaiproject.lessonbuildertool.ccexport.ZipPrintStream;
 import org.sakaiproject.lessonbuildertool.model.SimplePageToolDao;
 import org.sakaiproject.lessonbuildertool.tool.view.ExportCCViewParameters;
+import org.sakaiproject.lessonbuildertool.tool.beans.SimplePageBean;
 
 import org.sakaiproject.tool.cover.SessionManager;
 import org.sakaiproject.tool.api.ToolSession;
@@ -118,6 +121,9 @@ public class CCExport {
 	String resourceId;
 	String location;
 	String use;
+	String title;
+	String url;
+	boolean islink;
 	List<String> dependencies;
     }
 
@@ -136,6 +142,12 @@ public class CCExport {
     // to prevent pages from being output more than once
     Set<Long> pagesDone = new HashSet();
 
+    // list of item ID's that use embed code. Need to output
+    // an HTML page with the embed code. The string is the embed code,
+    // with fixups done
+    Map<Long, String> embedMap = new HashMap<Long,String>();
+    // itemID's that are links. Need to output the link XML file
+    Set<Resource> linkSet = new HashSet<Resource>();
 
     // the error messages are a problem. They won't show until the next page display
     // however errrors at this level are unusual, and we interrupt the download, so the
@@ -226,6 +238,10 @@ public class CCExport {
        	return "res" + (nextid++);
     }
 
+    String getResourceIdPeek () {
+       	return "res" + nextid;
+    }
+
     public void setIntendeduse (String sakaiId, String intendeduse) {
 	Resource ref = fileMap.get(sakaiId);
 	if (ref == null)
@@ -240,20 +256,20 @@ public class CCExport {
 	return ref.location;
     }
 
-    public void addFile(String sakaiId, String location) {
-	addFile(sakaiId, location, null);
+    public Resource addFile(String sakaiId, String location) {
+	return addFile(sakaiId, location, null);
     }
 
-    public void addFile(String sakaiId, String location, String use) {
+    public Resource addFile(String sakaiId, String location, String use) {
 	Resource res = new Resource();
 	res.sakaiId = sakaiId;
 	res.resourceId = getResourceId();
 	res.location = location;
 	res.dependencies = new ArrayList<String>();
 	res.use = use;
-
+	res.islink = false;
 	fileMap.put(sakaiId, res);
-
+	return res;
     }
 
     public boolean addAllFiles(String siteId) {
@@ -284,7 +300,29 @@ public class CCExport {
 		    continue;
 
 		if (e instanceof ContentResource) {
-		    addFile(e.getId(), e.getId().substring(baselen));
+		    boolean islink = ((ContentResource)e).getContentType().equals("text/url");
+		    String location = null;
+		    if (islink) {
+			location = "attachments/" + getResourceIdPeek() + ".xml";
+			String url = new String(((ContentResource)e).getContent());
+			// see if Youtube. If so, use the current recommended URL
+			String youtubeKey = SimplePageBean.getYoutubeKeyFromUrl(url);
+			if (youtubeKey != null)
+			    // code is also in ShowPageProducer. keep in sync
+			    url = SimplePageBean.getYoutubeUrlFromKey(youtubeKey);
+			Resource res = addFile(e.getId(), location);
+			res.islink = true;
+			res.url = url;
+			// try to get title from resource. Will normally be the URL
+			res.title = ((ContentResource)e).getProperties().getProperty(ResourceProperties.PROP_DISPLAY_NAME);
+			if (res.title == null)
+			    res.title = url;
+			// queue this so we output the XML file
+			linkSet.add(res);
+		    } else {
+			location = e.getId().substring(baselen);
+			Resource res = addFile(e.getId(), location);
+		    }
 		} else 
 		    addAllFiles((ContentCollection)e, baselen);
 	    }
@@ -314,7 +352,12 @@ public class CCExport {
 		InputStream instream = null;
 		if (inSakai) {
 		    resource = contentHostingService.getResource(entry.getKey());
-		    zipEntry.setSize(resource.getContentLength());
+		    // if URL there's no file to output. The link XML file will
+		    // be done at the end, since some links are discovered while outputting manifest
+		    if (((Resource)entry.getValue()).islink) {
+			continue;
+		    } else
+			zipEntry.setSize(resource.getContentLength());
 		} else {
 		    infile = new File(entry.getKey().substring(3));
 		    instream = new FileInputStream(infile);
@@ -381,6 +424,25 @@ public class CCExport {
 
     }
 
+    // xxx/abc/../ccc
+    // xxx/ccc
+    // xxx/../ccc
+    // ccc
+
+    public String removeDotDot(String s) {
+	while (true) {
+	    int i = s.indexOf("/../");
+	    if (i < 1)
+		return s;
+	    int j = s.lastIndexOf("/", i-1);
+	    if (j < 0)
+		j = 0;
+	    else
+		j = j + 1;
+	    s = s.substring(0, j) + s.substring(i+4);
+	}
+    }
+
     public boolean addAllSamigo(String siteId) {
 	List<String> tests = samigoExport.getEntitiesInSite(siteId);
 	if (tests == null)
@@ -397,6 +459,7 @@ public class CCExport {
 	    res.sakaiId = sakaiId;
 	    res.dependencies = new ArrayList<String>();
 	    res.use = null;
+	    res.islink = false;
 	    samigoMap.put(res.sakaiId, res);
 	}
 	if (doBank && samigoExport.havePoolItems()) {
@@ -406,6 +469,7 @@ public class CCExport {
 	    res.sakaiId = null;
 	    res.dependencies = new ArrayList<String>();
 	    res.use = null;
+	    res.islink = false;
 	    samigoBank = res;
 	}
 	return true;
@@ -452,6 +516,7 @@ public class CCExport {
 	    res.sakaiId = sakaiId;
 	    res.dependencies = new ArrayList<String>();
 	    res.use = null;
+	    res.islink = false;
 	    assignmentMap.put(res.sakaiId, res);
 	}
 
@@ -490,6 +555,7 @@ public class CCExport {
 	    res.sakaiId = sakaiId;
 	    res.dependencies = new ArrayList<String>();
 	    res.use = null;
+	    res.islink = false;
 	    forumsMap.put(res.sakaiId, res);
 	}
 	return true;
@@ -527,6 +593,7 @@ public class CCExport {
 	    res.sakaiId = sakaiId;
 	    res.dependencies = new ArrayList();
 	    res.use = null;
+	    res.islink = false;
 	    bltiMap.put(res.sakaiId, res);
 	}
 	return true;
@@ -573,7 +640,7 @@ public class CCExport {
 		res.location = location;
 		res.dependencies = new ArrayList();
 		res.use = null;
-		
+		res.islink = false;
 		fileMap.put(res.sakaiId, res);
 	    }
 	} catch (Exception e) {
@@ -630,6 +697,7 @@ public class CCExport {
 	    Resource res = null;
 	    String sakaiId = null;
 	    String itemString = null;
+	    String urlTitle = null;
 
 	    switch (item.getType()) {
 	    case SimplePageItem.PAGE:
@@ -650,8 +718,8 @@ public class CCExport {
 		    outputLessonPage(out, pId, item.getName(), indent + 2, true);
 		}
 		break;
-	    case SimplePageItem.RESOURCE:
 	    case SimplePageItem.MULTIMEDIA:
+	    case SimplePageItem.RESOURCE:
 		res = (Resource)this.fileMap.get(item.getSakaiId());
 		break;
 	    case SimplePageItem.ASSIGNMENT:
@@ -696,8 +764,12 @@ public class CCExport {
 		outputIndent(out, indent + 2); out.println("<item identifier=\"item_" + item.getId() + "\" identifierref=\"" + res.resourceId + "\">");
 		String ititle = item.getName();
 		
-		if ((ititle == null) || (ititle.equals("")))
-		    ititle = messageLocator.getMessage("simplepage.importcc-texttitle");
+ 		if ((ititle == null) || (ititle.equals(""))) {
+ 		    if (urlTitle != null)
+ 			ititle = urlTitle;
+ 		    else
+ 			ititle = messageLocator.getMessage("simplepage.importcc-texttitle");
+ 		}
 		outputIndent(out, indent + 4); out.println("<title>" + StringEscapeUtils.escapeHtml(ititle) + "</title>");
 		outputIndent(out, indent + 2); out.println("</item>"); 
 	    }
@@ -756,18 +828,21 @@ public class CCExport {
 	    String qtiid = null;
 	    String bankid = null;
 	    String topicid = null;
+	    String linkid = null;
 	    String usestr = "";
 	    switch (version) {
 	    case V11:
 		qtiid = "imsqti_xmlv1p2/imscc_xmlv1p1/assessment";
 		bankid = "imsqti_xmlv1p2/imscc_xmlv1p1/question-bank";
 		topicid = "imsdt_xmlv1p1";
+		linkid = "imswl_xmlv1p1";
 		usestr = "";
 		break;
 	    default:
 		qtiid = "imsqti_xmlv1p2/imscc_xmlv1p2/assessment";
 		bankid = "imsqti_xmlv1p2/imscc_xmlv1p2/question-bank";
 		topicid = "imsdt_xmlv1p2";
+		linkid = "imswl_xmlv1p2";
 		usestr = " intendeduse=\"assignment\"";
 	    }
 
@@ -778,8 +853,13 @@ public class CCExport {
 		    if (entry.getValue().use != null)
 			use = " intendeduse=\"" + entry.getValue().use + "\"";
 		}
-		out.println("    <resource href=\"" + StringEscapeUtils.escapeXml(entry.getValue().location) + "\" identifier=\"" + entry.getValue().resourceId + "\" type=\"webcontent\"" + use + ">");
+		String type = "webcontent";
+		if (((Resource)entry.getValue()).islink)
+		    type = linkid;
+		out.println("    <resource href=\"" + StringEscapeUtils.escapeXml(entry.getValue().location) + "\" identifier=\"" + entry.getValue().resourceId + "\" type=\"" + type + "\"" + use + ">");
 		out.println("      <file href=\"" + StringEscapeUtils.escapeXml(entry.getValue().location) + "\"/>");
+		for (String d: entry.getValue().dependencies)
+		    out.println("      <dependency identifierref=\"" + d + "\"/>");
 		out.println("    </resource>");
 	    }
 
@@ -830,6 +910,47 @@ public class CCExport {
 			   "\" type=\"webcontent\">\n      <file href=\"cc-objects/export-errors\"/>\n    </resource>"));
 	    
 	    out.println("  </resources>\n</manifest>");
+
+	    // items with embed code. need to put out the HTML page
+	    for (Map.Entry entry : this.embedMap.entrySet()) {
+		Long itemId = (Long)entry.getKey();
+		String location = "attachments/item-" + itemId + ".html";
+		
+		ZipEntry ze = new ZipEntry(location);
+		out.putNextEntry(ze);
+
+		out.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
+		out.println("<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"en\" xml:lang=\"en\">");
+		out.println("<body>");
+		out.print((String)entry.getValue());
+		out.println("</body>");
+		out.println("</html>");
+	    }		
+
+	    // links. need to put out the XML file defining the link
+	    for (Resource res: linkSet) {
+		ZipEntry ze = new ZipEntry(res.location);
+		out.putNextEntry(ze);
+		switch (version) {
+		case V11:
+		    out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+		    out.println("<webLink xmlns=\"http://www.imsglobal.org/xsd/imsccv1p1/imswl_v1p1\"");
+		    out.println("      xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"");
+		    out.println("      xsi:schemaLocation=\"http://www.imsglobal.org/xsd/imsccv1p1/imswl_v1p1 http://www.imsglobal.org/profile/cc/ccv1p1/ccv1p1_imswl_v1p1.xsd\">");
+		    out.println("  <title>" + StringEscapeUtils.escapeXml(res.title) + "</title>");
+		    out.println("  <url href=\"" + StringEscapeUtils.escapeXml(res.url) + "\"/>");
+		    out.println("</webLink>");
+		    break;
+		default:
+		    out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+		    out.println("<webLink xmlns=\"http://www.imsglobal.org/xsd/imsccv1p2/imswl_v1p2\"");
+		    out.println("      xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"");
+		    out.println("      xsi:schemaLocation=\"http://www.imsglobal.org/xsd/imsccv1p2/imswl_v1p2 http://www.imsglobal.org/profile/cc/ccv1p2/ccv1p2_imswl_v1p2.xsd\">");
+		    out.println("  <title>" + StringEscapeUtils.escapeXml(res.title) + "</title>");
+		    out.println("  <url href=\"" + StringEscapeUtils.escapeXml(res.url) + "\"/>");
+		    out.println("</webLink>");
+		}
+	    }
 
 	    errStream.close();
 	    zipEntry = new ZipEntry("cc-objects/export-errors");
@@ -902,7 +1023,9 @@ public class CCExport {
 	// http://lessonbuilder.sakaiproject.org/53605/
 	StringBuilder ret = new StringBuilder();
 	String sakaiIdBase = "/group/" + siteId;
-	Pattern target = Pattern.compile("/access/content/group/" + siteId + "|http://lessonbuilder.sakaiproject.org/", Pattern. CASE_INSENSITIVE);
+	// I'm matching against /access/content/group not /access/content/group/SITEID, because SITEID can in some installations
+	// be user chosen. In that case there could be escaped characters, and the escaping in HTML URL's isn't unique. 
+	Pattern target = Pattern.compile("(?:https?:)?(?://[-a-zA-Z0-9.]+(?::[0-9]+)?)?/access/content(/group/)|http://lessonbuilder.sakaiproject.org/", Pattern. CASE_INSENSITIVE);
 	Matcher matcher = target.matcher(s);
 	// technically / isn't allowed in an unquoted attribute, but sometimes people
 	// use sloppy HTML	
@@ -915,17 +1038,27 @@ public class CCExport {
 	    }		
 	    String sakaiId = null;
 	    int start = matcher.start();
-	    if (s.regionMatches(false, start, "/access", 0, 7)) { // matched /access/content...
-		int sakaistart = start + "/access/content".length(); //start of sakaiid, can't find end until we figure out quoting
-		int last = start + "/access/content/group/".length() + siteId.length();
-		if (s.regionMatches(true, (start - server.length()), server, 0, server.length())) {    // servername before it
-		    start -= server.length();
-		    if (s.regionMatches(true, start - 7, "http://", 0, 7)) {   // http:// or https:// before that
-			start -= 7;
-		    } else if (s.regionMatches(true, start - 8, "https://", 0, 8)) {
-			start -= 8;
-		    }
+	    if (matcher.start(1) >= 0) { // matched /access/content...
+		// make sure it's the right siteid. This approach will get it no matter
+		// how the siteid is url encoded
+		int startsite = matcher.end(1);
+		int last = s.indexOf("/", startsite);
+		if (last < 0)
+		    continue;
+		String sitepart = null;
+		try {
+		    sitepart = URLDecoder.decode(s.substring(startsite, last), "UTF-8");
+		} catch (Exception e) {
+		    System.out.println("decode failed in CCExport " + e);
 		}
+		if (!siteId.equals(sitepart))
+		    continue;
+
+		// it matches, now map it
+		// unfortunately the hostname and port are a bit unpredictable. Don't use them for match. I think siteids are
+		// unique enough that if /access/content/group/SITEID matches that should be enough
+		int sakaistart = matcher.start(1); //start of sakaiid, can't find end until we figure out quoting
+
 		// need to find sakaiend. To do that we need to find the close quote
 		int sakaiend = 0;
 		char quote = s.charAt(start-1);
@@ -939,10 +1072,15 @@ public class CCExport {
 		    else
 			sakaiend = s.length();
 		}
-		sakaiId = s.substring(sakaistart, sakaiend);
+		try {
+		    sakaiId = removeDotDot(URLDecoder.decode(s.substring(sakaistart, sakaiend), "UTF-8"));
+		} catch (Exception e) {
+		    System.out.println("Exception in CCExport URLDecoder " + e);
+		}
 		ret.append(s.substring(index, start));
 		ret.append("$IMS-CC-FILEBASE$..");
-		index = last;  // start here next time
+		ret.append(removeDotDot(s.substring(last, sakaiend)));
+		index = sakaiend;  // start here next time
 	    } else { // matched http://lessonbuilder.sakaiproject.org/
 		int last = matcher.end(); // should be start of an integer
 		int endnum = s.length();  // end of the integer
@@ -962,6 +1100,8 @@ public class CCExport {
 			sakaiId.startsWith(sakaiIdBase)) {
 			ret.append(s.substring(index, start));
 			ret.append("$IMS-CC-FILEBASE$.." + sakaiId.substring(sakaiIdBase.length()));
+			if (s.charAt(endnum) == '/')
+			    endnum++;
 			index = endnum;
 		    }
 		}
@@ -981,7 +1121,9 @@ public class CCExport {
 	// http://lessonbuilder.sakaiproject.org/53605/
 	StringBuilder ret = new StringBuilder();
 	String sakaiIdBase = "/group/" + siteId;
-	Pattern target = Pattern.compile("/access/content/group/" + siteId + "|http://lessonbuilder.sakaiproject.org/", Pattern. CASE_INSENSITIVE);
+	// I'm matching against /access/content/group not /access/content/group/SITEID, because SITEID can in some installations
+	// be user chosen. In that case there could be escaped characters, and the escaping in HTML URL's isn't unique. 
+	Pattern target = Pattern.compile("(?:https?:)?(?://[-a-zA-Z0-9.]+(?::[0-9]+)?)?/access/content(/group/)|http://lessonbuilder.sakaiproject.org/", Pattern. CASE_INSENSITIVE);
 	Matcher matcher = target.matcher(s);
 	// technically / isn't allowed in an unquoted attribute, but sometimes people
 	// use sloppy HTML	
@@ -994,17 +1136,24 @@ public class CCExport {
 	    }		
 	    String sakaiId = null;
 	    int start = matcher.start();
-	    if (s.regionMatches(false, start, "/access", 0, 7)) { // matched /access/content...
-		int sakaistart = start + "/access/content".length(); //start of sakaiid, can't find end until we figure out quoting
-		int last = start + "/access/content/group/".length() + siteId.length();
-		if (s.regionMatches(true, (start - server.length()), server, 0, server.length())) {    // servername before it
-		    start -= server.length();
-		    if (s.regionMatches(true, start - 7, "http://", 0, 7)) {   // http:// or https:// before that
-			start -= 7;
-		    } else if (s.regionMatches(true, start - 8, "https://", 0, 8)) {
-			start -= 8;
-		    }
+	    if (matcher.start(1) >= 0) { // matched /access/content...
+		// make sure it's the right siteid. This approach will get it no matter
+		// how the siteid is url encoded
+		int startsite = matcher.end(1);
+		int last = s.indexOf("/", startsite);
+		if (last < 0)
+		    continue;
+		String sitepart = null;
+		try {
+		    sitepart = URLDecoder.decode(s.substring(startsite, last), "UTF-8");
+		} catch (Exception e) {
+		    System.out.println("decode failed in CCExport " + e);
 		}
+		if (!siteId.equals(sitepart))
+		    continue;
+
+		int sakaistart = matcher.start(1); //start of sakaiid, can't find end until we figure out quoting
+
 		// need to find sakaiend. To do that we need to find the close quote
 		int sakaiend = 0;
 		char quote = s.charAt(start-1);
@@ -1018,16 +1167,19 @@ public class CCExport {
 		    else
 			sakaiend = s.length();
 		}
-		last = sakaiend;
-		sakaiId = s.substring(sakaistart, sakaiend);
-		ret.append(s.substring(index, start));
+		try {
+		    sakaiId = removeDotDot(URLDecoder.decode(s.substring(sakaistart, sakaiend), "UTF-8"));
+		} catch (Exception e) {
+		    System.out.println("Exception in CCExport URLDecoder " + e);
+		}
 		// do the mapping. resource.location is a relative URL of the page we're looking at
 		// sakaiid is the URL of the object, starting /group/
 		String base = getParent(resource.location);
 		String thisref = sakaiId.substring(sakaiIdBase.length()+1);
 		String relative = relativize(thisref, base);
+		ret.append(s.substring(index, start));
 		ret.append(relative.toString());
-		index = last;  // start here next time
+		index = sakaiend;  // start here next time
 	    } else { // matched http://lessonbuilder.sakaiproject.org/
 		int last = matcher.end(); // should be start of an integer
 		int endnum = s.length();  // end of the integer
@@ -1050,6 +1202,8 @@ public class CCExport {
 			String thisref = sakaiId.substring(sakaiIdBase.length()+1);
 			String relative = relativize(thisref, base);
 			ret.append(relative);
+			if (s.charAt(endnum) == '/')
+			    endnum++;
 			index = endnum;
 		    }
 		}

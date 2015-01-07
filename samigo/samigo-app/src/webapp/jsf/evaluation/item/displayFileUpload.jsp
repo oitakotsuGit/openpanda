@@ -1,4 +1,4 @@
-<%-- $Id: displayFileUpload.jsp 73009 2010-01-30 00:34:36Z ktsao@stanford.edu $
+<%-- $Id: displayFileUpload.jsp 308481 2014-04-22 17:32:29Z ottenhoff@longsight.com $
 include file for displaying file upload questions
 should be included in file importing DeliveryMessages
 --%>
@@ -32,7 +32,7 @@ should be included in file importing DeliveryMessages
         <h:column>
           <f:verbatim>&nbsp;&nbsp;&nbsp;&nbsp;</f:verbatim>
           <h:outputLink title="#{evaluationMessages.t_fileUpload}" value="/samigo-app/servlet/ShowMedia?mediaId=#{media.mediaId}" target="new_window">
-             <h:outputText escape="false" value="#{media.filename}" />
+             <h:outputText value="#{media.filename}" />
           </h:outputLink>
         </h:column>
         <h:column>

@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/sam/tags/samigo-2.9.3/samigo-api/src/java/org/sakaiproject/tool/assessment/data/ifc/grading/ItemGradingIfc.java $
+ * $URL: https://source.sakaiproject.org/svn/sam/branches/samigo-2.9.x/samigo-api/src/java/org/sakaiproject/tool/assessment/data/ifc/grading/ItemGradingIfc.java $
  * $Id: ItemGradingIfc.java 127394 2013-07-19 03:16:01Z ktsao@stanford.edu $
  ***********************************************************************************
  *

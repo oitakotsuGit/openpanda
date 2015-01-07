@@ -1,6 +1,6 @@
 /*******************************************************************************
- * $URL: https://source.sakaiproject.org/svn/metaobj/tags/sakai-2.9.3/metaobj-util/tool-lib/src/java/org/sakaiproject/metaobj/shared/control/XsltArtifactView.java $
- * $Id: XsltArtifactView.java 91946 2011-04-15 16:41:09Z botimer@umich.edu $
+ * $URL: https://source.sakaiproject.org/svn/metaobj/branches/sakai-2.9.x/metaobj-util/tool-lib/src/java/org/sakaiproject/metaobj/shared/control/XsltArtifactView.java $
+ * $Id: XsltArtifactView.java 306983 2014-03-11 12:55:34Z holladay@longsight.com $
  * **********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -36,6 +36,7 @@ import org.sakaiproject.content.api.ResourceToolAction;
 import org.sakaiproject.metaobj.shared.mgt.StructuredArtifactDefinitionManager;
 import org.sakaiproject.metaobj.shared.model.Artifact;
 import org.sakaiproject.metaobj.shared.model.ElementBean;
+import org.sakaiproject.metaobj.shared.model.Id;
 import org.sakaiproject.metaobj.shared.FormHelper;
 import org.sakaiproject.component.cover.ComponentManager;
 import org.sakaiproject.tool.api.ToolSession;
@@ -140,13 +141,13 @@ public class XsltArtifactView extends AbstractXsltView {
          }
       }
 
-      boolean edit = false;
+      Id id = null;
 
       if (bean instanceof Artifact) {
          root = getStructuredArtifactDefinitionManager().createFormViewXml(
             (Artifact) bean, null);
          homeType = getHomeType((Artifact) bean);
-         edit = ((Artifact)bean).getId() != null;
+         id = ((Artifact) bean).getId();
       }
       else {
          EditedArtifactStorage sessionBean = (EditedArtifactStorage)httpServletRequest.getSession().getAttribute(
@@ -159,16 +160,16 @@ public class XsltArtifactView extends AbstractXsltView {
             replaceNodes(root, bean, sessionBean);
             paramsMap.put("subForm", "true");
             homeType = getHomeType(sessionBean.getRootArtifact());
-            edit = sessionBean.getRootArtifact().getId() != null;
+            id = sessionBean.getRootArtifact().getId();
          }
          else {
             return new javax.xml.transform.dom.DOMSource();
          }
       }
 
-      if (edit) {
+      if (id != null) {
          paramsMap.put("edit", "true");
-         paramsMap.put(FormHelper.XSL_ARTIFACT_ID, ((Artifact)bean).getId().getValue());
+         paramsMap.put(FormHelper.XSL_ARTIFACT_ID, id.getValue());
       }
 
       httpServletRequest.setAttribute(STYLESHEET_LOCATION,

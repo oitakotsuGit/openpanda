@@ -1,9 +1,9 @@
-<%-- $Id: deliverAudioRecording.jsp 104706 2012-02-15 07:32:19Z miguel.carro@samoo.es $
+<%-- $Id: deliverAudioRecording.jsp 308481 2014-04-22 17:32:29Z ottenhoff@longsight.com $
 include file for delivering audio questions
 should be included in file importing DeliveryMessages
 --%>
 <!--
-* $Id: deliverAudioRecording.jsp 104706 2012-02-15 07:32:19Z miguel.carro@samoo.es $
+* $Id: deliverAudioRecording.jsp 308481 2014-04-22 17:32:29Z ottenhoff@longsight.com $
 <%--
 ***********************************************************************************
 *
@@ -111,7 +111,7 @@ should be included in file importing DeliveryMessages
         <h:column>
           <f:verbatim>&nbsp;&nbsp;&nbsp;&nbsp;</f:verbatim>
           <h:outputLink value="#{attach.location}" target="new_window">
-            <h:outputText escape="false" value="#{attach.filename}" />
+            <h:outputText value="#{attach.filename}" />
           </h:outputLink>
         </h:column>
         <h:column>

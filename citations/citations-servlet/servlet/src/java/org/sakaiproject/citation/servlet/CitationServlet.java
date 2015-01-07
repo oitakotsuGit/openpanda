@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/citations/tags/sakai-2.9.3/citations-servlet/servlet/src/java/org/sakaiproject/citation/servlet/CitationServlet.java $
+ * $URL: https://source.sakaiproject.org/svn/citations/branches/sakai-2.9.x/citations-servlet/servlet/src/java/org/sakaiproject/citation/servlet/CitationServlet.java $
  * $Id: CitationServlet.java 98468 2011-09-21 02:49:36Z jimeng@umich.edu $
  ***********************************************************************************
  *

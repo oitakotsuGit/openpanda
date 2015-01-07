@@ -1,4 +1,4 @@
-<!-- $Id: chef_assignments_student_view_submission.vm 125640 2013-06-11 22:13:24Z ottenhoff@longsight.com $ -->
+<!-- $Id: chef_assignments_student_view_submission.vm 308312 2014-04-17 19:38:39Z matthew@longsight.com $ -->
 <!-- start: chef_assignments_student_view_submission.vm  -->
 #parse("/vm/assignment/assignment_macros.vm")
 <script type="text/javascript" src="/library/js/jquery.js"></script>
@@ -497,7 +497,7 @@ function submitform(id)
 				<input type="hidden" name="sakai_csrf_token" value="$sakai_csrf_token" />
 			</form>
 		#else
-	<form name="addSubmissionForm" id="addSubmissionForm" action="#toolForm("AssignmentAction")" method="post" onsubmit="return true;" enctype="multipart/form-data">
+	<form name="addSubmissionForm" id="addSubmissionForm" action="#toolForm("AssignmentAction")" method="post" onsubmit="return true;" enctype="multipart/form-data" >
 		<input type="hidden" name="eventSubmit_doRead_add_submission_form" value="x" />
 		<input type="hidden" name="option" id="option" value="cancel" />
 		<input type="hidden" name="currentAttachment" value="" />
@@ -506,27 +506,22 @@ function submitform(id)
 			## if a draft submission or the submission has been returned and has not yet submitted
 			## 1- text only; 2-attachment only; 3-text and attachment
 			#set ( $submissionType = $assignment.getContent().getTypeOfSubmission())
+
+			## We are allowing the instructor to submit as long as assignment is not non-electronic and not deleted
+			#if (!$submissionType != 4 && !$!deleted.equalsIgnoreCase("true") && $!allowAddAssignment && $!allowSubmitByInstructor && $!student) 
+				<h4>$tlang.getString("submitforstudent")</h4>
+				<p class="instruction">
+					$student.getDisplayName()
+					<input type="hidden" name="submit_on_behalf_of" id="submit_on_behalf_of" value="$student.id" />		
+				</p>
+			#end
+
 			#if (($submissionType==1) || ($submissionType==3))
 				#if ($!deleted.equalsIgnoreCase("true"))
 					<h4>$tlang.getString("gen.yousub") </h4>
 					##if the assignment has been deleted, disable the action button
 					$validator.escapeHtmlFormattedText($!value_submission_text)
 				#else
-					#*
-					#if (!$submitted || ($submitted && !$timeSubmitted))
-						## for draft submission
-						#if ($!closeTime && $currentTime.after($closeTime))
-							##disable input for submitted and not returned submission or when later than assignment close date
-							##<h4>$tlang.getString("gen.yousub")</h4>
-							$validator.escapeHtmlFormattedText($!value_submission_text)
-						#else*#
-							#if ($!allowAddAssignment && $!allowSubmitByInstructor && $!student) 
-							<h4>$tlang.getString("submitforstudent")</h4>
-							<p class="instruction">
-								$student.getDisplayName()
-								<input type="hidden" name="submit_on_behalf_of" id="submit_on_behalf_of" value="$student.id" />		
-							</p>
-							#end
 							<h4>$tlang.getString("assignmenttext")</h4>
 							<p class="instruction">
 							#if ($returned)
@@ -648,11 +643,11 @@ function submitform(id)
 									<table border="0" cellpadding="0" cellspacing="0" class="listHier  centerLines" style="width:auto;margin:0">
 										<tr>
 											<td>
-												<span>$howManySubAtts</span>
+												<span><label for="clonableUpload">$howManySubAtts</label></span>
 											</td>
 											<td>
-												<div id="clonableUpload"> 
-													<input type="file" name="upload" class="upload" id="clonableUpload" onchange="javascript:showNotif('submitnotifxxx','post','addSubmissionForm');document.getElementById('addSubmissionForm').action='#toolLinkParam("AssignmentAction" "doAttachUpload" "")';submitform('addSubmissionForm');""/> 
+												<div id="clonableUploadW"> 
+													<input type="file" name="upload" class="upload" id="clonableUpload" onchange="javascript:showNotif('submitnotifxxx','post','addSubmissionForm');document.getElementById('addSubmissionForm').action='#toolLinkParam("AssignmentAction" "doAttachUpload" "sakai_csrf_token=$validator.escapeUrl($sakai_csrf_token)")';submitform('addSubmissionForm');"/> 
 													<span id="submitnotifxxx" class="messageProgress" style="visibility:hidden">$tlang.getString("processmessage.file")</span>
 												</div>
 											</td>
@@ -687,7 +682,7 @@ function submitform(id)
 						<div class="highlightPanel">
 							<p class="shorttext">
 								<label for="upload">$tlang.getString("att.upl")</label>
-								<input type="file" name="upload" class="upload" id="clonableUpload" onchange="javascript:showNotif('submitnotifxxx','post','addSubmissionForm');document.getElementById('addSubmissionForm').action='#toolLinkParam("AssignmentAction" "doAttachUploadSingle" "")';submitform('addSubmissionForm');"/> 
+								<input type="file" name="upload" class="upload" id="clonableUpload" onchange="javascript:showNotif('submitnotifxxx','post','addSubmissionForm');document.getElementById('addSubmissionForm').action='#toolLinkParam("AssignmentAction" "doAttachUploadSingle" "sakai_csrf_token=$validator.escapeUrl($sakai_csrf_token)")';submitform('addSubmissionForm');"/> 
 								<span id="submitnotifxxx" class="messageProgress" style="visibility:hidden">$tlang.getString("processmessage.file")</span>
 								<input type="hidden" name="submissionFileCount" id="submissionFileCount" value="1"/>
 							</p>	

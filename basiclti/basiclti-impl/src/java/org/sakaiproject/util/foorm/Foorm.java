@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/basiclti/tags/basiclti-2.1.1/basiclti-impl/src/java/org/sakaiproject/util/foorm/Foorm.java $
- * $Id: Foorm.java 128457 2013-08-14 03:59:38Z csev@umich.edu $
+ * $URL: https://source.sakaiproject.org/svn/basiclti/branches/basiclti-2.1.x/basiclti-impl/src/java/org/sakaiproject/util/foorm/Foorm.java $
+ * $Id: Foorm.java 129311 2013-09-03 20:59:01Z zqian@umich.edu $
  ***********************************************************************************
  *
  * Copyright (c) 2011 The Sakai Foundation
@@ -1290,17 +1290,25 @@ public class Foorm {
 				throw new IllegalArgumentException(
 						"All model elements must include field name and type");
 			}
+			// always allow autodate fields
+			if ("autodate".equals(type))
+			{
+				ret.add(line);
+			}
+			// always allow the SITE_ID field
+			else if ("SITE_ID".equals(field))
+			{
+				ret.add(line);
+			}
 			// We always assume radio and checkbox may be allowed
-			if ("radio".equals(type) || "checkbox".equals(type) ) {
+			else if ("radio".equals(type) || "checkbox".equals(type) ) {
 				// Field = Always Off (0), Always On (1), or Delegate(2)
 				int value = getInt(getField(controlRow, field));
 				if ( value == 2 || ! isFieldSet(controlRow, field) ) ret.add(line);
 			//  For allowed fields, allow = 0ff (0) or On (1)
-			} else if ("true".equals(allowed) ) {
+			} else {
 				int value = getInt(getField(controlRow, "allow" + field));
 				if ( value == 1 || ! isFieldSet(controlRow, field) ) ret.add(line);
-			} else {
-				ret.add(line);
 			}
 		}
 		return ret.toArray(new String[ret.size()]);

@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/help/tags/sakai-2.9.3/help-tool/src/java/org/sakaiproject/tool/help/ContentServlet.java $
- * $Id: ContentServlet.java 117701 2012-12-14 14:29:21Z ottenhoff@longsight.com $
+ * $URL: https://source.sakaiproject.org/svn/help/branches/sakai-2.9.x/help-tool/src/java/org/sakaiproject/tool/help/ContentServlet.java $
+ * $Id: ContentServlet.java 308482 2014-04-22 17:33:29Z ottenhoff@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2003, 2004, 2005, 2006, 2008 The Sakai Foundation
@@ -46,7 +46,7 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * Content Servlet serves help documents to document frame.
- * @version $Id: ContentServlet.java 117701 2012-12-14 14:29:21Z ottenhoff@longsight.com $
+ * @version $Id: ContentServlet.java 308482 2014-04-22 17:33:29Z ottenhoff@longsight.com $
  */
 public class ContentServlet extends HttpServlet
 {
@@ -96,7 +96,8 @@ public class ContentServlet extends HttpServlet
     	  		String localHelpPath = sakaiHomePath+getServerConfigurationService().getString("help.localpath","/help/");
     	  		File localFile = new File(localHelpPath+resource.getLocation());
     	  		boolean localFileIsFile = false;
-    	  		if(localFile.isFile()) { 
+    	  		String localFileCanonicalPath = localFile.getCanonicalPath();
+    	  		if(localFileCanonicalPath.contains(localHelpPath) && localFile.isFile()) { 
     	  			M_log.debug("Local help file overrides: "+resource.getLocation());
     	  			localFileIsFile = true;
     	  		}

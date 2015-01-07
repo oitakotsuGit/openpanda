@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/calendar/tags/calendar-2.9.3/calendar-tool/tool/src/java/org/sakaiproject/calendar/tool/CalendarAction.java $
- * $Id: CalendarAction.java 123595 2013-05-03 18:01:44Z arwhyte@umich.edu $
+ * $URL: https://source.sakaiproject.org/svn/calendar/branches/calendar-2.9.x/calendar-tool/tool/src/java/org/sakaiproject/calendar/tool/CalendarAction.java $
+ * $Id: CalendarAction.java 311112 2014-07-24 15:18:51Z ottenhoff@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2003, 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -60,6 +60,7 @@ import org.sakaiproject.calendar.api.ExternalSubscription;
 import org.sakaiproject.calendar.api.RecurrenceRule;
 import org.sakaiproject.calendar.cover.CalendarImporterService;
 import org.sakaiproject.calendar.cover.CalendarService;
+import org.sakaiproject.entitybroker.exception.EntityNotFoundException;
 import org.sakaiproject.calendar.cover.ExternalCalendarSubscriptionService;
 import org.sakaiproject.calendar.tool.CalendarActionState.LocalEvent;
 import org.sakaiproject.cheftool.Context;
@@ -2190,7 +2191,7 @@ extends VelocityPortletStateAction
 	
 	private static final String EVENT_CONTEXT_VAR = "event";
 	private static final String NO_EVENT_FLAG_CONTEXT_VAR = "noEvent";
-	
+	private static final String NOT_OPEN_EVENT_FLAG_CONTEXT_VAR = "notOpenEvent";
 	//
 	// These are variables used in the context for communication between this
 	// action class and the Velocity template.
@@ -2902,13 +2903,19 @@ extends VelocityPortletStateAction
 					entityId.append( (CalendarService.getCalendar(calEvent.getCalendarReference())).getContext() );
 					entityId.append( EntityReference.SEPARATOR );
 					entityId.append( assignmentId );
-					ActionReturn ret = entityBroker.executeCustomAction(entityId.toString(), ASSN_ENTITY_ACTION, null, null);
-					if (ret != null && ret.getEntityData() != null) {
-						Object returnData = ret.getEntityData().getData();
-						assignData = (Map<String, Object>)returnData;
-					}
-					context.put("assignmenturl", (String) assignData.get("assignmentUrl"));
-					context.put("assignmentTitle", (String) assignData.get("assignmentTitle"));
+					try{
+						ActionReturn ret = entityBroker.executeCustomAction(entityId.toString(), ASSN_ENTITY_ACTION, null, null);
+						if (ret != null && ret.getEntityData() != null) {
+							Object returnData = ret.getEntityData().getData();
+							assignData = (Map<String, Object>)returnData;
+						}
+						context.put("assignmenturl", (String) assignData.get("assignmentUrl"));
+						context.put("assignmentTitle", (String) assignData.get("assignmentTitle"));
+					}catch(SecurityException e){
+						context.put(ALERT_MSG_KEY,rb.getString("java.alert.opendate"));
+						context.put(NOT_OPEN_EVENT_FLAG_CONTEXT_VAR, TRUE_STRING);
+						return;
+ 					}
 				}
 						
 				
@@ -4094,7 +4101,7 @@ extends VelocityPortletStateAction
 					dateObj.setTodayDate(m_calObj.getMonthInteger(),m_calObj.getDayOfMonth(),m_calObj.getYear());
 					
 					startTime = TimeService.newTimeLocal(m_calObj.getYear(),m_calObj.getMonthInteger(),m_calObj.getDayOfMonth(),00,00,00,001);
-					endTime = TimeService.newTimeLocal(m_calObj.getYear(),m_calObj.getMonthInteger(),m_calObj.getDayOfMonth(),23,59,00,000);
+					endTime = TimeService.newTimeLocal(m_calObj.getYear(),m_calObj.getMonthInteger(),m_calObj.getDayOfMonth(),23,59,59,999);
 					
 					eventList = CalendarEventVectorObj.getEvents(TimeService.newTimeRange(startTime,endTime,true,true));
 					
@@ -4112,7 +4119,7 @@ extends VelocityPortletStateAction
 					dateObj.setTodayDate(m_calObj.getMonthInteger(),m_calObj.getDayOfMonth(),m_calObj.getYear());
 					
 					startTime = TimeService.newTimeLocal(m_calObj.getYear(),m_calObj.getMonthInteger(),m_calObj.getDayOfMonth(),00,00,00,001);
-					endTime = TimeService.newTimeLocal(m_calObj.getYear(),m_calObj.getMonthInteger(),m_calObj.getDayOfMonth(),23,59,00,000);
+					endTime = TimeService.newTimeLocal(m_calObj.getYear(),m_calObj.getMonthInteger(),m_calObj.getDayOfMonth(),23,59,59,999);
 					
 					timeRange = TimeService.newTimeRange(startTime,endTime,true,true);
 					
@@ -4141,7 +4148,7 @@ extends VelocityPortletStateAction
 					
 					dateObj.setTodayDate(m_calObj.getMonthInteger(),m_calObj.getDayOfMonth(),m_calObj.getYear());
 					startTime = TimeService.newTimeLocal(m_calObj.getYear(),m_calObj.getMonthInteger(),m_calObj.getDayOfMonth(),00,00,00,001);
-					endTime = TimeService.newTimeLocal(m_calObj.getYear(),m_calObj.getMonthInteger(),m_calObj.getDayOfMonth(),23,59,00,000);
+					endTime = TimeService.newTimeLocal(m_calObj.getYear(),m_calObj.getMonthInteger(),m_calObj.getDayOfMonth(),23,59,59,999);
 					
 					
 					timeRange = TimeService.newTimeRange(startTime,endTime,true,true);
@@ -4166,7 +4173,7 @@ extends VelocityPortletStateAction
 						dateObj.setTodayDate(m_calObj.getMonthInteger(),m_calObj.getDayOfMonth(),m_calObj.getYear());
 						
 						startTime = TimeService.newTimeLocal(m_calObj.getYear(),m_calObj.getMonthInteger(),m_calObj.getDayOfMonth(),00,00,00,001);
-						endTime = TimeService.newTimeLocal(m_calObj.getYear(),m_calObj.getMonthInteger(),m_calObj.getDayOfMonth(),23,59,00,000);
+						endTime = TimeService.newTimeLocal(m_calObj.getYear(),m_calObj.getMonthInteger(),m_calObj.getDayOfMonth(),23,59,59,999);
 						
 						timeRange = TimeService.newTimeRange(startTime,endTime,true,true);
 						

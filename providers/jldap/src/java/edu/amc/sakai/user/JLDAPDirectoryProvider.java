@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/providers/tags/sakai-2.9.3/jldap/src/java/edu/amc/sakai/user/JLDAPDirectoryProvider.java $
- * $Id: JLDAPDirectoryProvider.java 110799 2012-07-26 18:04:51Z ottenhoff@longsight.com $
+ * $URL: https://source.sakaiproject.org/svn/providers/branches/sakai-2.9.x/jldap/src/java/edu/amc/sakai/user/JLDAPDirectoryProvider.java $
+ * $Id: JLDAPDirectoryProvider.java 128953 2013-08-22 22:10:19Z ottenhoff@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2003, 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -638,17 +638,20 @@ public class JLDAPDirectoryProvider implements UserDirectoryProvider, LdapConnec
 				userEdit = (UserEdit) userEdits.next();
 				String eid = userEdit.getEid();
 				
-				// Do nothing with this eid if it is in the blacklist
 				if ( !(isSearchableEid(eid)) ) {
 					userEdits.remove();
-					continue;
-				}
-				
-				// Check the cache before sending the request to LDAP
-				LdapUserData cachedUserData = getCachedUserEntry(eid);
-				if ( cachedUserData == null ) {
-					usersToSearchInLDAP.put(eid, userEdit);
-					cnt++;
+					//proceed ahead with this (perhaps the final) iteration
+					//usersToSearchInLDAP needs to be processed unless empty
+				} else {
+					// Check the cache before sending the request to LDAP
+					LdapUserData cachedUserData = getCachedUserEntry(eid);
+					if ( cachedUserData == null ) {
+						usersToSearchInLDAP.put(eid, userEdit);
+						cnt++;
+					} else {
+						// populate userEdit with cached ldap data:
+						mapUserDataOntoUserEdit(cachedUserData, userEdit);
+					}
 				}
 				
 				// We need to make sure this query isn't larger than maxQuerySize
@@ -662,6 +665,14 @@ public class JLDAPDirectoryProvider implements UserDirectoryProvider, LdapConnec
 				
 					for (LdapUserData ldapUserData : ldapUsers) {
 						String ldapEid = ldapUserData.getEid();
+
+						if (StringUtils.isEmpty(ldapEid)) {
+							continue;
+						}
+						if (!(caseSensitiveCacheKeys)) {
+							ldapEid = ldapEid.toLowerCase();
+						}
+
 						UserEdit ue = usersToSearchInLDAP.get(ldapEid);
 						mapUserDataOntoUserEdit(ldapUserData, ue);
 						usersToSearchInLDAP.remove(ldapEid);

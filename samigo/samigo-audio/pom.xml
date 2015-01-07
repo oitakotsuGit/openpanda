@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.sakaiproject.samigo</groupId>
         <artifactId>samigo</artifactId>
-        <version>2.9.3</version>
+        <version>2.9.5-SNAPSHOT</version>
     </parent>
 
     <name>Sakai Samigo Audio Recorder (samigo-audio)</name>
@@ -53,6 +53,13 @@
                             <alias>${sakai.samigo-audio.jarsign.alias}</alias>
                             <storepass>${sakai.samigo-audio.jarsign.password}</storepass>
                             <verify>true</verify>
+                            <archive>
+								<index>true</index>
+								<manifestEntries>
+									<Permissions>all-permissions</Permissions>
+									<Application-Name>Sakai samigo-audio</Application-Name>
+								</manifestEntries>
+							</archive>
                         </configuration>
                     </plugin>
                 </plugins>

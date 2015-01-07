@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/kernel/tags/kernel-1.3.3/kernel-impl/src/main/java/org/sakaiproject/event/impl/ClusterEventTrackingServiceSqlMySql.java $
+ * $URL: https://source.sakaiproject.org/svn/kernel/branches/kernel-1.3.x/kernel-impl/src/main/java/org/sakaiproject/event/impl/ClusterEventTrackingServiceSqlMySql.java $
  * $Id: ClusterEventTrackingServiceSqlMySql.java 127978 2013-07-30 19:51:29Z ottenhoff@longsight.com $
  ***********************************************************************************
  *

@@ -1,6 +1,6 @@
 /**
- * $URL: https://source.sakaiproject.org/svn/basiclti/tags/basiclti-2.1.1/basiclti-blis/src/java/org/sakaiproject/blti/ServiceServlet.java $
- * $Id: ServiceServlet.java 128210 2013-08-06 15:27:57Z csev@umich.edu $
+ * $URL: https://source.sakaiproject.org/svn/basiclti/branches/basiclti-2.1.x/basiclti-blis/src/java/org/sakaiproject/blti/ServiceServlet.java $
+ * $Id: ServiceServlet.java 129201 2013-08-29 03:05:08Z csev@umich.edu $
  *
  * Copyright (c) 2009 The Sakai Foundation
  *
@@ -304,15 +304,15 @@ public class ServiceServlet extends HttpServlet {
 			M_log.debug("Basic LTI Service request from IP=" + ipAddress);
 
 			String allowOutcomes = ServerConfigurationService.getString(
-					SakaiBLTIUtil.BASICLTI_OUTCOMES_ENABLED, null);
+					SakaiBLTIUtil.BASICLTI_OUTCOMES_ENABLED, SakaiBLTIUtil.BASICLTI_OUTCOMES_ENABLED_DEFAULT);
 			if ( ! "true".equals(allowOutcomes) ) allowOutcomes = null;
 
 			String allowSettings = ServerConfigurationService.getString(
-					SakaiBLTIUtil.BASICLTI_SETTINGS_ENABLED, null);
+					SakaiBLTIUtil.BASICLTI_SETTINGS_ENABLED, SakaiBLTIUtil.BASICLTI_SETTINGS_ENABLED_DEFAULT);
 			if ( ! "true".equals(allowSettings) ) allowSettings = null;
 
 			String allowRoster = ServerConfigurationService.getString(
-					SakaiBLTIUtil.BASICLTI_ROSTER_ENABLED, null);
+					SakaiBLTIUtil.BASICLTI_ROSTER_ENABLED, SakaiBLTIUtil.BASICLTI_ROSTER_ENABLED_DEFAULT);
 			if ( ! "true".equals(allowRoster) ) allowRoster = null;
 
 			if (allowOutcomes == null && allowSettings == null && allowRoster == null ) {
@@ -451,7 +451,8 @@ public class ServiceServlet extends HttpServlet {
 			oauth_secret = SakaiBLTIUtil.decryptSecret(oauth_secret);
 			M_log.debug("oauth_secret (decrypted): "+oauth_secret);
 
-			OAuthMessage oam = OAuthServlet.getMessage(request, null);
+			String URL = SakaiBLTIUtil.getOurServletPath(request);
+			OAuthMessage oam = OAuthServlet.getMessage(request, URL);
 			OAuthValidator oav = new SimpleOAuthValidator();
 			OAuthConsumer cons = new OAuthConsumer("about:blank#OAuth+CallBack+NotUsed", oauth_consumer_key,oauth_secret, null);
 
@@ -719,7 +720,7 @@ public class ServiceServlet extends HttpServlet {
 			String releaseEmail = pitch.getProperty(LTIService.LTI_SENDEMAILADDR);
 			String assignment = pitch.getProperty("assignment");
 			String allowOutcomes = ServerConfigurationService.getString(
-					SakaiBLTIUtil.BASICLTI_OUTCOMES_ENABLED, null);
+					SakaiBLTIUtil.BASICLTI_OUTCOMES_ENABLED, SakaiBLTIUtil.BASICLTI_OUTCOMES_ENABLED_DEFAULT);
 			if ( ! "true".equals(allowOutcomes) ) allowOutcomes = null;
 
 			String maintainRole = site.getMaintainRole();
@@ -825,11 +826,11 @@ public class ServiceServlet extends HttpServlet {
 			M_log.debug("LTI POX Service request from IP=" + ipAddress);
 
 			String allowOutcomes = ServerConfigurationService.getString(
-					SakaiBLTIUtil.BASICLTI_OUTCOMES_ENABLED, null);
+					SakaiBLTIUtil.BASICLTI_OUTCOMES_ENABLED, SakaiBLTIUtil.BASICLTI_OUTCOMES_ENABLED_DEFAULT);
 			if ( ! "true".equals(allowOutcomes) ) allowOutcomes = null;
 
 			String allowLori = ServerConfigurationService.getString(
-					SakaiBLTIUtil.BASICLTI_LORI_ENABLED, null);
+					SakaiBLTIUtil.BASICLTI_LORI_ENABLED, SakaiBLTIUtil.BASICLTI_LORI_ENABLED_DEFAULT);
 			if ( ! "true".equals(allowLori) ) allowLori = null;
 
 			if (allowOutcomes == null && allowLori == null ) {
@@ -937,7 +938,8 @@ public class ServiceServlet extends HttpServlet {
 			oauth_secret = SakaiBLTIUtil.decryptSecret(oauth_secret);
 			M_log.debug("oauth_secret (decrypted): "+oauth_secret);
 
-			pox.validateRequest(oauth_consumer_key, oauth_secret, request);
+			String URL = SakaiBLTIUtil.getOurServletPath(request);
+			pox.validateRequest(oauth_consumer_key, oauth_secret, request, URL);
 			if ( ! pox.valid ) {
 				if (pox.base_string != null) {
 					M_log.warn(pox.base_string);

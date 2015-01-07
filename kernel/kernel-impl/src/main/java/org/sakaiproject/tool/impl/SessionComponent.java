@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/kernel/tags/kernel-1.3.3/kernel-impl/src/main/java/org/sakaiproject/tool/impl/SessionComponent.java $
+ * $URL: https://source.sakaiproject.org/svn/kernel/branches/kernel-1.3.x/kernel-impl/src/main/java/org/sakaiproject/tool/impl/SessionComponent.java $
  * $Id: SessionComponent.java 126050 2013-06-20 19:00:47Z ottenhoff@longsight.com $
  ***********************************************************************************
  *

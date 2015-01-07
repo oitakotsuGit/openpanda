@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/content/tags/sakai-2.9.3/content-tool/tool/src/java/org/sakaiproject/content/tool/ResourcesAction.java $
- * $Id: ResourcesAction.java 127206 2013-07-18 13:12:57Z ottenhoff@longsight.com $
+ * $URL: https://source.sakaiproject.org/svn/content/branches/sakai-2.9.x/content-tool/tool/src/java/org/sakaiproject/content/tool/ResourcesAction.java $
+ * $Id: ResourcesAction.java 310472 2014-06-27 20:11:10Z ottenhoff@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2003, 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -136,7 +136,7 @@ import org.w3c.dom.Element;
 * <p>ResourceAction is a ContentHosting application</p>
 *
 * @author University of Michigan, CHEF Software Development Team
-* @version $Revision: 127206 $
+* @version $Revision: 310472 $
 */
 public class ResourcesAction 
 	extends PagedResourceHelperAction // VelocityPortletPaneledAction
@@ -5066,7 +5066,7 @@ protected static final String PARAM_PAGESIZE = "collections_per_page";
 		context.put("server_url", ServerConfigurationService.getServerUrl());
 		context.put("site_id", ToolManager.getCurrentPlacement().getContext());
 		context.put("site_title", state.getAttribute(STATE_SITE_TITLE));
-		context.put("user_id", UserDirectoryService.getCurrentUser().getEid());
+		context.put("user_id", UserDirectoryService.getCurrentUser().getEid().matches(".*(;|/|\\?|:|@|&|=|\\+).*")?UserDirectoryService.getCurrentUser().getId():UserDirectoryService.getCurrentUser().getEid());
 		
 		if (ContentHostingService.isShortRefs())
 		{

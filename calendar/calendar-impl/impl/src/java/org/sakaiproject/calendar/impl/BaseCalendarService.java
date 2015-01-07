@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/calendar/tags/calendar-2.9.3/calendar-impl/impl/src/java/org/sakaiproject/calendar/impl/BaseCalendarService.java $
- * $Id: BaseCalendarService.java 123594 2013-05-03 17:54:41Z arwhyte@umich.edu $
+ * $URL: https://source.sakaiproject.org/svn/calendar/branches/calendar-2.9.x/calendar-impl/impl/src/java/org/sakaiproject/calendar/impl/BaseCalendarService.java $
+ * $Id: BaseCalendarService.java 308480 2014-04-22 17:29:57Z ottenhoff@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2003, 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -4273,6 +4273,7 @@ public abstract class BaseCalendarService implements CalendarService, StorageUse
 		 */
 		public String getField(String name)
 		{
+			name = FormattedText.unEscapeHtml(name);
 			// names are prefixed to form a namespace
 			name = ResourceProperties.PROP_CALENDAR_EVENT_FIELDS + "." + name;
 

@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/assignment/tags/assignment-2.9.3/assignment-impl/impl/src/java/org/sakaiproject/assignment/impl/BaseAssignmentService.java $
- * $Id: BaseAssignmentService.java 127894 2013-07-29 14:34:57Z ottenhoff@longsight.com $
+ * $URL: https://source.sakaiproject.org/svn/assignment/branches/assignment-2.9.x/assignment-impl/impl/src/java/org/sakaiproject/assignment/impl/BaseAssignmentService.java $
+ * $Id: BaseAssignmentService.java 309072 2014-05-01 12:29:55Z matthew@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2003, 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -58,6 +58,7 @@ import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.util.WorkbookUtil;
 import org.sakaiproject.announcement.api.AnnouncementChannel;
 import org.sakaiproject.announcement.api.AnnouncementService;
 import org.sakaiproject.assignment.api.Assignment;
@@ -412,6 +413,7 @@ public abstract class BaseAssignmentService implements AssignmentService, Entity
 		String context = assignment.getContext();
 		String userId = SessionManager.getCurrentSessionUserId();
 		if (allowAllGroups(context) && AuthzGroupService.isAllowed(userId,lock, SiteService.siteReference(context)))
+			if (allowAllGroups(context) && SecurityService.unlock(lock, SiteService.siteReference(context)))
 		{
 			return true;
 		}
@@ -425,7 +427,7 @@ public abstract class BaseAssignmentService implements AssignmentService, Entity
 			{
 				String groupId = (String) i.next();
 				boolean isAllowed
-					= AuthzGroupService.isAllowed(userId,lock,groupId);
+					= SecurityService.unlock(lock,groupId);
 				
 				if(isAllowed) return true;
 			}
@@ -434,7 +436,7 @@ public abstract class BaseAssignmentService implements AssignmentService, Entity
 		}
 		else
 		{
-			return SecurityService.unlock(lock, resource);
+			return SecurityService.unlock(lock, SiteService.siteReference(context));
 		}
 	}// unlockCheckWithGroups
 
@@ -4407,16 +4409,7 @@ public abstract class BaseAssignmentService implements AssignmentService, Entity
 			short rowNum = 0;
 			HSSFWorkbook wb = new HSSFWorkbook();
 			
-			// a tab title in a workbook have a maximum length of 31 chars.
-			// otherwise an Exception will been thrown "Sheet name cannot be blank, greater than 31 chars, or contain any of /\*?[]"
-			// we truncate it if it's too long
-			String sheetTitle = siteTitle;
-			int siteTitleLength = sheetTitle.length();
-			if (siteTitleLength > 31) {
-			    M_log.info(this + " Site title is too long (" + siteTitleLength + " chars) truncating it down to 31 chars!");
-			    sheetTitle = sheetTitle.substring(0, 31);
-			}
-			HSSFSheet sheet = wb.createSheet(Validator.escapeZipEntry(sheetTitle));
+			HSSFSheet sheet = wb.createSheet(WorkbookUtil.createSafeSheetName(siteTitle));
 	
 			// Create a row and put some cells in it. Rows are 0 based.
 			HSSFRow row = sheet.createRow(rowNum++);
@@ -4658,6 +4651,7 @@ public abstract class BaseAssignmentService implements AssignmentService, Entity
 				
 				if (!rvUsers.isEmpty())
 				{
+					List<String> groupRefs = new ArrayList<String>();
 					for (Iterator uIterator = rvUsers.iterator(); uIterator.hasNext();)
 					{
 						User u = (User) uIterator.next();
@@ -4671,6 +4665,24 @@ public abstract class BaseAssignmentService implements AssignmentService, Entity
 						// add those users who haven't made any submissions and with submission rights
 						else
 						{
+							//only initiate the group list once
+							if (groupRefs.isEmpty())
+							{
+								if (a.getAccess() == Assignment.AssignmentAccess.SITE)
+								{
+									// for site range assignment, add the site reference first
+									groupRefs.add(SiteService.siteReference(contextString));
+								}
+								// add all groups inside the site
+								Collection groups = getGroupsAllowGradeAssignment(contextString, a.getReference());
+								for(Object g : groups)
+								{
+									if (g instanceof Group)
+									{
+										groupRefs.add(((Group) g).getReference());
+									}
+								}
+							}
 							// construct fake submissions for grading purpose if the user has right for grading
 							if (allowGradeSubmission(a.getReference()))
 							{
@@ -4681,7 +4693,7 @@ public abstract class BaseAssignmentService implements AssignmentService, Entity
 						            		new MySecurityAdvisor(
 						            				SessionManager.getCurrentSessionUserId(), 
 						            				new ArrayList<String>(Arrays.asList(SECURE_ADD_ASSIGNMENT_SUBMISSION, SECURE_UPDATE_ASSIGNMENT_SUBMISSION)),
-						            				""/* no submission id yet, pass the empty string to advisor*/));
+						            				groupRefs/* no submission id yet, pass the empty string to advisor*/));
 							        
 						            AssignmentSubmissionEdit s = addSubmission(contextString, a.getId(), u.getId());
 									if (s != null)
@@ -4745,7 +4757,7 @@ public abstract class BaseAssignmentService implements AssignmentService, Entity
 			// now are we view all sections/groups or just specific one?
 			if (allOrOneGroup.equals(AssignmentConstants.ALL))
 			{
-				if (a.getAccess() ==  Assignment.AssignmentAccess.SITE)
+				if (allowAllGroups(contextString))
 				{
 					// site range
 					try {

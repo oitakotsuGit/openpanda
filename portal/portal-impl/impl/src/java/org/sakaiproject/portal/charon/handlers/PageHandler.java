@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/portal/tags/portal-base-2.9.3/portal-impl/impl/src/java/org/sakaiproject/portal/charon/handlers/PageHandler.java $
- * $Id: PageHandler.java 118537 2013-01-21 16:35:17Z ottenhoff@longsight.com $
+ * $URL: https://source.sakaiproject.org/svn/portal/branches/portal-2.9.x/portal-impl/impl/src/java/org/sakaiproject/portal/charon/handlers/PageHandler.java $
+ * $Id: PageHandler.java 130479 2013-10-15 17:27:14Z ottenhoff@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2003, 2004, 2005, 2006, 2007, 2008 The Sakai Foundation
@@ -46,11 +46,12 @@ import org.sakaiproject.site.api.ToolConfiguration;
 import org.sakaiproject.site.cover.SiteService;
 import org.sakaiproject.tool.api.Session;
 import org.sakaiproject.tool.api.ToolException;
+import org.sakaiproject.portal.util.URLUtils;
 
 /**
  * @author ieb
  * @since Sakai 2.4
- * @version $Rev: 118537 $
+ * @version $Rev: 130479 $
  */
 public class PageHandler extends BasePortalHandler
 {
@@ -138,7 +139,7 @@ public class PageHandler extends BasePortalHandler
 				ss.setRequest(req);
 				ss.setToolContextPath(toolContextPath);
 				portalService.setStoredState(ss);
-				portal.doLogin(req, res, session, req.getPathInfo(), false);
+				portal.doLogin(req, res, session, URLUtils.getSafePathInfo(req), false);
 			}
 			else
 			{

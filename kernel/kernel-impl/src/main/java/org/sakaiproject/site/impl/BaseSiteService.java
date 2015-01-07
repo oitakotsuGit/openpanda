@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/kernel/tags/kernel-1.3.3/kernel-impl/src/main/java/org/sakaiproject/site/impl/BaseSiteService.java $
- * $Id: BaseSiteService.java 125728 2013-06-13 16:57:33Z ottenhoff@longsight.com $
+ * $URL: https://source.sakaiproject.org/svn/kernel/branches/kernel-1.3.x/kernel-impl/src/main/java/org/sakaiproject/site/impl/BaseSiteService.java $
+ * $Id: BaseSiteService.java 131980 2013-11-26 21:30:14Z matthew@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2003, 2004, 2005, 2006, 2007, 2008 Sakai Foundation
@@ -1040,18 +1040,10 @@ public abstract class BaseSiteService implements SiteService, StorageUser
 	 */
 	public void saveSiteInfo(String id, String description, String infoUrl) throws IdUnusedException, PermissionException
 	{
-		String ref = siteReference(id);
-
-		// check security (throws if not permitted)
-		unlock(SECURE_UPDATE_SITE, ref);
-
-		// check for existance
-		if (!m_storage.check(id))
-		{
-			throw new IdUnusedException(id);
-		}
-
-		m_storage.saveInfo(id, description, infoUrl);
+		Site site = getSite(id);
+		site.setDescription(description);
+		site.setInfoUrl(infoUrl);
+		save(site);
 	}
 
 	/**

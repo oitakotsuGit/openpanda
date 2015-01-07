@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/rwiki/tags/sakai-2.9.3/rwiki-impl/impl/src/java/uk/ac/cam/caret/sakai/rwiki/component/macros/SpanMacro.java $
+ * $URL: https://source.sakaiproject.org/svn/rwiki/branches/sakai-2.9.x/rwiki-impl/impl/src/java/uk/ac/cam/caret/sakai/rwiki/component/macros/SpanMacro.java $
  * $Id: SpanMacro.java 127747 2013-07-25 16:10:58Z ottenhoff@longsight.com $
  ***********************************************************************************
  *

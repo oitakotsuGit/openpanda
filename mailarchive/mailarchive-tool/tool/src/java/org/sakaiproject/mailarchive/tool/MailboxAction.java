@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/mailarchive/tags/mailarchive-2.9.3/mailarchive-tool/tool/src/java/org/sakaiproject/mailarchive/tool/MailboxAction.java $
- * $Id: MailboxAction.java 106617 2012-04-09 13:40:00Z matthew@longsight.com $
+ * $URL: https://source.sakaiproject.org/svn/mailarchive/branches/mailarchive-2.9.x/mailarchive-tool/tool/src/java/org/sakaiproject/mailarchive/tool/MailboxAction.java $
+ * $Id: MailboxAction.java 308466 2014-04-22 14:39:33Z ottenhoff@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2003, 2004, 2005, 2006, 2007, 2008 The Sakai Foundation
@@ -539,6 +539,7 @@ public class MailboxAction extends PagedResourceActionII
 					String email = user.getEmail();
 					context.put("validFrom", email);
 				}
+				context.put(STATE_OPTION_SENDTO, channel.getSendToList());
 			}
 		}
 		catch (IdUnusedException e)

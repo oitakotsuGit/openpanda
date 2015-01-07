@@ -1231,6 +1231,11 @@ public class SimplePageBean {
 		return currentSite;
 	}
 
+    // after someone else hacks on the site
+	public void clearCurrentSite() {  
+	    currentSite = null;
+	}
+
     // find page to show in next link
     // If the current page is a LB page, and it has a single "next" link on it, use that
 
@@ -2201,7 +2206,7 @@ public class SimplePageBean {
 					if (lessonEntity != null) {
 					    String groups = getItemGroupString (i, lessonEntity, true);
 					    ourGroupName = "Access: " + getNameOfSakaiItem(i);
-					    String groupId = GroupPermissionsService.makeGroup(getCurrentPage().getSiteId(), ourGroupName);
+					    String groupId = GroupPermissionsService.makeGroup(getCurrentPage().getSiteId(), ourGroupName, i.getSakaiId(), this);
 					    saveItem(simplePageToolDao.makeGroup(i.getSakaiId(), groupId, groups, getCurrentPage().getSiteId()));
 
 					    // update the tool access control to point to our access control group
@@ -2393,13 +2398,17 @@ public class SimplePageBean {
 
 				// if no change, don't worry
 				LessonEntity existing = assignmentEntity.getEntity(i.getSakaiId());
-				String ref = existing.getReference();
+				String ref = null;
+				if (existing != null)
+				    ref = existing.getReference();
 				// if same quiz, nothing to do
-				if (!ref.equals(selectedAssignment)) {
+				if ((existing == null) || !ref.equals(selectedAssignment)) {
 				    // if access controlled, clear restriction from old assignment and add to new
 				    if (i.isPrerequisite()) {
-					i.setPrerequisite(false);
-					checkControlGroup(i, false);
+					if (existing !=  null) {
+					    i.setPrerequisite(false);
+					    checkControlGroup(i, false);
+					}
 					// sakaiid and name are used in setting control
 					i.setSakaiId(selectedAssignment);
 					i.setName(selectedObject.getTitle());
@@ -2460,20 +2469,16 @@ public class SimplePageBean {
 
 				// if no change, don't worry
 				LessonEntity existing = bltiEntity.getEntity(i.getSakaiId());
-				String ref = existing.getReference();
+				String ref = null;
+				if (existing != null)
+				    ref = existing.getReference();
 				// if same item, nothing to do
-				if (!ref.equals(selectedBlti)) {
+				if ((existing == null) || !ref.equals(selectedBlti)) {
 				    // if access controlled, clear restriction from old assignment and add to new
-				    if (i.isPrerequisite()) {
-					i.setPrerequisite(false);
-					// sakaiid and name are used in setting control
-					i.setSakaiId(selectedBlti);
-					i.setName(selectedObject.getTitle());
-					i.setPrerequisite(true);
-				    } else {
-					i.setSakaiId(selectedBlti);
-					i.setName(selectedObject.getTitle());
-				    }
+				    // group access not used for BLTI items, so don't need the setcontrolgroup
+				    // logic from other item types
+				    i.setSakaiId(selectedBlti);
+				    i.setName(selectedObject.getTitle());
 				    if (format == null || format.trim().equals(""))
 					i.setFormat("");
 				    else
@@ -3002,13 +3007,17 @@ public class SimplePageBean {
 				i = findItem(itemId);
 				// do getEntity/getreference to normalize, in case sakaiid is old format
 				LessonEntity existing = quizEntity.getEntity(i.getSakaiId());
-				String ref = existing.getReference();
+				String ref = null;
+				if (existing != null)
+				    ref = existing.getReference();
 				// if same quiz, nothing to do
-				if (!ref.equals(selectedQuiz)) {
+				if ((existing == null) || !ref.equals(selectedQuiz)) {
 				    // if access controlled, clear restriction from old quiz and add to new
 				    if (i.isPrerequisite()) {
-					i.setPrerequisite(false);
-					checkControlGroup(i, false);
+					if (existing != null) {
+					    i.setPrerequisite(false);
+					    checkControlGroup(i, false);
+					}
 					// sakaiid and name are used in setting control
 					i.setSakaiId(selectedQuiz);
 					i.setName(selectedObject.getTitle());
@@ -3152,7 +3161,7 @@ public class SimplePageBean {
 			// adjust gradebook entry
 			boolean add = false;
 			if (newPoints == null && currentPoints != null) {
-				gradebookIfc.removeExternalAssessment(site.getId(), "lesson-builder:" + page.getPageId());
+				add = gradebookIfc.removeExternalAssessment(site.getId(), "lesson-builder:" + page.getPageId());
 			} else if (newPoints != null && currentPoints == null) {
 				add = gradebookIfc.addExternalAssessment(site.getId(), "lesson-builder:" + page.getPageId(), null,
 						       	pageTitle, newPoints, null, "Lesson Builder");
@@ -3268,6 +3277,29 @@ public class SimplePageBean {
 		}
 	}
 	
+	private boolean uploadSizeOk(MultipartFile file) {
+	    long uploadedFileSize = file.getSize();
+
+	    if (uploadedFileSize == 0) {
+		setErrMessage(messageLocator.getMessage("simplepage.filezero"));
+		return false;
+	    }
+
+	    String maxFileSizeInMB = ServerConfigurationService.getString("content.upload.max", "1");
+	    int maxFileSizeInBytes = 1024 * 1024;
+	    try {
+		maxFileSizeInBytes = Integer.parseInt(maxFileSizeInMB) * 1024 * 1024;
+	    } catch(NumberFormatException e) {
+		log.warn("Unable to parse content.upload.max retrieved from properties file during upload");
+	    }
+
+	    if (uploadedFileSize > maxFileSizeInBytes) {
+		setErrMessage(messageLocator.getMessage("simplepage.filetoobig").replace("{}", maxFileSizeInMB));
+		return false;
+	    }
+	    return true;
+	}
+
 	private String uploadFile(String collectionId) {
 		String name = null;
 		String mimeType = null;
@@ -3276,11 +3308,17 @@ public class SimplePageBean {
 		if (multipartMap.size() > 0) {
 			// 	user specified a file, create it
 			file = multipartMap.values().iterator().next();
-			if (file.isEmpty())
-				file = null;
 		}
 		
 		if (file != null) {
+
+			// uploadsizeok would otherwise complain about 0 length file. For
+			// this case it's valid. Means no file.
+			if (file.getSize() == 0)
+			    return null;
+			if (!uploadSizeOk(file))
+			    return null;
+
 			try {
 				contentHostingService.checkCollection(collectionId);
 			}catch(Exception ex) {
@@ -4205,19 +4243,33 @@ public class SimplePageBean {
 
     // maybeUpdateLinks checks to see if this page was copied from another
     // site and needs an update
+    // only works if you have lessons write permission. Caller shold check
 	public void maybeUpdateLinks() {
 	    String needsFixup = getCurrentSite().getProperties().getProperty("lessonbuilder-needsfixup");
 	    if (needsFixup == null || !needsFixup.equals("true"))
 		return;
-	    lessonBuilderEntityProducer.updateEntityReferences(getCurrentSiteId());
-	    Site site = getCurrentSite();
-	    ResourcePropertiesEdit rp = site.getPropertiesEdit();
-	    rp.removeProperty("lessonbuilder-needsfixup");
+
+	    // it's important for only one process to do the update. So instead of depending upon something
+	    // that can be cached and is not synced across sites, do this directly in the DB with somehting
+	    // atomic. Also site save is veyr heavy weight, and not well interlocked. Much better just
+	    // to remove the property. This should only be needed for 10 min (cache lifetime), after which
+	    // the test above will show that it's not needed
+	    //   Permission note: this should work for a student. A full site save won't. However this
+	    // code only gets called for people with lessons.write. Normally lessons.write is also people
+	    // with site.upd, but maybe not always. It should be OK for anyone to clear this flag in this code
+
+	    int updated = 0;
 	    try {
-		siteService.save(site);
+		updated = simplePageToolDao.clearNeedsFixup(getCurrentSiteId());
 	    } catch (Exception e) {
-		log.warn("site save in maybeUpdateLinks " + e);
+		// should get here if the flag has been removed already by another process
+		log.warn("clearneedsfixup " + e);
 	    }
+	    // only do this if there was a flag to delete
+	    if (updated == 0)
+		return;
+
+	    lessonBuilderEntityProducer.updateEntityReferences(getCurrentSiteId());
 	    currentSite = null;  // force refetch next time
 	}
 
@@ -4295,12 +4347,12 @@ public class SimplePageBean {
     // as HTML is an SGML dialect.
     // If you run into trouble with &amp;, you can use ; in the following. Google seems to 
     // process it correctly. ; is a little-known alterantive to & that the RFCs do permit
-       private String normalizeParams(String URL) {
+       private static String normalizeParams(String URL) {
 	   URL = URL.replaceAll("[\\?\\&\\;]", "&");
 	   return URL.replaceFirst("\\&", "?");
        }
 
-       private String getYoutubeKeyFromUrl(String URL) {
+       public static String getYoutubeKeyFromUrl(String URL) {
 	   // 	see if it has a Youtube ID
 	   int offset = 0;
 	   if (URL.startsWith("http:"))
@@ -4389,6 +4441,12 @@ public class SimplePageBean {
 		
 		// 	no
 		return null;
+	}
+
+    // current recommended best URL for youtube. Put here because the same code is
+    // used a couple of different places
+        public static String getYoutubeUrlFromKey(String key) {
+	    return "https://www.youtube.com/embed/" + key + "?wmode=opaque";
 	}
 
 	public String[] split(String s, String p) {
@@ -4630,11 +4688,16 @@ public class SimplePageBean {
 			if (multipartMap.size() > 0) {
 				// 	user specified a file, create it
 				file = multipartMap.values().iterator().next();
+				// zero length is valid. We get that if it's not a file upload
 				if (file.isEmpty())
-					file = null;
+				    file = null;
+
 			}
 			
 			if (file != null) {
+				if (!uploadSizeOk(file))
+				    return;
+
 				String collectionId = getCollectionId(false);
 				// 	user specified a file, create it
 				name = file.getOriginalFilename();
@@ -4813,11 +4876,12 @@ public class SimplePageBean {
 	    if (multipartMap.size() > 0) {
 		// user specified a file, create it
 		file = multipartMap.values().iterator().next();
-		if (file.isEmpty())
-		    file = null;
 	    }
 
 	    if (file != null) {
+		if (!uploadSizeOk(file))
+		    return;
+
 		File cc = null;
 		File root = null;
 		try {
@@ -5137,11 +5201,6 @@ public class SimplePageBean {
 					return "failure";
 				}
 				
-				// TODO: should update instead of delete/add
-				if(comment.getGradebookId() != null && !comment.getGradebookPoints().equals(points)) {
-					gradebookIfc.removeExternalAssessment(getCurrentSiteId(), comment.getGradebookId());
-				}
-				
 				if(comment.getGradebookId() == null || !comment.getGradebookPoints().equals(points)) {
 					String pageTitle = "";
 					String gradebookId = "";
@@ -5152,7 +5211,11 @@ public class SimplePageBean {
 						pageTitle = getPage(comment.getPageId()).getTitle();
 						gradebookId = "lesson-builder:comment:" + comment.getId();
 						
-						add = gradebookIfc.addExternalAssessment(getCurrentSiteId(), "lesson-builder:comment:" + comment.getId(), null,
+						if(comment.getGradebookId() != null && !comment.getGradebookPoints().equals(points))
+						    add = gradebookIfc.updateExternalAssessment(getCurrentSiteId(), "lesson-builder:comment:" + comment.getId(), null,
+							      pageTitle + " Comments (item:" + comment.getId() + ")", Integer.valueOf(maxPoints), null);
+						else
+						    add = gradebookIfc.addExternalAssessment(getCurrentSiteId(), "lesson-builder:comment:" + comment.getId(), null,
 								pageTitle + " Comments (item:" + comment.getId() + ")", Integer.valueOf(maxPoints), null, "Lesson Builder");
 						if(!add) {
 							setErrMessage(messageLocator.getMessage("simplepage.no-gradebook"));
@@ -5377,15 +5440,14 @@ public class SimplePageBean {
 					return "failure";
 				}
 				
-				// TODO: should update instead of delete/add
-				if(page.getGradebookId() != null && !page.getGradebookPoints().equals(points)) {
-					gradebookIfc.removeExternalAssessment(getCurrentSiteId(), page.getGradebookId());
-				}
-				
 				if(page.getGradebookId() == null || !page.getGradebookPoints().equals(points)) {
-					boolean add = gradebookIfc.addExternalAssessment(getCurrentSiteId(), "lesson-builder:page:" + page.getId(), null,
-							getPage(page.getPageId()).getTitle() + " Student Pages (item:" + page.getId() + ")", Integer.valueOf(maxPoints), null, "Lesson Builder");
+				 	boolean add = false;
+					if (page.getGradebookId() != null && !page.getGradebookPoints().equals(points))
+					    add = gradebookIfc.updateExternalAssessment(getCurrentSiteId(), "lesson-builder:page:" + page.getId(), null, getPage(page.getPageId()).getTitle() + " Student Pages (item:" + page.getId() + ")", Integer.valueOf(maxPoints), null);
+					else 
+					    add = gradebookIfc.addExternalAssessment(getCurrentSiteId(), "lesson-builder:page:" + page.getId(), null, getPage(page.getPageId()).getTitle() + " Student Pages (item:" + page.getId() + ")", Integer.valueOf(maxPoints), null, "Lesson Builder");
 					
+					System.out.println("added " + add);
 					if(!add) {
 						setErrMessage(messageLocator.getMessage("simplepage.no-gradebook"));
 					}else {
@@ -5411,14 +5473,14 @@ public class SimplePageBean {
 					return "failure";
 				}
 				
-				// todo: use update instead of delete, add
-				if(page.getAltGradebook() != null && !page.getAltPoints().equals(points)) {
-					gradebookIfc.removeExternalAssessment(getCurrentSiteId(), page.getAltGradebook());
-				}
-				
 				if(page.getAltGradebook() == null || !page.getAltPoints().equals(points)) {
 					String title = getPage(page.getPageId()).getTitle() + " Student Page Comments (item:" + page.getId() + ")";
-					boolean add = gradebookIfc.addExternalAssessment(getCurrentSiteId(), "lesson-builder:page-comment:" + page.getId(), null,
+					boolean add = false;
+					if(page.getAltGradebook() != null && !page.getAltPoints().equals(points))
+					    add = gradebookIfc.updateExternalAssessment(getCurrentSiteId(), "lesson-builder:page-comment:" + page.getId(), null,
+											title, points, null);
+					else
+					    add = gradebookIfc.addExternalAssessment(getCurrentSiteId(), "lesson-builder:page-comment:" + page.getId(), null,
 							title, points, null, "Lesson Builder");
 					// The assessment couldn't be added
 					if(!add) {

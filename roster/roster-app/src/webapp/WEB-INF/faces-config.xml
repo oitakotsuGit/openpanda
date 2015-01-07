@@ -272,6 +272,7 @@
             <renderer-class>org.sakaiproject.jsf.roster.HtmlSortHeaderRenderer</renderer-class>
         </renderer>
 
+
     </render-kit>
 
 
@@ -283,6 +284,11 @@
     <converter>
         <converter-id>groupTextTruncateConverter</converter-id>
         <converter-class>org.sakaiproject.jsf.roster.GroupTextTruncateConverter</converter-class>
+    </converter>
+    
+     <converter>
+        <converter-id>escapeLinkConverter</converter-id>
+        <converter-class>org.sakaiproject.jsf.roster.EscapeLinkConverter</converter-class>
     </converter>
 
 </faces-config>

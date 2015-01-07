@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/edu-services/tags/edu-services-1.2.3/cm-service/cm-impl/hibernate-impl/impl/src/test/org/sakaiproject/coursemanagement/test/CourseManagementAdministrationTest.java $
- * $Id: CourseManagementAdministrationTest.java 67139 2009-10-04 09:54:02Z david.horwitz@uct.ac.za $
+ * $URL: https://source.sakaiproject.org/svn/edu-services/branches/edu-services-1.2.x/cm-service/cm-impl/hibernate-impl/impl/src/test/org/sakaiproject/coursemanagement/test/CourseManagementAdministrationTest.java $
+ * $Id: CourseManagementAdministrationTest.java 129015 2013-08-23 17:57:12Z ottenhoff@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2006, 2007, 2008 The Sakai Foundation
@@ -527,8 +527,8 @@ public class CourseManagementAdministrationTest extends CourseManagementTestBase
 		cmAdmin.setCurrentAcademicSessions(Arrays.asList(new String[] {"nowTerm", "nextTerm"}));
 		academicSessions = cm.getCurrentAcademicSessions();
 		Assert.assertEquals(2, academicSessions.size());
-		Assert.assertEquals("nowTerm", academicSessions.get(0).getEid());
-		Assert.assertEquals("nextTerm", academicSessions.get(1).getEid());
+		Assert.assertEquals("nextTerm", academicSessions.get(0).getEid());
+		Assert.assertEquals("nowTerm", academicSessions.get(1).getEid());
 	}
 
 }

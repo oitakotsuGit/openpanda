@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/help/tags/sakai-2.9.3/help-component-shared/src/java/org/sakaiproject/component/app/help/model/GlossaryEntryBean.java $
+ * $URL: https://source.sakaiproject.org/svn/help/branches/sakai-2.9.x/help-component-shared/src/java/org/sakaiproject/component/app/help/model/GlossaryEntryBean.java $
  * $Id: GlossaryEntryBean.java 110562 2012-07-19 23:00:20Z ottenhoff@longsight.com $
  ***********************************************************************************
  *

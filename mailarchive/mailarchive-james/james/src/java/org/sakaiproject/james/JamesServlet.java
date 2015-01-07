@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/mailarchive/tags/mailarchive-2.9.3/mailarchive-james/james/src/java/org/sakaiproject/james/JamesServlet.java $
+ * $URL: https://source.sakaiproject.org/svn/mailarchive/branches/mailarchive-2.9.x/mailarchive-james/james/src/java/org/sakaiproject/james/JamesServlet.java $
  * $Id: JamesServlet.java 127752 2013-07-25 16:24:27Z ottenhoff@longsight.com $
  ***********************************************************************************
  *

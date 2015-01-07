@@ -22,6 +22,7 @@ package org.sakaiproject.component.app.messageforums;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -999,7 +1000,7 @@ public class MessageForumsMessageManagerImpl extends HibernateDaoSupport impleme
             	if (message.getTopic().getBaseForum()==null && message.getTopic().getOpenForum() != null) 	 
                     message.getTopic().setBaseForum((BaseForum) message.getTopic().getOpenForum()); 	 
 	 
-            	this.saveMessage(message, true, toolId, userId, context, true);
+            	this.saveMessage(message, false, toolId, userId, context, true);
 
         	if (isMessageFromForums)
         		eventTrackingService.post(eventTrackingService.newEvent(DiscussionForumService.EVENT_FORUMS_READ, getEventMessage(message, toolId, userId, context), false));
@@ -1034,7 +1035,7 @@ public class MessageForumsMessageManagerImpl extends HibernateDaoSupport impleme
 
     public void decrementForumSynopticToolInfo(String userId, String siteId, int numOfAttempts) {
     	try {
-    		SynopticMsgcntrManagerCover.decrementForumSynopticToolInfo(userId, siteId);
+    		SynopticMsgcntrManagerCover.decrementForumSynopticToolInfo(Arrays.asList(userId), siteId);
     	} catch (HibernateOptimisticLockingFailureException holfe) {
 
     		// failed, so wait and try again
@@ -1062,7 +1063,7 @@ public class MessageForumsMessageManagerImpl extends HibernateDaoSupport impleme
 
     public void incrementForumSynopticToolInfo(String userId, String siteId, int numOfAttempts) {
     	try {
-    		SynopticMsgcntrManagerCover.incrementForumSynopticToolInfo(userId, siteId);
+    		SynopticMsgcntrManagerCover.incrementForumSynopticToolInfo(Arrays.asList(userId), siteId);
     	} catch (HibernateOptimisticLockingFailureException holfe) {
 
     		// failed, so wait and try again
@@ -1090,7 +1091,7 @@ public class MessageForumsMessageManagerImpl extends HibernateDaoSupport impleme
 
     public void decrementMessagesSynopticToolInfo(String userId, String siteId, int numOfAttempts) {
     	try {
-    		SynopticMsgcntrManagerCover.decrementMessagesSynopticToolInfo(userId, siteId);
+    		SynopticMsgcntrManagerCover.decrementMessagesSynopticToolInfo(Arrays.asList(userId), siteId);
     	} catch (HibernateOptimisticLockingFailureException holfe) {
 
     		// failed, so wait and try again
@@ -1118,7 +1119,7 @@ public class MessageForumsMessageManagerImpl extends HibernateDaoSupport impleme
 
     public void incrementMessagesSynopticToolInfo(String userId, String siteId, int numOfAttempts) {
     	try {
-    		SynopticMsgcntrManagerCover.incrementMessagesSynopticToolInfo(userId, siteId);
+    		SynopticMsgcntrManagerCover.incrementMessagesSynopticToolInfo(Arrays.asList(userId), siteId);
     	} catch (HibernateOptimisticLockingFailureException holfe) {
 
     		// failed, so wait and try again

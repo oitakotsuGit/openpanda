@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/authz/tags/sakai-2.9.3/authz-tool/tool/src/java/org/sakaiproject/authz/tool/PermissionsHelperAction.java $
- * $Id: PermissionsHelperAction.java 94052 2011-06-24 10:13:01Z david.horwitz@uct.ac.za $
+ * $URL: https://source.sakaiproject.org/svn/authz/branches/sakai-2.9.x/authz-tool/tool/src/java/org/sakaiproject/authz/tool/PermissionsHelperAction.java $
+ * $Id: PermissionsHelperAction.java 308478 2014-04-22 17:23:13Z ottenhoff@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2005, 2006, 2008 The Sakai Foundation
@@ -509,6 +509,11 @@ public class PermissionsHelperAction extends VelocityPortletPaneledAction
 	public void doSave(RunData data)
 	{
 		SessionState state = ((JetspeedRunData) data).getPortletSessionState(((JetspeedRunData) data).getJs_peid());
+
+		if (!"POST".equals(data.getRequest().getMethod())) {
+			M_log.warn("PermissionsAction.doSave: user did not submit with a POST! IP=" + data.getRequest().getRemoteAddr());
+			return;
+		}
 
 		// only save the view realm's roles
 		AuthzGroup edit = (AuthzGroup) state.getAttribute(STATE_VIEW_REALM_EDIT);

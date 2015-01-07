@@ -1670,11 +1670,16 @@ public class DiscussionForumManagerImpl extends HibernateDaoSupport implements
   
   public boolean  getAnonRole()
   {
+	  return getAnonRole(getContextSiteId());
+  }
+  
+  public boolean  getAnonRole(String contextSiteId)
+  {
    LOG.debug("getAnonRoles()");
    AuthzGroup realm = null;
    try
     {
-      realm = AuthzGroupService.getAuthzGroup(getContextSiteId());      
+      realm = AuthzGroupService.getAuthzGroup(contextSiteId);      
       Role anon = realm.getRole(".anon");
      if (sessionManager.getCurrentSessionUserId()==null && anon != null && anon.getAllowedFunctions().contains("site.visit"))
       {
@@ -1800,30 +1805,19 @@ public class DiscussionForumManagerImpl extends HibernateDaoSupport implements
     {
       LOG.debug("getTopicAccess(DiscussionTopic" + t + ")");
     }
-    //SAK-12685 If topic's permission level name is "None", then can't access 
-    boolean nonePermission = false;
-    User user=userDirectoryService.getCurrentUser();
-    String role=AuthzGroupService.getUserRole(user.getId(), getContextSiteId());
-    Set membershipItemSet = t.getMembershipItemSet();
-    Iterator it = membershipItemSet.iterator();
-    while(it.hasNext()) {
-    	DBMembershipItem membershipItem =(DBMembershipItem)it.next();
-    	String roleName = membershipItem.getName();
-    	String permissionName = membershipItem.getPermissionLevelName();
-    	if(roleName.equals(role) && permissionName.equals(PermissionLevelManager.PERMISSION_LEVEL_NAME_NONE)){
-    		nonePermission = true;
-    	}    	
-    }   
 
-    if ((t.getDraft().equals(Boolean.FALSE) && !nonePermission && 
-            t.getAvailability() != null && t.getAvailability())
-    		|| isInstructor()
-            || securityService.isSuperUser()
-            || isTopicOwner(t))
-    {
+    // SAK-27570: Return early instead of looping through lots of database records
+    if (isInstructor() || securityService.isSuperUser() || isTopicOwner(t)) {
       return true;
     }
-    return false;
+    else if (t.getDraft().equals(Boolean.TRUE) || t.getAvailability() == null || !t.getAvailability()) {
+    	return false;
+    }
+
+    //SAK-12685 If topic's permission level name is "None", then can't access 
+    User user=userDirectoryService.getCurrentUser();
+    String role=AuthzGroupService.getUserRole(user.getId(), getContextSiteId());
+    return !forumManager.doesRoleHavePermissionInTopic(t.getId(), role, PermissionLevelManager.PERMISSION_LEVEL_NAME_NONE);
   }
 
   /**

@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/sam/tags/samigo-2.9.3/samigo-hibernate/src/java/org/sakaiproject/tool/assessment/data/dao/grading/ItemGradingData.java $
+ * $URL: https://source.sakaiproject.org/svn/sam/branches/samigo-2.9.x/samigo-hibernate/src/java/org/sakaiproject/tool/assessment/data/dao/grading/ItemGradingData.java $
  * $Id: ItemGradingData.java 128514 2013-08-15 14:43:49Z ottenhoff@longsight.com $
  ***********************************************************************************
  *

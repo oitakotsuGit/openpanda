@@ -1,4 +1,4 @@
-<!-- $Id: chef_assignments_instructor_new_edit_assignment.vm 125640 2013-06-11 22:13:24Z ottenhoff@longsight.com $ -->
+<!-- $Id: chef_assignments_instructor_new_edit_assignment.vm 308123 2014-04-11 17:25:37Z ottenhoff@longsight.com $ -->
 <!-- start: chef_assignments_instructor_new_edit_assignment.vm  -->
 ##<!-- $Header: Exp $ -->
 ## Assignments - Instructor new Assignment view
@@ -453,7 +453,7 @@ $(document).ready(function() {
 		#end
 			<div class="longtext">
 				<label for="new_assignment_instructions" class="block">
-					$tlang.getString("gen.assinf")
+					<span class="reqStar">*</span> $tlang.getString("gen.assinf")
 				</label>
 				<table border="0" style="margin:0"><tr><td>
 					<textarea name="$name_Description" id="$name_Description" cols="80" rows="30" wrap="virtual">$validator.escapeHtmlFormattedTextarea($value_Description)</textarea>
@@ -605,7 +605,6 @@ $(document).ready(function() {
 						</div>
 						#end
 					</div>
-					</div>
 				</div>
 			</div>
 		#end
@@ -727,7 +726,7 @@ $(document).ready(function() {
 								#elseif($!gradebookAssignmentsSelectedDisabled.get($gaId).equals("selected")) 
 									selected="selected"
 								#end>
-									$!gradebookAssignmentsLabel.get($gaId)
+									$validator.escapeHtml($!gradebookAssignmentsLabel.get($gaId))
 							</option>
 						#end
 					</select>

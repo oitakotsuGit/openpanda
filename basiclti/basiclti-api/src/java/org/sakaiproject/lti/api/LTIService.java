@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/basiclti/tags/basiclti-2.1.1/basiclti-api/src/java/org/sakaiproject/lti/api/LTIService.java $
- * $Id: LTIService.java 120996 2013-03-09 19:56:04Z csev@umich.edu $
+ * $URL: https://source.sakaiproject.org/svn/basiclti/branches/basiclti-2.1.x/basiclti-api/src/java/org/sakaiproject/lti/api/LTIService.java $
+ * $Id: LTIService.java 128962 2013-08-23 01:23:11Z csev@umich.edu $
  ***********************************************************************************
  *
  * Copyright (c) 2011 The Sakai Foundation
@@ -54,60 +54,6 @@ public interface LTIService {
 	 * @return
 	 */
 	public boolean isMaintain();
-
-	/**
-	 * 
-	 * @return
-	 */
-	public String[] getMappingModel();
-
-	/**
-	 * 
-	 * @param newProps
-	 * @return
-	 */
-	public Object insertMapping(Properties newProps);
-
-	/**
-	 * 
-	 * @param key
-	 * @return
-	 */
-	public Map<String, Object> getMapping(Long key);
-
-	/**
-	 * 
-	 * @param key
-	 * @return
-	 */
-	public boolean deleteMapping(Long key);
-
-	/**
-	 * 
-	 * @param key
-	 * @param newProps
-	 * @return
-	 */
-	public Object updateMapping(Long key, Map<String, Object> newProps);
-
-	/**
-	 * 
-	 * @param key
-	 * @param newProps
-	 * @return
-	 */
-	public Object updateMapping(Long key, Properties newProps);
-
-	/**
-	 * 
-	 * @param search
-	 * @param order
-	 * @param first
-	 * @param last
-	 * @return
-	 */
-	public List<Map<String, Object>> getMappings(String search, String order, int first,
-			int last);
 
 	/**
 	 * 
@@ -231,13 +177,6 @@ public interface LTIService {
 	 * @return
 	 */
 	public List<Map<String, Object>> getToolsDao(String search, String order, int first, int last, String siteId);
-
-	/**
-	 * 
-	 * @param url
-	 * @return
-	 */
-	public String checkMapping(String url);
 
 	/**
 	 * 
@@ -466,16 +405,6 @@ public interface LTIService {
 		"xmlimport:text:hidden=true:maxlength=16384",
 		"splash:textarea:label=bl_splash:rows=5:cols=25:maxlength=4096",
 		"created_at:autodate", 
-		"updated_at:autodate" };
-
-	/**
-	 * 
-	 */
-	static String[] MAPPING_MODEL = { "id:key",
-		"matchpattern:url:label=bl_matchpattern:required=true:maxlength=255",
-		"launch:url:label=bl_launchurl:required=true:maxlength=255",
-		"note:text:label=bl_note:maxlength=255", 
-		"created_at:autodate",
 		"updated_at:autodate" };
 
 	/** Static constants for data fields */

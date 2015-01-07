@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/sections/tags/sakai-2.9.3/sections-app/src/java/org/sakaiproject/tool/section/jsf/backingbean/OptionsBean.java $
- * $Id: OptionsBean.java 93246 2011-05-25 11:32:14Z david.horwitz@uct.ac.za $
+ * $URL: https://source.sakaiproject.org/svn/sections/branches/sakai-2.9.x/sections-app/src/java/org/sakaiproject/tool/section/jsf/backingbean/OptionsBean.java $
+ * $Id: OptionsBean.java 131975 2013-11-26 18:40:15Z ottenhoff@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2005, 2006, 2007, 2008 The Sakai Foundation
@@ -186,7 +186,7 @@ public class OptionsBean extends CourseDependentBean implements Serializable {
 		if (openDate == null) {
 			return null;
 		} else {
-			SimpleDateFormat sd = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a");
+			SimpleDateFormat sd = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a");
 			return sd.format(openDate.getTime());
 		}
 	}
@@ -195,7 +195,7 @@ public class OptionsBean extends CourseDependentBean implements Serializable {
 		if (date==null || date.length()==0) {
 			this.openDate=null;
 		}else{
-			SimpleDateFormat sd = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a");
+			SimpleDateFormat sd = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a");
 			Calendar p = Calendar.getInstance();
 			try {
 				p.setTime(sd.parse(date));

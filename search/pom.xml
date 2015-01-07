@@ -4,19 +4,19 @@
     <parent>
         <groupId>org.sakaiproject</groupId>
         <artifactId>master</artifactId>
-        <version>2.9.3</version>
+        <version>2.9-SNAPSHOT</version>
 		<relativePath>../master/pom.xml</relativePath>
     </parent>
     <name>Sakai Search Project</name>
     <groupId>org.sakaiproject.search</groupId>
     <artifactId>search</artifactId>
-    <version>1.4.3</version>
+    <version>1.4.4-SNAPSHOT</version>
     <packaging>pom</packaging>
     
     <scm>
-        <connection>scm:svn:https://source.sakaiproject.org/svn/search/tags/search-1.4.3</connection>
-        <developerConnection>scm:svn:https://source.sakaiproject.org/svn/search/tags/search-1.4.3</developerConnection>
-        <url>https://source.sakaiproject.org/svn/search/tags/search-1.4.3</url>
+        <connection>scm:svn:https://source.sakaiproject.org/svn/search/branches/search-1.4.x</connection>
+        <developerConnection>scm:svn:https://source.sakaiproject.org/svn/search/branches/search-1.4.x</developerConnection>
+        <url>https://source.sakaiproject.org/svn/search/branches/search-1.4.x</url>
     </scm>
     
     <profiles>
@@ -25,13 +25,13 @@
             <modules>
                 <module>search-api/api</module>
                 <module>search-help</module>
+                <module>search-test</module>
                 <module>search-impl/impl</module>
                 <module>search-impl/pack</module>
                 <module>search-integration-test</module>
                 <module>search-model</module>
                 <module>search-util</module>
                 <module>search-tool/tool</module>
-                <module>search-test</module>
             </modules>
         </profile>
         <profile>
@@ -42,13 +42,13 @@
             <modules>
                 <module>search-api/api</module>
                 <module>search-help</module>
+                <module>search-test</module>
                 <module>search-impl/impl</module>
                 <module>search-impl/pack</module>
                 <module>search-integration-test</module>
                 <module>search-model</module>
                 <module>search-util</module>
                 <module>search-tool/tool</module>
-                <module>search-test</module>
                 <module>search-assembly</module>
             </modules>
         </profile>

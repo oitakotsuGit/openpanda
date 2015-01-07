@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/assignment/tags/assignment-2.9.3/assignment-impl/impl/src/java/org/sakaiproject/assignment/taggable/impl/AssignmentItemImpl.java $
+ * $URL: https://source.sakaiproject.org/svn/assignment/branches/assignment-2.9.x/assignment-impl/impl/src/java/org/sakaiproject/assignment/taggable/impl/AssignmentItemImpl.java $
  * $Id: AssignmentItemImpl.java 75499 2010-03-31 15:22:25Z zqian@umich.edu $
  ***********************************************************************************
  *

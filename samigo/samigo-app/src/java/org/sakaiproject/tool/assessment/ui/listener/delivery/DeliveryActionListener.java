@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/sam/tags/samigo-2.9.3/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/delivery/DeliveryActionListener.java $
- * $Id: DeliveryActionListener.java 128514 2013-08-15 14:43:49Z ottenhoff@longsight.com $
+ * $URL: https://source.sakaiproject.org/svn/sam/branches/samigo-2.9.x/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/delivery/DeliveryActionListener.java $
+ * $Id: DeliveryActionListener.java 309680 2014-05-20 18:44:11Z ktsao@stanford.edu $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -97,7 +97,7 @@ import org.sakaiproject.util.ResourceLoader;
  * <p>Purpose:  this module creates the lists of published assessments for the select index
  * <p>Description: Sakai Assessment Manager</p>
  * @author Ed Smiley
- * @version $Id: DeliveryActionListener.java 128514 2013-08-15 14:43:49Z ottenhoff@longsight.com $
+ * @version $Id: DeliveryActionListener.java 309680 2014-05-20 18:44:11Z ktsao@stanford.edu $
  */
 
 public class DeliveryActionListener
@@ -1086,7 +1086,7 @@ public class DeliveryActionListener
       itemBean.setFeedback(item.getGeneralItemFeedback());
     }
  
-    else if ( itemBean.getMaxPoints()>0) {
+    else if (itemBean.getMaxPoints()>0 && !item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT)) {
         // 
         // This is not really needed because the next Else{} will cover all other question types. 
     	// However it's much cheaper to check scores rather than looping through and check each answers. 

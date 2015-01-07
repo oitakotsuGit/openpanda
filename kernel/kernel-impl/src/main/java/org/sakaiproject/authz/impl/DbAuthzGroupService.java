@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/kernel/tags/kernel-1.3.3/kernel-impl/src/main/java/org/sakaiproject/authz/impl/DbAuthzGroupService.java $
- * $Id: DbAuthzGroupService.java 127152 2013-07-17 18:13:24Z arwhyte@umich.edu $
+ * $URL: https://source.sakaiproject.org/svn/kernel/branches/kernel-1.3.x/kernel-impl/src/main/java/org/sakaiproject/authz/impl/DbAuthzGroupService.java $
+ * $Id: DbAuthzGroupService.java 310299 2014-06-18 13:45:39Z matthew@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2003, 2004, 2005, 2006, 2006 2007, 2007, 2008 Sakai Foundation
@@ -2483,8 +2483,8 @@ public abstract class DbAuthzGroupService extends BaseAuthzGroupService implemen
 				{
 					fields[1] = uar.userId;
 					fields[2] = getValueForSubquery(dbAuthzGroupSql.getInsertRealmRoleGroup3_2Sql(), uar.role);
-					fields[3] = uar.active;
-					fields[4] = uar.provided;
+					fields[3] = uar.active ? "1" : "0"; // KNL-1099
+					fields[4] = uar.provided ? "1" : "0"; // KNL-1099
 
 					m_sql.dbWrite(sql, fields);
 				}

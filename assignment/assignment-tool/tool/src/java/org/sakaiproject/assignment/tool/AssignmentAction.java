@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/assignment/tags/assignment-2.9.3/assignment-tool/tool/src/java/org/sakaiproject/assignment/tool/AssignmentAction.java $
- * $Id: AssignmentAction.java 121841 2013-03-27 16:27:25Z arwhyte@umich.edu $
+ * $URL: https://source.sakaiproject.org/svn/assignment/branches/assignment-2.9.x/assignment-tool/tool/src/java/org/sakaiproject/assignment/tool/AssignmentAction.java $
+ * $Id: AssignmentAction.java 314486 2014-10-16 15:47:59Z zqian@umich.edu $
  ***********************************************************************************
  *
  *
@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -1318,6 +1319,8 @@ public class AssignmentAction extends PagedResourceActionII
 		if (AssignmentService.getAllowSubmitByInstructor() && student != null) {
 			List<String> submitterIds = AssignmentService.getSubmitterIdList(searchFilterOnly.toString(), allOrOneGroup, search, currentAssignmentReference, contextString);
 			if (submitterIds != null && !submitterIds.isEmpty() && submitterIds.contains(student.getId())) {
+				// we want to come back to the instructor view page
+				state.setAttribute(FROM_VIEW, MODE_INSTRUCTOR_VIEW_STUDENTS_ASSIGNMENT);
 				context.put("student",student);
 			}
 		}
@@ -2157,7 +2160,18 @@ public class AssignmentAction extends PagedResourceActionII
 			String gradebookItem = StringUtils.trimToNull(a.getProperties().getProperty(AssignmentService.PROP_ASSIGNMENT_ASSOCIATE_GRADEBOOK_ASSIGNMENT));
 			if (gradebookItem != null)
 			{
-				gAssignmentIdTitles.put(gradebookItem, a.getTitle());
+				String associatedAssignmentTitles="";
+				if (gAssignmentIdTitles.containsKey(gradebookItem))
+				{
+					// get the current associated assignment titles first
+					associatedAssignmentTitles=gAssignmentIdTitles.get(gradebookItem) + ", ";
+				}
+				
+				// append the current assignment title
+				associatedAssignmentTitles += a.getTitle();
+				
+				// put the current associated assignment titles back
+				gAssignmentIdTitles.put(gradebookItem, associatedAssignmentTitles);
 			}
 		}
 		
@@ -2181,12 +2195,7 @@ public class AssignmentAction extends PagedResourceActionII
 					if (gAssignmentIdTitles.containsKey(gaId))
 					{
 						String assignmentTitle = gAssignmentIdTitles.get(gaId);
-						if (aTitle == null || !aTitle.equals(assignmentTitle))
-						{
-							// this gradebook item has been associated with other assignment, not selectable
-							status = "disabled";
-						}
-						else if (aTitle != null && aTitle.equals(assignmentTitle))
+						if (aTitle != null && aTitle.equals(assignmentTitle))
 						{
 							// this gradebook item is associated with current assignment, make it selected
 							status = "selected";
@@ -3799,9 +3808,16 @@ public class AssignmentAction extends PagedResourceActionII
 
 		// reset the view assignment
 		state.setAttribute(VIEW_ASSIGNMENT_ID, "");
-
-		// back to the student list view of assignments
-		state.setAttribute(STATE_MODE, MODE_LIST_ASSIGNMENTS);
+		
+		String fromView = (String) state.getAttribute(FROM_VIEW);
+		if (MODE_INSTRUCTOR_VIEW_STUDENTS_ASSIGNMENT.equals(fromView)) {
+			state.setAttribute(STATE_MODE, MODE_INSTRUCTOR_VIEW_STUDENTS_ASSIGNMENT);
+		}
+		else {
+			// back to the student list view of assignments
+			state.setAttribute(STATE_MODE, MODE_LIST_ASSIGNMENTS);
+		}
+		
 
 	} // doCancel_show_submission
 
@@ -4117,6 +4133,10 @@ public class AssignmentAction extends PagedResourceActionII
 			if (feedbackCommentString != null)
 			{
 				sEdit.setFeedbackComment(feedbackCommentString);
+			} 
+			else 
+			{
+				sEdit.setFeedbackComment("");
 			}
 
 			// the instructor inline feedback
@@ -4256,6 +4276,8 @@ public class AssignmentAction extends PagedResourceActionII
 			User submitter = null;
 			String studentId = params.get("submit_on_behalf_of");
 			if (studentId != null && !studentId.equals("-1")) {
+				// SAK-23817: return to the Assignments List by Student
+				state.setAttribute(FROM_VIEW, MODE_INSTRUCTOR_VIEW_STUDENTS_ASSIGNMENT);
 				try {
 					submitter = u;
 					u = UserDirectoryService.getUser(studentId);
@@ -4566,7 +4588,14 @@ public class AssignmentAction extends PagedResourceActionII
 	public void doConfirm_assignment_submission(RunData data)
 	{
 		SessionState state = ((JetspeedRunData) data).getPortletSessionState(((JetspeedRunData) data).getJs_peid());
-		state.setAttribute(STATE_MODE, MODE_LIST_ASSIGNMENTS);
+		// SAK-23817 if the instructor submitted on behalf of the student, go back to Assignment List by Student
+		String fromView = (String) state.getAttribute(FROM_VIEW);
+		if (MODE_INSTRUCTOR_VIEW_STUDENTS_ASSIGNMENT.equals(fromView)) {
+			state.setAttribute(STATE_MODE, MODE_INSTRUCTOR_VIEW_STUDENTS_ASSIGNMENT);
+		}
+		else {
+			state.setAttribute(STATE_MODE, MODE_LIST_ASSIGNMENTS);
+		}
 		state.setAttribute(ATTACHMENTS, EntityManager.newReferenceList());
 	}
 	/**
@@ -6566,8 +6595,8 @@ public class AssignmentAction extends PagedResourceActionII
 		}
 		catch (PermissionException e)
 		{
-			addAlert(state, rb.getString("youarenot1"));
-			M_log.warn(this + ":commitAssignmentEdit " + rb.getString("youarenot1") + e.getMessage());
+			addAlert(state, rb.getString("youarenot_addAssignmentContent"));
+			M_log.warn(this + ":commitAssignmentEdit " + rb.getString("youarenot_addAssignmentContent") + e.getMessage());
 		}
 
 		if (state.getAttribute(STATE_MESSAGE) == null)
@@ -8819,7 +8848,7 @@ public class AssignmentAction extends PagedResourceActionII
 
 		if (state.getAttribute(STUDENT_LIST_SHOW_TABLE) == null)
 		{
-			state.setAttribute(STUDENT_LIST_SHOW_TABLE, new HashSet());
+			state.setAttribute(STUDENT_LIST_SHOW_TABLE, new ConcurrentSkipListSet());
 		}
 
 		if (state.getAttribute(ATTACHMENTS_MODIFIED) == null)
@@ -10935,7 +10964,9 @@ public class AssignmentAction extends PagedResourceActionII
 			}
 			if (invalid)
 			{
-				addAlert(state, rb.getString("plesuse0"));
+				// -------- SAK-24199 (SAKU-274) by Shoji Kajita
+				addAlert(state, rb.getFormattedMessage("plesuse0", new Object []{grade}));
+				// --------
 			}
 		}
 	}
@@ -11684,7 +11715,7 @@ public class AssignmentAction extends PagedResourceActionII
 		if(fileFromUpload == null)
 		{
 			// "The user submitted a file to upload but it was too big!"
-			addAlert(state, rb.getFormattedMessage("uploadall.size", new Object[]{max_file_size_mb}));
+			addAlert(state, rb.getFormattedMessage("size.exceeded", new Object[]{max_file_size_mb}));
 		}
 		else 
 		{	
@@ -11904,6 +11935,10 @@ public class AssignmentAction extends PagedResourceActionII
 							        				if (gradeType == Assignment.SCORE_GRADE_TYPE)
 							        				{
 							        					validPointGrade(state, itemString);
+							        				} // SAK-24199 - Applied patch provided with a few additional modifications.
+							        				else if (gradeType == Assignment.PASS_FAIL_GRADE_TYPE)
+							        				{
+							        					itemString = validatePassFailGradeValue(state, itemString);
 							        				}
 							        				else
 							        				{
@@ -13243,4 +13278,32 @@ public class AssignmentAction extends PagedResourceActionII
 		String lOptions = ServerConfigurationService.getString("assignment.letterGradeOptions", "A+,A,A-,B+,B,B-,C+,C,C-,D+,D,D-,E,F");
 		context.put("letterGradeOptions", StringUtil.split(lOptions, ","));
 	}
+    /**
+     * Validates the ungraded/pass/fail grade values provided in the upload file are valid.
+     * Values must be present in the appropriate language property file.
+     * @param state
+     * @param itemString
+     * @return one of the valid values or the original value entered by the user
+     */
+    private String validatePassFailGradeValue(SessionState state, String itemString)
+    {
+	    // -------- SAK-24199 (SAKU-274) by Shoji Kajita
+		if (itemString.equalsIgnoreCase(rb.getString("pass"))) 
+		{
+			itemString = "Pass";
+		} 
+		else if (itemString.equalsIgnoreCase(rb.getString("fail"))) 
+		{
+			itemString = "Fail";
+		} 
+		else if (itemString.equalsIgnoreCase(rb.getString("ungra")) || itemString.isEmpty()) {
+			itemString = "Ungraded";
+		}
+		else { // Not one of the expected values. Display error message.
+			addAlert(state, rb.getFormattedMessage("plesuse0", new Object []{itemString}));
+		}
+		// --------
+    	
+    	return itemString;
+    }
 }	

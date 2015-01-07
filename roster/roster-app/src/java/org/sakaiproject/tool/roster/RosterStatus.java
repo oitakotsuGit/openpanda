@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/roster/tags/sakai-2.9.3/roster-app/src/java/org/sakaiproject/tool/roster/RosterStatus.java $
+ * $URL: https://source.sakaiproject.org/svn/roster/branches/sakai-2.9.x/roster-app/src/java/org/sakaiproject/tool/roster/RosterStatus.java $
  * $Id: RosterStatus.java 127130 2013-07-17 16:46:34Z arwhyte@umich.edu $
  ***********************************************************************************
  *

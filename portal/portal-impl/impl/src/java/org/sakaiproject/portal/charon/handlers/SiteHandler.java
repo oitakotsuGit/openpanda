@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/portal/tags/portal-base-2.9.3/portal-impl/impl/src/java/org/sakaiproject/portal/charon/handlers/SiteHandler.java $
- * $Id: SiteHandler.java 127164 2013-07-17 18:44:48Z ottenhoff@longsight.com $
+ * $URL: https://source.sakaiproject.org/svn/portal/branches/portal-2.9.x/portal-impl/impl/src/java/org/sakaiproject/portal/charon/handlers/SiteHandler.java $
+ * $Id: SiteHandler.java 130479 2013-10-15 17:27:14Z ottenhoff@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2003, 2004, 2005, 2006, 2007, 2008 The Sakai Foundation
@@ -63,11 +63,12 @@ import org.sakaiproject.user.cover.PreferencesService;
 import org.sakaiproject.user.cover.UserDirectoryService;
 import org.sakaiproject.util.Web;
 import org.sakaiproject.util.ResourceLoader;
+import org.sakaiproject.portal.util.URLUtils;
 
 /**
  * @author ieb
  * @since Sakai 2.4
- * @version $Rev: 127164 $
+ * @version $Rev: 130479 $
  */
 public class SiteHandler extends WorksiteHandler
 {
@@ -232,7 +233,7 @@ public class SiteHandler extends WorksiteHandler
 				ss.setRequest(req);
 				ss.setToolContextPath(toolContextPath);
 				portalService.setStoredState(ss);
-				portal.doLogin(req, res, session, req.getPathInfo(), false);
+				portal.doLogin(req, res, session, URLUtils.getSafePathInfo(req), false);
 			}
 			else
 			{
@@ -244,7 +245,7 @@ public class SiteHandler extends WorksiteHandler
 		// If the page is the mutable page name then look up the 
 		// real page id from the tool name.
 		if (mutablePagename.equalsIgnoreCase(pageId)) {
-			pageId = findPageIdFromToolId(pageId, req.getPathInfo(), site);
+			pageId = findPageIdFromToolId(pageId, URLUtils.getSafePathInfo(req), site);
 		}
 		
 		// clear the last page visited
@@ -311,7 +312,7 @@ public class SiteHandler extends WorksiteHandler
 		}catch(Exception e){}
 //End - log the visit into SAKAI_EVENT		
 		rcontext.put("currentUrlPath", Web.serverUrl(req) + req.getContextPath()
-				+ req.getPathInfo());
+				+ URLUtils.getSafePathInfo(req));
 
 		// end the response
 		if (doFrameTop)

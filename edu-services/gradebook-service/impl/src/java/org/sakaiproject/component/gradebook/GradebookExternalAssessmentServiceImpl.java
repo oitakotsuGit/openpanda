@@ -1,6 +1,6 @@
 /**********************************************************************************
 *
-* $Id: GradebookExternalAssessmentServiceImpl.java 127788 2013-07-25 18:51:54Z ottenhoff@longsight.com $
+* $Id: GradebookExternalAssessmentServiceImpl.java 311123 2014-07-24 16:44:59Z ottenhoff@longsight.com $
 *
 ***********************************************************************************
 *
@@ -652,7 +652,9 @@ public class GradebookExternalAssessmentServiceImpl extends BaseHibernateManager
 		}
 
 		for (ExternalAssignmentProvider provider : getExternalAssignmentProviders().values()) {
-			Map<String, List<String>> externals = provider.getAllExternalAssignments(gradebookUid, studentIds);
+			//SAK-24407 - Some tools modify this set so we can't pass it. I considered making it an unmodifableCollection but that would require changing a number of tools
+			Set studentIdsCopy = new HashSet(studentIds);
+			Map<String, List<String>> externals = provider.getAllExternalAssignments(gradebookUid, (studentIdsCopy));
 			for (String studentId : externals.keySet()) {
 				if (visible.containsKey(studentId)) {
 					visible.get(studentId).addAll(externals.get(studentId));

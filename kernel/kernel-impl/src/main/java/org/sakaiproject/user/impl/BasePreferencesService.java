@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/kernel/tags/kernel-1.3.3/kernel-impl/src/main/java/org/sakaiproject/user/impl/BasePreferencesService.java $
+ * $URL: https://source.sakaiproject.org/svn/kernel/branches/kernel-1.3.x/kernel-impl/src/main/java/org/sakaiproject/user/impl/BasePreferencesService.java $
  * $Id: BasePreferencesService.java 90981 2011-03-31 09:11:03Z david.horwitz@uct.ac.za $
  ***********************************************************************************
  *
