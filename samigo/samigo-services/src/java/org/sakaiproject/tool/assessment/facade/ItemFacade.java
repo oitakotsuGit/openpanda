@@ -1,5 +1,5 @@
 /* $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-services/src/java/org/sakaiproject/tool/assessment/facade/ItemFacade.java $
- * $Id: ItemFacade.java 311533 2014-08-04 14:28:18Z enietzel@anisakai.com $
+ * $Id: ItemFacade.java 319083 2015-05-20 22:24:13Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -56,7 +56,7 @@ import org.sakaiproject.tool.assessment.services.PersistenceService;
  * agreement.
  */
 public class ItemFacade implements Serializable, ItemDataIfc, Comparable<ItemDataIfc> {
-  private static Log log = LogFactory.getLog(ItemFacade.class);
+  private Log log = LogFactory.getLog(ItemFacade.class);
 
   private static final long serialVersionUID = 7526471155622776147L;
   protected org.osid.assessment.Item item;
@@ -918,39 +918,6 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable<ItemDat
     return this.data.getText();
   }
 
-  /**
-   * Utility method.
-   * Obeys the semantics and rules of the getText() but removes
-   * HTML tags.
-   *
-   * @see getText()
-   * @return text of question, removes
-   * HTML tags.
-   * @throws DataFacadeException
-   */
-  public String getTextHtmlStripped() throws DataFacadeException
-  {
-    String regexHTMLTag = "\\<.*?\\>";
-    String regexLineBreaks = "(\\r|\\n)";
-    return getText().replaceAll(regexLineBreaks,"").replaceAll(regexHTMLTag," ");
-  }
-
-  /**
-   * Utility method.
-   * Obeys the semantics and rules of the getText() but removes
-   * HTML tags. The differency of getTextHtmlStripped() is this
-   * API doesn't replace HTMLtags by white space.
-   *
-   * @see getText()
-   * @return text of question, removes
-   * HTML tags.
-   * @throws DataFacadeException
-   */
-  public String getTextHtmlStrippedAll() throws DataFacadeException
-  {
-    String regex = "\\<.*?\\>|\\n|\\r\\n";
-    return getText().replaceAll(regex,"");
-  }
   
   public ArrayList getItemTextArray() {
     ArrayList list = new ArrayList();

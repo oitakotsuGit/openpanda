@@ -111,6 +111,7 @@ import org.sakaiproject.user.cover.UserDirectoryService;
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.util.ResourceLoader;
 import org.sakaiproject.util.FormattedText;
+import org.sakaiproject.util.Web;
 import org.sakaiproject.portal.util.CSSUtils;
 
 import uk.org.ponder.localeutil.LocaleGetter;
@@ -199,13 +200,13 @@ public class ShowPageProducer implements ViewComponentProducer, DefaultView, Nav
     // mp4 means it plays with the flash player if HTML5 doesn't work.
     // flv is also played with the flash player, but it doesn't get a backup <OBJECT> inside the player
     // Strobe claims to handle MOV files as well, but I feel safer passing them to quicktime, though that requires Quicktime installation
-        private static final String DEFAULT_MP4_TYPES = "video/mp4,video/m4v,audio/mpeg";
+        private static final String DEFAULT_MP4_TYPES = "video/mp4,video/m4v,audio/mpeg,audio/mp3";
         private static String[] mp4Types = null;
-        private static final String DEFAULT_HTML5_TYPES = "video/mp4,video/m4v,video/webm,video/ogg,audio/mpeg,audio/ogg,audio/wav,audio/x-wav,audio/webm,audio/ogg,audio/mp4,audio/aac";
+        private static final String DEFAULT_HTML5_TYPES = "video/mp4,video/m4v,video/webm,video/ogg,audio/mpeg,audio/ogg,audio/wav,audio/x-wav,audio/webm,audio/ogg,audio/mp4,audio/aac,audio/mp3";
     // jw can also handle audio: audio/mp4,audio/mpeg,audio/ogg
         private static String[] html5Types = null;
     // almost ISO. Full ISO isn't available until Java 7. this uses -0400 where ISO uses -04:00
-        SimpleDateFormat isoDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+	SimpleDateFormat isoDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
     // WARNING: this must occur after memoryService, for obvious reasons. 
     // I'm doing it this way because it doesn't appear that Spring can do this kind of initialization
@@ -213,7 +214,6 @@ public class ShowPageProducer implements ViewComponentProducer, DefaultView, Nav
     // an init method
 	private static Cache urlCache = memoryService.newCache("org.sakaiproject.lessonbuildertool.tool.producers.ShowPageProducer.url.cache");
         String browserString = ""; // set by checkIEVersion;
-
     	public static int majorVersion = getMajorVersion();
 
 	protected static final int DEFAULT_EXPIRATION = 10 * 60;
@@ -234,13 +234,11 @@ public class ShowPageProducer implements ViewComponentProducer, DefaultView, Nav
 		}
 	    }
 
-	    System.out.println("major version " + major);
-
 	    return major;
 
 	}
 
-	static final String ICONSTYLE = "\n.portletTitle .action img {\n        background: url({}/help.gif) center right no-repeat;\n}\n.portletTitle .action img:hover, .portletTitle .action img:focus {\n        background: url({}/help_h.gif) center right no-repeat\n}\n.portletTitle .title img {\n        background: url({}/reload.gif) center left no-repeat;\n}\n.portletTitle .title img:hover, .portletTitle .title img:focus {\n        background: url({}/reload_h.gif) center left no-repeat\n}\n";
+	static final String ICONSTYLE = "\n.portletTitle .action .help img {\n        background: url({}/help.gif) center right no-repeat !important;\n}\n.portletTitle .action .help img:hover, .portletTitle .action .help img:focus {\n        background: url({}/help_h.gif) center right no-repeat\n}\n.portletTitle .title img {\n        background: url({}/reload.gif) center left no-repeat;\n}\n.portletTitle .title img:hover, .portletTitle .title img:focus {\n        background: url({}/reload_h.gif) center left no-repeat\n}\n";
 
 	public String getViewID() {
 		return VIEW_ID;
@@ -409,6 +407,9 @@ public class ShowPageProducer implements ViewComponentProducer, DefaultView, Nav
 		boolean canSeeAll = simplePageBean.canSeeAll();  // always on if caneditpage
 		
 		boolean cameFromGradingPane = params.getPath().equals("none");
+
+		TimeZone localtz = timeService.getLocalTimeZone();
+		isoDateFormat.setTimeZone(localtz);
 
 		if (!canReadPage) {
 			// this code is intended for the situation where site permissions
@@ -810,6 +811,8 @@ public class ShowPageProducer implements ViewComponentProducer, DefaultView, Nav
 		ToolSession toolSession = SessionManager.getCurrentToolSession();
 		String helpurl = (String)toolSession.getAttribute("sakai-portal:help-action");
 		String reseturl = (String)toolSession.getAttribute("sakai-portal:reset-action");
+		Placement placement = toolManager.getCurrentPlacement();
+
 		String skinName = null;
 		String skinRepo = null;
 		String iconBase = null;
@@ -844,6 +847,22 @@ public class ShowPageProducer implements ViewComponentProducer, DefaultView, Nav
 			         messageLocator.getMessage("simplepage.help-button")));
 		    UIOutput.make(tofill, (pageItem.getPageId() == 0 ? "helpnewwindow" : "helpnewwindow2"), 
 				  messageLocator.getMessage("simplepage.opens-in-new"));
+		    UILink.make(tofill, "directurl").
+			decorate(new UIFreeAttributeDecorator("rel", "#Main" + Web.escapeJavascript(placement.getId()) + "_directurl")).
+			decorate(new UIFreeAttributeDecorator("title", messageLocator.getMessage("simplepage.direct-link")));
+		    UIOutput.make(tofill, "directurl-div").
+			decorate(new UIFreeAttributeDecorator("id", "Main" + Web.escapeJavascript(placement.getId()) + "_directurl"));
+		    // in general 2.9 doesn't have the url shortener
+		    if (majorVersion >= 10) {
+			UIOutput.make(tofill, "directurl-input").
+			    decorate(new UIFreeAttributeDecorator("onclick", "toggleShortUrlOutput('" + myUrl() + "/portal/directtool/" + placement.getId() + "/', this, 'Main" + Web.escapeJavascript(placement.getId()) + "_urlholder');"));
+			UIOutput.make(tofill, "directurl-shorten", messageLocator.getMessage("simplepage.short-url"));
+		    }
+		    UIOutput.make(tofill, "directurl-textarea", myUrl() + "/portal/directtool/" + placement.getId() + "/").
+			decorate(new UIFreeAttributeDecorator("class", "portlet title-tools Main" + Web.escapeJavascript(placement.getId()) + "_urlholder"));
+		    UIOutput.make(tofill, "directimage").decorate(new UIFreeAttributeDecorator("alt",
+			messageLocator.getMessage("simplepage.direct-link")));
+
 		}
 
 		if (reseturl != null) {
@@ -1977,6 +1996,7 @@ public class ShowPageProducer implements ViewComponentProducer, DefaultView, Nav
 							UIOutput.make(tableRow, "iframeWidth", getOrig(width));
 							UIOutput.make(tableRow, "mimetype3", mimeType);
 							UIOutput.make(tableRow, "item-prereq2", String.valueOf(i.isPrerequisite()));
+							UIOutput.make(tableRow, "embedtype", mmDisplayType);
 							UIOutput.make(tableRow, "current-item-id3", Long.toString(i.getId()));
 							UIOutput.make(tableRow, "editmm-td");
 							UILink.make(tableRow, "iframe-edit", messageLocator.getMessage("simplepage.editItem"), "").decorate(new UIFreeAttributeDecorator("title", messageLocator.getMessage("simplepage.edit-title.url").replace("{}", abbrevUrl(i.getURL()))));
@@ -2009,7 +2029,6 @@ public class ShowPageProducer implements ViewComponentProducer, DefaultView, Nav
 					    UIOutput.make(tableRow, "missing-prereqs", messageLocator.getMessage("simplepage.missing-prereqs"));
 					}else {
 						UIOutput.make(tableRow, "commentsDiv");
-						Placement placement = toolManager.getCurrentPlacement();
 						UIOutput.make(tableRow, "placementId", placement.getId());
 
 					        // note: the URL will be rewritten in comments.js to look like
@@ -2378,7 +2397,6 @@ public class ShowPageProducer implements ViewComponentProducer, DefaultView, Nav
 							
 							if (peerEvalDate != null && peerDueDate != null) {
 								DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, M_locale);
-								
 								//Open date from attribute string
 								peerevalcal.setTimeInMillis(Long.valueOf(peerEvalDate));
 								
@@ -2398,7 +2416,7 @@ public class ShowPageProducer implements ViewComponentProducer, DefaultView, Nav
 								//Default open and due date
 								Date now = new Date();
 								peerevalcal.setTime(now);
-								
+
 								//Default open date: now
 								String dateStr = isoDateFormat.format(peerevalcal.getTime());
 								
@@ -3463,6 +3481,8 @@ public class ShowPageProducer implements ViewComponentProducer, DefaultView, Nav
 		UIBoundBoolean.make(form, "mm-prerequisite", "#{simplePageBean.prerequisite}", false);
 
 		UICommand.make(form, "mm-add-item", messageLocator.getMessage("simplepage.save_message"), "#{simplePageBean.addMultimedia}");
+		UIOutput.make(form, "mm-test-tryother").decorate(new UIFreeAttributeDecorator("value", messageLocator.getMessage("simplepage.mm-test-tryother")));
+		UIOutput.make(form, "mm-test-start-over").decorate(new UIFreeAttributeDecorator("value", messageLocator.getMessage("simplepage.mm-test-start-over")));
 		UIInput.make(form, "mm-item-id", "#{simplePageBean.itemId}");
 		UIInput.make(form, "mm-is-mm", "#{simplePageBean.isMultimedia}");
 		UIInput.make(form, "mm-display-type", "#{simplePageBean.multimediaDisplayType}");

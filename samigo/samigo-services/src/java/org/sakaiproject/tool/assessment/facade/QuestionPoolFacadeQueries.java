@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-services/src/java/org/sakaiproject/tool/assessment/facade/QuestionPoolFacadeQueries.java $
- * $Id: QuestionPoolFacadeQueries.java 311428 2014-07-31 02:09:30Z enietzel@anisakai.com $
+ * $Id: QuestionPoolFacadeQueries.java 319771 2015-06-04 21:09:24Z matthew@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -23,6 +23,8 @@ package org.sakaiproject.tool.assessment.facade;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -62,7 +64,10 @@ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 public class QuestionPoolFacadeQueries
     extends HibernateDaoSupport implements QuestionPoolFacadeQueriesAPI {
-  private static Log log = LogFactory.getLog(QuestionPoolFacadeQueries.class);
+  private Log log = LogFactory.getLog(QuestionPoolFacadeQueries.class);
+  
+  // SAM-2049
+  private static final String VERSION_START = " - ";
 
   public QuestionPoolFacadeQueries() {
   }
@@ -209,7 +214,7 @@ public class QuestionPoolFacadeQueries
 	  return new QuestionPoolIteratorFacade(qpList);
   }
   
-  public ArrayList getBasicInfoOfAllPools(final String agentId) {
+  public ArrayList<QuestionPoolFacade> getBasicInfoOfAllPools(final String agentId) {
 	    final HibernateCallback hcb = new HibernateCallback(){
 	    	public Object doInHibernate(Session session) throws HibernateException, SQLException {
 	    		Query q = session.createQuery("select new QuestionPoolData(a.questionPoolId, a.title, a.parentPoolId)from QuestionPoolData a where a.questionPoolId  " +
@@ -220,15 +225,10 @@ public class QuestionPoolFacadeQueries
 	    };
 	    List list = getHibernateTemplate().executeFind(hcb);
 
-//	  List list = getHibernateTemplate().find(
-//        "select new QuestionPoolData(a.questionPoolId, a.title)from QuestionPoolData a where a.ownerId= ? ",
-//        new Object[] {agentId}
-//        , new org.hibernate.type.Type[] {Hibernate.STRING});
-    ArrayList poolList = new ArrayList();
+    ArrayList<QuestionPoolFacade> poolList = new ArrayList<QuestionPoolFacade>();
     for (int i = 0; i < list.size(); i++) {
       QuestionPoolData a = (QuestionPoolData) list.get(i);
-      QuestionPoolFacade f = new QuestionPoolFacade(a.getQuestionPoolId(),
-          a.getTitle(), a.getParentPoolId());
+      QuestionPoolFacade f = new QuestionPoolFacade(a.getQuestionPoolId(), a.getTitle(), a.getParentPoolId());
       poolList.add(f);
     }
     return poolList;
@@ -333,7 +333,7 @@ public class QuestionPoolFacadeQueries
 	    	facadeVector.add(itemFacade);
 	    	log.debug("QuestionPoolFacadeQueries: getAllItemFacadesOrderByItemText:: getItemId = " + itemData.getItemId());
 	    	log.debug("QuestionPoolFacadeQueries: getAllItemFacadesOrderByItemText:: getText = " + itemData.getText());
-	    	text = itemFacade.getTextHtmlStrippedAll();
+	    	text = itemFacade.getText();
 	    	log.debug("QuestionPoolFacadeQueries: getAllItemFacadesOrderByItemText:: getTextHtmlStrippedAll = '" + text + "'");
 	    	
 	    	origValueV = (Vector) hp.get(text);
@@ -631,7 +631,7 @@ public class QuestionPoolFacadeQueries
           // pool that item is attached to
           ArrayList metaList = new ArrayList();
           for (int j=0; j<list.size(); j++){
-            String itemId = ((QuestionPoolItemData)list.get(j)).getItemId();
+            Long itemId = ((QuestionPoolItemData)list.get(j)).getItemId();
             String query = "from ItemMetaData as meta where meta.item.itemId=? and meta.label=?";
             Object [] values = {Long.valueOf(itemId), ItemMetaDataIfc.POOLID};
     	    List m = getHibernateTemplate().find(query, values);
@@ -796,7 +796,7 @@ public class QuestionPoolFacadeQueries
    * @param itemId DOCUMENTATION PENDING
    * @param poolId DOCUMENTATION PENDING
    */
-  public void removeItemFromPool(String itemId, Long poolId) {
+  public void removeItemFromPool(Long itemId, Long poolId) {
     QuestionPoolItemData qpi = new QuestionPoolItemData(poolId, itemId);
     int retryCount = PersistenceService.getInstance().getPersistenceHelper().getRetryCount().intValue();
     while (retryCount > 0){
@@ -817,7 +817,7 @@ public class QuestionPoolFacadeQueries
    * @param itemId DOCUMENTATION PENDING
    * @param poolId DOCUMENTATION PENDING
    */
-  public void moveItemToPool(String itemId, Long sourceId, Long destId) {
+  public void moveItemToPool(Long itemId, Long sourceId, Long destId) {
     QuestionPoolItemData qpi = new QuestionPoolItemData(sourceId, itemId);
     int retryCount = PersistenceService.getInstance().getPersistenceHelper().getRetryCount().intValue();
     while (retryCount > 0){
@@ -1034,8 +1034,8 @@ public class QuestionPoolFacadeQueries
    * @param poolId DOCUMENTATION PENDING
    */
 
-  public List getPoolIdsByAgent(final String agentId) {
-    ArrayList idList = new ArrayList();
+  public List<Long> getPoolIdsByAgent(final String agentId) {
+    ArrayList<Long> idList = new ArrayList<Long>();
 
     final HibernateCallback hcb = new HibernateCallback(){
     	public Object doInHibernate(Session session) throws HibernateException, SQLException {
@@ -1046,10 +1046,6 @@ public class QuestionPoolFacadeQueries
     };
     List qpaList = getHibernateTemplate().executeFind(hcb);
 
-//    List qpaList = getHibernateTemplate().find(
-//        "select qpa from QuestionPoolAccessData as qpa where qpa.agentId= ?",
-//        new Object[] {agentId}
-//        , new org.hibernate.type.Type[] {Hibernate.STRING});
     try {
       Iterator iter = qpaList.iterator();
       while (iter.hasNext()) {
@@ -1236,7 +1232,7 @@ public class QuestionPoolFacadeQueries
     Iterator iter = itemDataArray.iterator();
     while (iter.hasNext()){
       ItemDataIfc itemData = (ItemDataIfc) iter.next();
-      set.add(new QuestionPoolItemData(questionPoolId, itemData.getItemIdString(), (ItemData) itemData));
+      set.add(new QuestionPoolItemData(questionPoolId, itemData.getItemId(), (ItemData) itemData));
     }
     return set;
   }
@@ -1404,12 +1400,45 @@ public class QuestionPoolFacadeQueries
 		  public Object doInHibernate(Session session) throws HibernateException, SQLException {
 			  Query q = session.createQuery("select count(ab) from ItemData ab, QuestionPoolItemData qpi where ab.itemId=qpi.itemId and qpi.questionPoolId = ?");
 			  q.setLong(0, questionPoolId.longValue());
+			  q.setCacheable(true);
 			  return q.uniqueResult();
 		  };
 	  };
 	  	    
 	  Integer count = (Integer)getHibernateTemplate().execute(hcb);	    
 	  return count;
+  }
+  
+  /**
+   * Fetch a HashMap of question pool ids and counts for all pools that a user has access to.
+   * We inner join the QuestionPoolAccessData table because the user may have access to pools
+   * that are being shared by other users. We can't simply look for the ownerId on QuestionPoolData.
+   * This was originally written for SAM-2463 to speed up these counts. 
+   * @param agentId Sakai internal user id. Most likely the currently logged in user
+   */
+  public HashMap<Long, Integer> getCountItemFacadesForUser(final String agentId) {	    
+	  final HibernateCallback hcb = new HibernateCallback(){
+		  public Object doInHibernate(Session session) throws HibernateException, SQLException {
+			  Query q = session.createQuery("select qpi.questionPoolId, count(ab) from ItemData ab, QuestionPoolItemData qpi, QuestionPoolData qpd, QuestionPoolAccessData qpad " + 
+					  "where ab.itemId=qpi.itemId and qpi.questionPoolId=qpd.questionPoolId AND qpd.questionPoolId=qpad.questionPoolId AND qpad.agentId=? AND qpad.accessTypeId!=? " + 
+					  "group by qpi.questionPoolId");
+			  q.setString(0, agentId);
+			  q.setLong(1, QuestionPoolData.ACCESS_DENIED);
+			  q.setCacheable(true);
+			  return q.list();
+		  };
+	  };
+
+	  HashMap<Long, Integer> counts = new HashMap<Long, Integer>();
+	  List list = getHibernateTemplate().executeFind(hcb);
+
+	  Iterator i1 = list.iterator();
+	  while (i1.hasNext()) {
+		  Object[]result = (Object [])i1.next();
+		  counts.put((Long) result[0], (Integer)result[1]);
+	  }
+
+	  return counts;
   }
 
   /**
@@ -1455,5 +1484,205 @@ public class QuestionPoolFacadeQueries
 	  }
 
 	  return agents;
+  }
+  
+  // **********************************************
+  // ****************** SAM-2049 ******************
+  // **********************************************
+  
+  public List<QuestionPoolData> getAllPoolsForTransfer(final List<Long> selectedPoolIds) {  
+	  final HibernateCallback hcb = new HibernateCallback() {
+		  public Object doInHibernate(Session session) throws HibernateException, SQLException {
+			  Query q = session.createQuery("FROM QuestionPoolData a WHERE a.questionPoolId IN (:ids)");
+			  q. setParameterList("ids", selectedPoolIds);
+			  return q.list();
+		  };
+	  };
+	  List list = getHibernateTemplate().executeFind(hcb);
+	  return list;	  
+  }
+	
+  private String createQueryString(List<Long> poolIds) {
+	  String poolIdQueryString ="";
+	  String prefix = "";
+	  for (Long poolId: poolIds) {
+		  poolIdQueryString += prefix + poolId.toString();
+		  prefix = ",";
+	  }
+	  
+  	  return poolIdQueryString;
+  }
+	    
+  private void updatePool(QuestionPoolData pooldata) {
+	  try {
+		  getHibernateTemplate().update(pooldata);
+	  } catch (Exception e) {
+		  log.warn("problem update the pool name" + e.getMessage());
+	  }	  
+  }
+  
+  private String renameDuplicate(String title) {
+	  if (title == null) {
+		  title = "";
+	  }
+  
+	  String rename = "";
+	  int index = title.lastIndexOf(VERSION_START);
+
+	  // If it is versioned
+	  if (index > -1) {
+		  String mainPart = "";
+		  String versionPart = title.substring(index);
+		  if(index > 0) {
+			  mainPart = title.substring(0, index);
+		  }
+  
+		  int nIndex = index + VERSION_START.length();
+		  String version = title.substring(nIndex);
+  
+		  int versionNumber = 0;
+		  try {
+			  versionNumber = Integer.parseInt(version);
+			  if (versionNumber < 2) {
+				  versionNumber = 2;
+			  }
+			  versionPart = VERSION_START + (versionNumber + 1);
+  			  rename = mainPart + versionPart;
+  		  } catch (NumberFormatException ex) {
+  			  rename = title + VERSION_START + "2";
+  		  }
+	  } else {
+		  rename = title + VERSION_START + "2";
+	  }
+
+	  return rename;
+  }
+	  
+  public void transferPoolsOwnership(String ownerId, final List<Long> transferPoolIds) {
+  	  Session session = null;
+  	  Connection conn = null;
+  	  PreparedStatement statement = null;
+  
+  	  // Get all pools to be transferred
+  	  List<QuestionPoolData> transferPoolsData = getAllPoolsForTransfer(transferPoolIds);
+  
+  	  // Get poolId which need to remove child-parent relationship
+  	  List<Long> needUpdatedPoolParentIdList = new ArrayList<Long>();
+  	  List<Long> updatePoolOwnerIdList = new ArrayList<Long>();
+  
+  	  for (QuestionPoolData poolTransfer : transferPoolsData) {
+  		  Long poolId = poolTransfer.getQuestionPoolId();	
+  		  updatePoolOwnerIdList.add(poolId);
+  		  
+  		  // Get remove child-parent relationship list
+  		  Long poolIdRemoveParent = poolTransfer.getParentPoolId();
+  		  if (!poolIdRemoveParent.equals(new Long("0")) && !transferPoolIds.contains(poolIdRemoveParent)) {
+  			  needUpdatedPoolParentIdList.add(poolId);
+  		  }
+  	  }
+  
+  	  // updatePoolOwnerIdList will not be empty, so no need to check the size
+  	  String updateOwnerIdInPoolTableQueryString = createQueryString(updatePoolOwnerIdList);
+  
+  	  // If all parent-children structure transfer, needUpdatedPoolParentIdList will be empty.	  
+  	  String removeParentPoolString = "";
+  	  if (needUpdatedPoolParentIdList.size() > 0) {
+  		  removeParentPoolString = createQueryString(needUpdatedPoolParentIdList);
+  	  }
+  
+  	  // I used jdbc update here since I met difficulties using hibernate to update SAM_QUESTIONPOOLACCESS_T. (it used composite-id there)
+  	  // For updating SAM_QUESTIONPOOL_T, I can use hibernate but it will have many db calls. (I didn't find an efficient way to bulk update.) So used jdbc here again.
+  	  try {
+  		  session = getSessionFactory().openSession();
+  		  conn = session.connection();
+                  boolean autoCommit = conn.getAutoCommit();
+  		  String query = "";
+  		  if (!"".equals(updateOwnerIdInPoolTableQueryString)) {
+  			  query = "UPDATE SAM_QUESTIONPOOLACCESS_T SET agentid = ? WHERE questionpoolid IN (?) AND accesstypeid = 34";
+  			  statement = conn.prepareStatement(query);
+  			  statement.setString(1, ownerId);
+  			  statement.setString(2, updateOwnerIdInPoolTableQueryString);
+  			  statement.executeUpdate();
+  			  
+  			  query = "UPDATE SAM_QUESTIONPOOL_T SET ownerid = ? WHERE questionpoolid IN (?)";
+			  statement = conn.prepareStatement(query);
+  			  statement.setString(1, ownerId);
+  			  statement.setString(2, updateOwnerIdInPoolTableQueryString);
+			  statement.executeUpdate();
+                          
+                          if (!autoCommit) {
+                              conn.commit();
+                          }
+  		  }
+  
+  		  // if the pool has parent but the parent doesn't transfer, need to remove the child-parent relationship.
+  		  if (!"".equals(removeParentPoolString)) {
+  			  query = "UPDATE SAM_QUESTIONPOOL_T SET parentpoolid = 0 WHERE questionpoolid IN (?)";
+  			  statement = conn.prepareStatement(query);
+  			  statement.setString(1, removeParentPoolString);
+  			  statement.executeUpdate();	
+                          
+                          if (!autoCommit) {
+                              conn.commit();
+                          }
+  		  }
+  	  } catch (Exception ex) {
+  		  log.warn(ex.getMessage());
+	  } finally {
+  		  if (statement != null) {
+			  try {
+				  statement.close();
+			  } catch (Exception ex) {
+				  log.warn("Could not close statement", ex);
+			  }
+		  }
+  		  
+  		  if (conn != null) {
+			  try {
+				  conn.close();
+			  } catch (Exception ex) {
+				  log.warn("Could not close conn", ex);
+			  }
+		  }
+  		  
+  		  if (session != null) {
+  			  try {
+  				  session.close();
+			  } catch (Exception ex) {
+				  log.warn("Could not close session", ex);
+			  }
+  		  }
+  	  }
+  
+  	  // Update pool name if there is a duplicate one.	  
+	  for (QuestionPoolData pooldata : transferPoolsData) {
+		  Long poolId = pooldata.getQuestionPoolId();
+		  String title = pooldata.getTitle();
+		  boolean isUnique = poolIsUnique(poolId, title, new Long("0"), ownerId);
+		  if (!isUnique) {
+			  synchronized (title) {
+				  log.debug("Questionpool " + title + " is not unique.");
+				  int count = 0; // Alternate exit condition
+	
+				  while (!isUnique) {
+					  title = renameDuplicate(title);
+					  log.debug("renameDuplicate (title): " + title);
+					  
+					  // Recheck to confirm that new title is not a dplicate too
+					  isUnique = poolIsUnique(poolId, title, new Long("0"), ownerId);	      	  
+					  if (count++ > 99) {
+						  break; // Exit condition in case bug is introduced
+					  }
+				  }
+			  }
+			  
+			  pooldata.setTitle(title);
+			  pooldata.setOwnerId(ownerId);
+			  if (!"".equals(removeParentPoolString) && needUpdatedPoolParentIdList.contains(poolId)) {
+				  pooldata.setParentPoolId(new Long("0"));
+			  }
+			  updatePool(pooldata);
+		  }		  
+	  } 	  
   }
 }

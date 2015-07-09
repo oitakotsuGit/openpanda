@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-services/src/java/org/sakaiproject/tool/assessment/facade/authz/AuthorizationFacadeQueries.java $
- * $Id: AuthorizationFacadeQueries.java 106463 2012-04-02 12:20:09Z david.horwitz@uct.ac.za $
+ * $Id: AuthorizationFacadeQueries.java 319083 2015-05-20 22:24:13Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2008 The Sakai Foundation
@@ -47,7 +47,7 @@ import org.apache.commons.logging.LogFactory;
 public class AuthorizationFacadeQueries
    extends HibernateDaoSupport implements AuthorizationFacadeQueriesAPI{
 
-  private static Log log = LogFactory.getLog(AuthorizationFacadeQueries.class);
+  private Log log = LogFactory.getLog(AuthorizationFacadeQueries.class);
 
   public AuthorizationFacadeQueries() {
   }

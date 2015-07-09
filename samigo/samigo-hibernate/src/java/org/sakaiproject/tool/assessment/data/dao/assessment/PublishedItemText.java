@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-hibernate/src/java/org/sakaiproject/tool/assessment/data/dao/assessment/PublishedItemText.java $
- * $Id: PublishedItemText.java 305964 2014-02-14 01:05:35Z ktsao@stanford.edu $
+ * $Id: PublishedItemText.java 316818 2015-01-16 23:05:58Z ottenhoff@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2008 The Sakai Foundation
@@ -127,22 +127,14 @@ public class PublishedItemText
 		return itemTextAttachmentSet;
 	}
 
+	public List getItemTextAttachmentList() {
+		return new ArrayList(itemTextAttachmentSet);
+	}
+
 	public void setItemTextAttachmentSet(Set itemTextAttachmentSet) {
 		this.itemTextAttachmentSet = itemTextAttachmentSet;
 	}
 
-	public List getItemTextAttachmentList() {
-		ArrayList list = new ArrayList();
-		if (itemTextAttachmentSet != null) {
-			Iterator iter = itemTextAttachmentSet.iterator();
-			while (iter.hasNext()) {
-				ItemTextAttachmentIfc a = (ItemTextAttachmentIfc) iter.next();
-				list.add(a);
-			}
-		}
-		return list;
-	}
-	
 	  // for EMI - Attachments at Answer Level
 	  public boolean getHasAttachment(){
 	    if (itemTextAttachmentSet != null && itemTextAttachmentSet.size() >0)

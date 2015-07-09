@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-hibernate/src/java/org/sakaiproject/tool/assessment/data/dao/assessment/ItemText.java $
- * $Id: ItemText.java 305964 2014-02-14 01:05:35Z ktsao@stanford.edu $
+ * $Id: ItemText.java 316818 2015-01-16 23:05:58Z ottenhoff@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2008 The Sakai Foundation
@@ -128,22 +128,14 @@ public class ItemText
 		return itemTextAttachmentSet;
 	}
 
+	public List<ItemTextAttachmentIfc> getItemTextAttachmentList() {
+		return new ArrayList<ItemTextAttachmentIfc>(itemTextAttachmentSet);
+	}
+
 	public void setItemTextAttachmentSet(Set<ItemTextAttachmentIfc> itemTextAttachmentSet) {
 		this.itemTextAttachmentSet = itemTextAttachmentSet;
 	}
 
-	public List<ItemTextAttachmentIfc> getItemTextAttachmentList() {
-		ArrayList<ItemTextAttachmentIfc> list = new ArrayList<ItemTextAttachmentIfc>();
-		if (itemTextAttachmentSet != null) {
-			Iterator<ItemTextAttachmentIfc> iter = itemTextAttachmentSet.iterator();
-			while (iter.hasNext()) {
-				ItemTextAttachmentIfc a = iter.next();
-				list.add(a);
-			}
-		}
-		return list;
-	}
-  
 	  // for EMI - Attachments at Answer Level
 	  public boolean getHasAttachment(){
 	    if (itemTextAttachmentSet != null && itemTextAttachmentSet.size() >0)

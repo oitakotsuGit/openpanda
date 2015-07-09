@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-services/src/java/org/sakaiproject/tool/assessment/util/MimeTypesLocator.java $
- * $Id: MimeTypesLocator.java 106463 2012-04-02 12:20:09Z david.horwitz@uct.ac.za $
+ * $Id: MimeTypesLocator.java 319083 2015-05-20 22:24:13Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2005, 2006, 2008, 2009 The Sakai Foundation
@@ -27,7 +27,6 @@ import java.io.File;
  
 public class MimeTypesLocator{
 
-  //private static Log log = LogFactory.getLog(MimeTypesLocator.class);
   private static MimeTypesLocator instance = null;
   private static MimetypesFileTypeMap map = null;
 

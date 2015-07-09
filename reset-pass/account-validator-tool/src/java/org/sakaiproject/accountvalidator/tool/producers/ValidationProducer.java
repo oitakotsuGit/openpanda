@@ -1,5 +1,5 @@
 /**
- * $Id: ValidationProducer.java 308859 2014-04-26 00:12:26Z enietzel@anisakai.com $
+ * $Id: ValidationProducer.java 315804 2014-12-01 17:42:39Z enietzel@anisakai.com $
  * $URL: https://source.sakaiproject.org/svn/reset-pass/branches/sakai-10.x/account-validator-tool/src/java/org/sakaiproject/accountvalidator/tool/producers/ValidationProducer.java $
  * 
  **************************************************************************
@@ -147,7 +147,7 @@ ViewParamsReporter, ActionResultInterceptor {
 				Object[] args = new Object[]{ vvp.tokenId};
 				tml.addMessage(new TargettedMessage("msg.alreadyValidated", args, TargettedMessage.SEVERITY_ERROR));
 				return;
-			} else if (ValidationAccount.STATUS_EXPIRED.equals((va.getStatus()))){
+			} else if (validationLogic.isTokenExpired(va)) {
 				Object[] args = new Object[]{ vvp.tokenId};
 				tml.addMessage(new TargettedMessage("msg.expiredValidation", args, TargettedMessage.SEVERITY_ERROR));
 				return;

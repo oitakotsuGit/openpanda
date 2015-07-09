@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-services/src/java/org/sakaiproject/tool/assessment/integration/context/IntegrationContextFactory.java $
- * $Id: IntegrationContextFactory.java 305964 2014-02-14 01:05:35Z ktsao@stanford.edu $
+ * $Id: IntegrationContextFactory.java 319083 2015-05-20 22:24:13Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2008, 2009 The Sakai Foundation
@@ -41,7 +41,6 @@ import org.sakaiproject.tool.assessment.integration.helper.ifc.CalendarServiceHe
  */
 public abstract class IntegrationContextFactory
 {
-  private static Log log = LogFactory.getLog(IntegrationContextFactory.class);
   private static IntegrationContextFactory instance=null;
 
   /**
@@ -50,6 +49,7 @@ public abstract class IntegrationContextFactory
    */
   public static IntegrationContextFactory getInstance()
   {
+    Log log = LogFactory.getLog(IntegrationContextFactory.class);
     log.debug("IntegrationContextFactory.getInstance()");
     if (instance==null)
     {
@@ -69,6 +69,7 @@ public abstract class IntegrationContextFactory
   
   public static IntegrationContextFactory getTestInstance()
   {
+	    Log log = LogFactory.getLog(IntegrationContextFactory.class);
 	    log.debug("IntegrationContextFactory.getTestInstance()");
 	    if (instance==null)
 	    {

@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -1199,18 +1200,18 @@ public class ProjectLogicImpl implements ProjectLogic {
 	 */
 	private class NodeListComparator implements Comparator<List>{
 		public int compare(List o1, List o2) {
-			if(((HierarchyNodeSerialized) o1.get(0)).title == null
-                                && ((HierarchyNodeSerialized) o2.get(0)).title == null){
+			if(((HierarchyNodeSerialized) o1.get(0)).description == null
+                                && ((HierarchyNodeSerialized) o2.get(0)).description == null){
                                 //nothing to compare
                                 return 0;
-                        }else if(((HierarchyNodeSerialized) o1.get(0)).title != null
-                                && ((HierarchyNodeSerialized) o2.get(0)).title  == null){
+                        }else if(((HierarchyNodeSerialized) o1.get(0)).description != null
+                                && ((HierarchyNodeSerialized) o2.get(0)).description  == null){
                                 return 1;
-                        }else if(((HierarchyNodeSerialized) o1.get(0)).title == null
-                                && ((HierarchyNodeSerialized) o2.get(0)).title != null){
+                        }else if(((HierarchyNodeSerialized) o1.get(0)).description == null
+                                && ((HierarchyNodeSerialized) o2.get(0)).description != null){
                                 return -1;
                         }else{
-                                return ((HierarchyNodeSerialized) o1.get(0)).title.compareToIgnoreCase(((HierarchyNodeSerialized) o2.get(0)).title);
+                                return ((HierarchyNodeSerialized) o1.get(0)).description.compareToIgnoreCase(((HierarchyNodeSerialized) o2.get(0)).description);
                         }
 		}
 	}
@@ -1748,7 +1749,7 @@ public class ProjectLogicImpl implements ProjectLogic {
 		if(useSession){
 			session = sakaiProxy.getCurrentSession();
 		}
-		Map<String, String[]> deniedAuthToolsMap = new HashMap<String, String[]>();
+		Map<String, String[]> deniedAuthToolsMap = new ConcurrentHashMap<String, String[]>();
 		if(useSession){
 			//only worry about the session for non shopping period queries
 			Object sessionDeniedToolsMap = session.getAttribute(DelegatedAccessConstants.SESSION_ATTRIBUTE_DENIED_TOOLS);
@@ -1757,7 +1758,7 @@ public class ProjectLogicImpl implements ProjectLogic {
 			}
 		}
 		
-		Map<String, String[]> deniedPublicToolsMap = new HashMap<String, String[]>();
+		Map<String, String[]> deniedPublicToolsMap = new ConcurrentHashMap<String, String[]>();
 		if(useSession){
 			//only worry about the session for non shopping period queries
 			Object sessionDeniedTools2Map = session.getAttribute(DelegatedAccessConstants.SESSION_ATTRIBUTE_DENIED_TOOLS2);
@@ -1766,7 +1767,7 @@ public class ProjectLogicImpl implements ProjectLogic {
 			}
 		}
 
-		Map<String, String[]> accessMap = new HashMap<String, String[]>();
+		Map<String, String[]> accessMap = new ConcurrentHashMap<String, String[]>();
 		if(useSession){
 			//only worry about the session for non shopping period queries
 			Object sessionaccessMap = session.getAttribute(DelegatedAccessConstants.SESSION_ATTRIBUTE_ACCESS_MAP);

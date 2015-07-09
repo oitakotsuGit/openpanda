@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/author/ItemAddListener.java $
- * $Id: ItemAddListener.java 308490 2014-04-22 19:22:40Z ktsao@stanford.edu $
+ * $Id: ItemAddListener.java 319771 2015-06-04 21:09:24Z matthew@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -835,7 +835,7 @@ public class ItemAddListener
 
         if (!qpdelegate.hasItem(item.getItemIdString(),
         		Long.valueOf(itemauthor.getQpoolId()))) {
-          qpdelegate.addItemToPool(item.getItemIdString(),
+          qpdelegate.addItemToPool(item.getItemId(),
                                    Long.valueOf(itemauthor.getQpoolId()));
 
         }
@@ -1000,7 +1000,7 @@ public class ItemAddListener
         QuestionPoolService qpdelegate = new QuestionPoolService();
 	// removed the old pool-item mappings
           if ( (bean.getOrigPool() != null) && (!bean.getOrigPool().equals(""))) {
-            qpdelegate.removeQuestionFromPool(item.getItemIdString(),
+            qpdelegate.removeQuestionFromPool(item.getItemId(),
             		Long.valueOf(bean.getOrigPool()));
           }
 
@@ -1014,7 +1014,7 @@ public class ItemAddListener
 
           if (!qpdelegate.hasItem(item.getItemIdString(),
                                  Long.valueOf(bean.getSelectedPool()))) {
-            qpdelegate.addItemToPool(item.getItemIdString(),
+            qpdelegate.addItemToPool(item.getItemId(),
             					Long.valueOf(bean.getSelectedPool()));
           }
         }
@@ -2394,15 +2394,80 @@ public class ItemAddListener
 	  return itemMetaDataSet;
 	}
   
-  private void preparePublishedTextForMatrixSurvey(ItemFacade item,
-		  ItemBean bean, ItemService delegate){
+  private void preparePublishedTextForMatrixSurvey(ItemFacade item, ItemBean bean, ItemService delegate){
+	  item.getData().setInstruction(bean.getItemText());
 	  Set textSet = item.getItemTextSet();
 	  Iterator textIter = textSet.iterator();
 	  HashMap itemTextMap = new HashMap();
 	  while (textIter.hasNext()) {
-		  ItemTextIfc itemText = (ItemTextIfc) textIter.next();
-		  itemTextMap.put(itemText.getSequence(), itemText);
-	  }  
+			ItemTextIfc itemText = (ItemTextIfc) textIter.next();
+			itemTextMap.put(itemText.getSequence(), itemText);
+	  }
+	  String[] rowChoices = returnMatrixChoices(bean,"row");
+	  String[] columnChoices = returnMatrixChoices(bean,"column");
+	  ItemTextIfc publishedItemText = null;
+	  Long rowChoiceSequence = null, columnChoiceSequence = null;
+	  Set answerSet = null;
+	  AnswerIfc publishedAnswer = null;
+	  for(int i = 0; i<rowChoices.length;i++)
+	  {
+		  rowChoiceSequence = Long.valueOf(i+1);
+		  if(!itemTextMap.containsKey(rowChoiceSequence)){
+			  publishedItemText = new PublishedItemText();
+			  publishedItemText.setItem(item.getData());
+			  publishedItemText.setSequence(rowChoiceSequence);
+			  publishedItemText.setText(rowChoices[i]);
+		  }	else {
+			    publishedItemText = (ItemTextIfc) itemTextMap.get(rowChoiceSequence);
+			    publishedItemText.setText(rowChoices[i]);
+		  }
+		  HashMap answerMap = new HashMap();
+		  answerSet = publishedItemText.getAnswerSet();
+		  if (answerSet != null) {
+			    Iterator answerIter = answerSet.iterator();
+				while (answerIter.hasNext()) {
+					publishedAnswer = (AnswerIfc) answerIter.next();
+					answerMap.put(publishedAnswer.getSequence(), publishedAnswer);
+				}
+		  } else {
+				answerSet = new HashSet();
+				publishedItemText.setAnswerSet(answerSet);
+			    textSet.add(publishedItemText);
+		  }
+		  for(int j = 0; j<columnChoices.length;j++){
+			  columnChoiceSequence = Long.valueOf(j+1);
+			  if (!answerMap.containsKey(columnChoiceSequence)) {
+				publishedAnswer = new PublishedAnswer(publishedItemText,columnChoices[j],columnChoiceSequence,null, null, null, Double.valueOf(bean.getItemScore()), Double.valueOf(0d), Double.valueOf(bean.getItemDiscount()));
+			  	answerSet.add(publishedAnswer);
+			  }	else {
+				  publishedAnswer = (AnswerIfc) answerMap.get(columnChoiceSequence);
+				  publishedAnswer.setText(columnChoices[j]);
+			  }	
+		  }
+		  int oldAnswerSetSize = publishedItemText.getAnswerSet().size();
+		  int newAnswerSetSize = columnChoices.length;
+		  if(oldAnswerSetSize > newAnswerSetSize){
+			  HashSet toBeRemovedAnswerSet = new HashSet();
+			  
+			  for (int j = newAnswerSetSize + 1; j < oldAnswerSetSize + 1; j++) {
+				  publishedAnswer = (AnswerIfc) answerMap.get(Long.valueOf(j));	
+				  toBeRemovedAnswerSet.add(publishedAnswer);
+			  }
+			  answerSet.removeAll(toBeRemovedAnswerSet);
+			  delegate.deleteSet(toBeRemovedAnswerSet);
+		  }
+	  }
+	  int oldTextSetSize = textSet.size();
+	  int newTextSetSize = rowChoices.length;
+	  if (oldTextSetSize > newTextSetSize) {
+			HashSet toBeRemovedTextSet = new HashSet();
+			for (int i = newTextSetSize + 1; i < oldTextSetSize + 1; i++) {
+				ItemTextIfc text = (ItemTextIfc) itemTextMap.get(Long.valueOf(i));
+				toBeRemovedTextSet.add(text);
+			}
+			textSet.removeAll(toBeRemovedTextSet);
+			delegate.deleteSet(toBeRemovedTextSet);
+	  }
   }
 
   private static ArrayList getFIBanswers(String entiretext) {

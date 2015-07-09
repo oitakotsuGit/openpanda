@@ -8,7 +8,7 @@
 
 <f:view>
 	<sakai:view title="Forums">
-<link rel="stylesheet" href="/messageforums-tool/css/jquery-ui-1.7.2.custom.css" type="text/css" />
+<link rel="stylesheet" href="/library/js/jquery/ui/1.10.3/css/ui-lightness/jquery-ui-1.10.3.custom.min.css" type="text/css" />
 <link rel="stylesheet" href="/messageforums-tool/css/msgcntr.css" type="text/css" />
 <link rel="stylesheet" href="/messageforums-tool/css/msgcntr_move_thread.css" type="text/css" />
 
@@ -260,6 +260,7 @@
 				<f:verbatim><div class="post_move_links"></f:verbatim>
                     <%-- hidden link to call ForumTool.processMoveThread  --%>
                     <h:commandLink value="" action="#{ForumTool.processMoveThread}" id="hidden_move_message_commandLink" ></h:commandLink>
+					<h:commandLink value="" action="$('.topic-picker').dialog('close');" id="hidden_close_move_thread" ></h:commandLink>
 
                     <%-- link for Move Thread(s)  --%>
 					<f:verbatim>
@@ -440,6 +441,27 @@
 			</h:column> 
 		</mf:hierDataTable>
 </div>
+
+<f:verbatim><br/><br/></f:verbatim>
+<h:panelGrid columns="1" width="100%" styleClass="specialLink">
+	 <h:panelGroup styleClass="itemNav">
+	   <h:outputText   value="#{msgs.cdfm_previous_topic}"  rendered="#{!ForumTool.selectedTopic.hasPreviousTopic}" />
+		 <h:commandLink action="#{ForumTool.processActionDisplayPreviousTopic}" value="#{msgs.cdfm_previous_topic}"  rendered="#{ForumTool.selectedTopic.hasPreviousTopic}" 
+		                title=" #{msgs.cdfm_previous_topic}">
+			 <f:param value="#{ForumTool.selectedTopic.previousTopicId}" name="previousTopicId"/>
+			 <f:param value="#{ForumTool.selectedForum.forum.id}" name="forumId"/>
+		 </h:commandLink>
+		 <f:verbatim><h:outputText  id="blankSpace2" value=" |  " /></f:verbatim>				
+		 <h:outputText   value="#{msgs.cdfm_next_topic}" rendered="#{!ForumTool.selectedTopic.hasNextTopic}" />
+		 <h:commandLink action="#{ForumTool.processActionDisplayNextTopic}" value="#{msgs.cdfm_next_topic}" rendered="#{ForumTool.selectedTopic.hasNextTopic}" 
+		                title=" #{msgs.cdfm_next_topic}">
+			<f:param value="#{ForumTool.selectedTopic.nextTopicId}" name="nextTopicId"/>
+			<f:param value="#{ForumTool.selectedForum.forum.id}" name="forumId"/>
+		 </h:commandLink>
+	 </h:panelGroup>
+</h:panelGrid>
+
+
 		
 <input type="hidden" id="selectedTopicid" name="selectedTopicid" class="selectedTopicid" value="0" />
 <input type="hidden" id="moveReminder" name="moveReminder" class="moveReminder" value="false" />

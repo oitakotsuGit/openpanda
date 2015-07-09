@@ -49,6 +49,9 @@ import com.lowagie.text.html.simpleparser.StyleSheet;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
+import com.lowagie.text.Font;
+import com.lowagie.text.FontFactoryImp;
+import com.lowagie.text.pdf.BaseFont;
 
 /**
  * 
@@ -104,7 +107,7 @@ public class PDFAssessmentBean implements Serializable {
 	 * @param intro in html
 	 */
 	public void setIntro(String intro) {
-		this.intro = FormattedText.unEscapeHtml(intro);
+		this.intro = convertFormattedText(FormattedText.unEscapeHtml(intro));
 	}
 
 	/**
@@ -361,7 +364,9 @@ public class PDFAssessmentBean implements Serializable {
 				ItemContentsBean item = (ItemContentsBean) items.get(j);
 				
 				StringBuffer legacy = new StringBuffer("<h3>");
-				legacy.append(item.getSequence());
+				if (printSetting.getShowSequence().booleanValue()) {
+					legacy.append(item.getSequence());
+				}
 				legacy.append("</h3>");
 
 				pdfItem.setItemId(item.getItemData().getItemId());
@@ -370,7 +375,7 @@ public class PDFAssessmentBean implements Serializable {
 
 				if (!(item.getItemData().getTypeId().equals(TypeIfc.FILL_IN_BLANK) || item.getItemData().getTypeId().equals(TypeIfc.FILL_IN_NUMERIC))) {
 					contentBuffer.append("<br />");
-					contentBuffer.append(FormattedText.convertPlaintextToFormattedText(FormattedText.convertFormattedTextToPlaintext(item.getItemData().getText())));
+					contentBuffer.append(convertFormattedText(item.getItemData().getText()));
 					contentBuffer.append("<br />");
 				}
 				if (item.getItemData().getItemAttachmentList() != null && item.getItemData().getItemAttachmentList().size() > 0) {
@@ -404,7 +409,7 @@ public class PDFAssessmentBean implements Serializable {
 						contentBuffer.append("<br />");
 					}
 					contentBuffer.append("<br />");
-					contentBuffer.append(FormattedText.convertPlaintextToFormattedText(FormattedText.convertFormattedTextToPlaintext(item.getItemData().getText())));
+					contentBuffer.append(convertFormattedText(item.getItemData().getText()));
 					contentBuffer.append("<br />");
 				}
 
@@ -473,10 +478,10 @@ public class PDFAssessmentBean implements Serializable {
 						if (matching.getText() == null) break;
 						
 						contentBuffer.append("<tr><td colspan='10'>");
-						contentBuffer.append(FormattedText.convertPlaintextToFormattedText(FormattedText.convertFormattedTextToPlaintext(matching.getText())));
+						contentBuffer.append(convertFormattedText(matching.getText()));
 						contentBuffer.append("</td>");
 						contentBuffer.append("<td colspan='10'>");
-						contentBuffer.append(FormattedText.convertPlaintextToFormattedText(FormattedText.convertFormattedTextToPlaintext(answer)));
+						contentBuffer.append(convertFormattedText(answer));
 						contentBuffer.append("</td></tr>");
 					}
 
@@ -571,14 +576,14 @@ public class PDFAssessmentBean implements Serializable {
 					contentBuffer.append(". ");
 				}
 				
-				contentBuffer.append(FormattedText.convertPlaintextToFormattedText(FormattedText.convertFormattedTextToPlaintext(answer.getText())));
+				contentBuffer.append(convertFormattedText(answer.getText()));
 				contentBuffer.append("</td>");
 				contentBuffer.append("<td colspan='9'>");
 				contentBuffer.append("<h6>");
 				contentBuffer.append(commonMessages.getString("feedback"));
 				contentBuffer.append(": ");
 				if (answer.getGeneralAnswerFeedback() != null && !answer.getGeneralAnswerFeedback().equals(""))
-					contentBuffer.append(FormattedText.convertPlaintextToFormattedText(FormattedText.convertFormattedTextToPlaintext(answer.getGeneralAnswerFeedback())));
+					contentBuffer.append(convertFormattedText(answer.getGeneralAnswerFeedback()));
 				else 
 					contentBuffer.append("--------");
 				contentBuffer.append("</h6>");
@@ -590,7 +595,7 @@ public class PDFAssessmentBean implements Serializable {
 					contentBuffer.append(". ");
 				}
 				
-				contentBuffer.append(FormattedText.convertPlaintextToFormattedText(FormattedText.convertFormattedTextToPlaintext(answer.getText())));
+				contentBuffer.append(convertFormattedText(answer.getText()));
 				contentBuffer.append("</td>");
 			}
 			contentBuffer.append("</td>");
@@ -599,7 +604,7 @@ public class PDFAssessmentBean implements Serializable {
 		if (item.getItemData().getTypeId().equals(TypeIfc.TRUE_FALSE)) {
 			contentBuffer.append("<td colspan='1'><img src='/samigo-app/images/radiounchecked.gif' /></td>");
 			contentBuffer.append("<td colspan='19'>");
-			contentBuffer.append(FormattedText.convertPlaintextToFormattedText(FormattedText.convertFormattedTextToPlaintext(answer.getText())));
+			contentBuffer.append(convertFormattedText(answer.getText()));
 			contentBuffer.append("</td>");
 		}
 
@@ -651,7 +656,7 @@ public class PDFAssessmentBean implements Serializable {
 				contentBuffer.append(commonMessages.getString("feedback"));
 				contentBuffer.append(": ");
 				if (item.getItemData().getGeneralItemFeedback() != null && !item.getItemData().getGeneralItemFeedback().equals(""))
-					contentBuffer.append(FormattedText.convertPlaintextToFormattedText(FormattedText.convertFormattedTextToPlaintext(item.getItemData().getGeneralItemFeedback())));
+					contentBuffer.append(convertFormattedText(item.getItemData().getGeneralItemFeedback()));
 				else 
 					contentBuffer.append("--------");
 			}
@@ -667,14 +672,14 @@ public class PDFAssessmentBean implements Serializable {
 				contentBuffer.append(printMessages.getString("correct_feedback"));
 				contentBuffer.append(": ");
 				if (item.getItemData().getCorrectItemFeedback() != null && !item.getItemData().getCorrectItemFeedback().equals(""))
-					contentBuffer.append(FormattedText.convertPlaintextToFormattedText(FormattedText.convertFormattedTextToPlaintext(item.getItemData().getCorrectItemFeedback())));
+					contentBuffer.append(convertFormattedText(item.getItemData().getCorrectItemFeedback()));
 				else 
 					contentBuffer.append("--------");
 				contentBuffer.append("<br />");
 				contentBuffer.append(printMessages.getString("incorrect_feedback"));
 				contentBuffer.append(": ");
 				if (item.getItemData().getInCorrectItemFeedback() != null && !item.getItemData().getInCorrectItemFeedback().equals(""))
-					contentBuffer.append(FormattedText.convertPlaintextToFormattedText(FormattedText.convertFormattedTextToPlaintext(item.getItemData().getInCorrectItemFeedback())));
+					contentBuffer.append(convertFormattedText(item.getItemData().getInCorrectItemFeedback()));
 				else 
 					contentBuffer.append("--------");
 			}
@@ -684,6 +689,15 @@ public class PDFAssessmentBean implements Serializable {
 		return contentBuffer.toString();
 	}
 
+	public String convertFormattedText(String text) {
+	    //To preserve old behavior, set this to true
+	    //Possibly consider using jsoup with a whitelist so some formatted text gets though, I'm not sure why this was here in the first place
+	    if (ServerConfigurationService.getBoolean("samigo.pdf.convertformattedtext",false)) {
+	        return FormattedText.convertPlaintextToFormattedText(FormattedText.convertFormattedTextToPlaintext(text));
+	    }
+	    return text;
+	}
+	
 	public void getPDFAttachment() {
 		prepDocumentPDF();
 		ByteArrayOutputStream pdf = getStream();
@@ -821,6 +835,7 @@ public class PDFAssessmentBean implements Serializable {
 
 			float prevs = 0;
 
+			props.put("font_factory", new CustomFontFactory());
 			props.put("img_baseurl", ServerConfigurationService.getServerUrl());
 			worker.setInterfaceProps(props);
 
@@ -983,4 +998,22 @@ public class PDFAssessmentBean implements Serializable {
 		return "" + items;
 	}
 
+	/**
+	 * This class pulls in the default font from sakai.properties
+	 */
+	protected class CustomFontFactory extends FontFactoryImp {
+		private final String defaultFontname;
+
+		public CustomFontFactory() {
+			super();
+			
+			defaultFontname = ServerConfigurationService.getString("pdf.default.font", "DejaVu Sans");
+			registerDirectory(this.getClass().getResource("fonts").getFile());
+		}
+
+		@Override
+		public Font getFont(String fontname, String encoding, boolean embedded, float size, int style, Color color, boolean cached) {
+			return super.getFont(defaultFontname, BaseFont.IDENTITY_H, embedded, size, style, color, cached);
+		}
+	}
 }

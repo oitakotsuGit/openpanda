@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-services/src/java/org/sakaiproject/tool/assessment/facade/AgentFacade.java $
- * $Id: AgentFacade.java 130512 2013-10-15 23:46:40Z ktsao@stanford.edu $
+ * $Id: AgentFacade.java 315391 2014-11-13 15:34:24Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2008 The Sakai Foundation
@@ -50,7 +50,7 @@ public class AgentFacade implements Serializable, AgentDataIfc
 	 */
 	private static final long serialVersionUID = 1L;
 
-private static Log log = LogFactory.getLog(AgentFacade.class);
+private Log log = LogFactory.getLog(AgentFacade.class);
 
   private static final AgentHelper helper =
     IntegrationContextFactory.getInstance().getAgentHelper();

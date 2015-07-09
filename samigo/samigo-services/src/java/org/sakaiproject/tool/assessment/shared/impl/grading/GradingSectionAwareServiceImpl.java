@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-services/src/java/org/sakaiproject/tool/assessment/shared/impl/grading/GradingSectionAwareServiceImpl.java $
- * $Id: GradingSectionAwareServiceImpl.java 305964 2014-02-14 01:05:35Z ktsao@stanford.edu $
+ * $Id: GradingSectionAwareServiceImpl.java 319083 2015-05-20 22:24:13Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2005, 2006, 2008, 2009 The Sakai Foundation
@@ -36,7 +36,6 @@ import org.sakaiproject.tool.assessment.shared.api.grading.GradingSectionAwareSe
 
 public class GradingSectionAwareServiceImpl implements GradingSectionAwareServiceAPI
 {
-  //private static Log log = LogFactory.getLog(GradingServiceImpl.class);
   private static final SectionAwareServiceHelper helper =
     IntegrationContextFactory.getInstance().getSectionAwareServiceHelper();
 

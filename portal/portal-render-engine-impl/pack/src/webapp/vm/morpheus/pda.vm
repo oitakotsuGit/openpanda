@@ -41,6 +41,7 @@
             <title>${pageTitle}</title>
             <script src="${pageScriptPath}headscripts.js$!{portalCDNQuery}"></script>
         #end
+        ${includeExtraHead}
     </head>
     <body class="portalBodyPDA">
         <!-- START VM pda.vm -->
@@ -124,7 +125,7 @@
                             <!-- xportal -->
                             <li class="loginLink">
                                 <div> 
-                                    <span><a href="${portalTopUrl}?force.login=yes">$rloader.getString("pda_login")</a></span>
+                                    <span><a href="${portalTopUrl}?force.login=yes">${loginMessage}</a></span>
                                         #if (${loginHasLogInOutUrl2})
                                             </li><li class="loginLink"><span><a href="${loginLogInOutUrl2Pda}" title="${loginMessage2}">${loginMessage2}</a></span>
                                         #end
@@ -147,7 +148,7 @@
                             <!-- xportal -->
                             <li class="loginLink">
                                 <div>
-                                    <span><a href="${portalTopUrl}?force.login=yes">$rloader.getString("pda_login")</a></span>
+                                    <span><a href="${portalTopUrl}?force.login=yes">${loginMessage}</a></span>
                                         #if (${loginHasLogInOutUrl2})
                                             </li><li class="loginLink"><span><a href="${loginLogInOutUrl2Pda}" title="${loginMessage2}">${loginMessage2}</a></span>
                                         #end

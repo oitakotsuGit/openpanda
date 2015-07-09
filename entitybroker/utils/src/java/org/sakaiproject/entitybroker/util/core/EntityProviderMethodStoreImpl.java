@@ -1,5 +1,5 @@
 /**
- * $Id: EntityProviderMethodStoreImpl.java 105077 2012-02-24 22:54:29Z ottenhoff@longsight.com $
+ * $Id: EntityProviderMethodStoreImpl.java 315272 2014-11-10 18:24:27Z enietzel@anisakai.com $
  * $URL: https://source.sakaiproject.org/svn/entitybroker/branches/sakai-10.x/utils/src/java/org/sakaiproject/entitybroker/util/core/EntityProviderMethodStoreImpl.java $
  * EntityProviderMethodStore.java - entity-broker - Jan 13, 2009 11:02:43 AM - azeckoski
  **********************************************************************************
@@ -23,6 +23,7 @@ package org.sakaiproject.entitybroker.util.core;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -231,6 +232,7 @@ public class EntityProviderMethodStoreImpl implements EntityProviderMethodStore 
                 redirects.add(redirect);
             }
         }
+        Collections.sort(redirects);
         return redirects.toArray(new URLRedirect[redirects.size()]);
     }
 

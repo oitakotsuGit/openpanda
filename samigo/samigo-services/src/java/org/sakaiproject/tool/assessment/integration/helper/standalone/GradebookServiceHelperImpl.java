@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-services/src/java/org/sakaiproject/tool/assessment/integration/helper/standalone/GradebookServiceHelperImpl.java $
- * $Id: GradebookServiceHelperImpl.java 107319 2012-04-17 13:39:00Z david.horwitz@uct.ac.za $
+ * $Id: GradebookServiceHelperImpl.java 319083 2015-05-20 22:24:13Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2007, 2008 The Sakai Foundation
@@ -47,7 +47,7 @@ import org.sakaiproject.tool.assessment.integration.helper.ifc.GradebookServiceH
  */
 public class GradebookServiceHelperImpl implements GradebookServiceHelper
 {
-	private static Log log = LogFactory.getLog(GradebookServiceHelperImpl.class);
+	private Log log = LogFactory.getLog(GradebookServiceHelperImpl.class);
 
 	public boolean isAssignmentDefined(String assessmentTitle, GradebookExternalAssessmentService g)
 	{

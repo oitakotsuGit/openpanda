@@ -8,7 +8,7 @@
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
    
 <!--
-* $Id: authorIndex.jsp 311430 2014-07-31 02:23:57Z enietzel@anisakai.com $
+* $Id: authorIndex.jsp 319085 2015-05-20 22:49:23Z enietzel@anisakai.com $
 <%--
 **********************************************************************************
 *
@@ -233,13 +233,13 @@ $(document).ready(function() {
 
 <div id="tabs">
 	<ul>
-		<h:outputText escape="false" value="<li><a href=\"#tabs-1\">" rendered="#{authorization.adminCoreAssessment}"/>
+		<h:outputText escape="false" value="<li><a href=\"#tabs-1\" onclick=\"resizeFrame();\">" rendered="#{authorization.adminCoreAssessment}"/>
 		<h:outputText escape="false" value="#{authorFrontDoorMessages.assessment_pending}:" rendered="#{authorization.adminCoreAssessment}"/>
 		<h:outputText escape="false" value="<span class=\"samigo-tab-sub\">" rendered="#{authorization.adminCoreAssessment}"/>
 		<h:outputText escape="false" value="#{authorFrontDoorMessages.assessment_pending_sub}" rendered="#{authorization.adminCoreAssessment}"/>
 		<h:outputText escape="false" value="</span></a></li>" rendered="#{authorization.adminCoreAssessment}"/>
 		
-		<h:outputText escape="false" value="<li><a href=\"#tabs-2\">" rendered="#{authorization.adminPublishedAssessment}"/>
+		<h:outputText escape="false" value="<li><a href=\"#tabs-2\" onclick=\"resizeFrame();\">" rendered="#{authorization.adminPublishedAssessment}"/>
 		<h:outputText escape="false" value="#{authorFrontDoorMessages.assessment_pub}:" rendered="#{authorization.adminPublishedAssessment}"/>
 		<h:outputText escape="false" value="<span class=\"samigo-tab-sub\">" rendered="#{authorization.adminPublishedAssessment}"/>
 		<h:outputText escape="false" value="#{authorFrontDoorMessages.assessment_pub_sub}" rendered="#{authorization.adminPublishedAssessment}"/>
@@ -325,25 +325,29 @@ $(document).ready(function() {
 	  <h:selectOneMenu id="publishedSelectAction1" value="select" onchange="clickPublishedSelectActionLink(this);" rendered="#{(author.isGradeable && publishedAssessment.submittedCount > 0) && (author.isEditable && (!author.editPubAssessmentRestricted || !publishedAssessment.hasAssessmentGradingData))}">
 		<f:selectItem itemLabel="#{authorMessages.select_action}" itemValue="select"/>
 		<f:selectItem itemLabel="#{authorMessages.action_scores}" itemValue="scores" />
-		<f:selectItem itemLabel="#{commonMessages.edit_action}" itemValue="edit_published" />
+		<f:selectItem itemLabel="#{commonMessages.edit_action}" itemValue="edit_published" itemDisabled="#{author.editPubAssessmentRestrictedAfterStarted && (publishedAssessment.submittedCount > 0 || publishedAssessment.inProgressCount > 0) && (publishedAssessment.retractDate == null || publishedAssessment.retractDate > author.currentTime)}"/>
 		<f:selectItems value="#{author.publishedSelectActionList}" />
+		<f:selectItem itemLabel="#{commonMessages.remove_action}" itemValue="remove_published" itemDisabled="#{!author.canRemovePublishedAssessments || (author.canRemovePublishedAssessmentsAfterStarted && (publishedAssessment.submittedCount > 0 || publishedAssessment.inProgressCount > 0) && (publishedAssessment.retractDate == null || publishedAssessment.retractDate > author.currentTime))}"/>
 		<f:valueChangeListener	type="org.sakaiproject.tool.assessment.ui.listener.author.ActionSelectListener" />
 	  </h:selectOneMenu>
 	  <h:selectOneMenu id="publishedSelectAction2" value="select" onchange="clickPublishedSelectActionLink(this);" rendered="#{(author.isGradeable && publishedAssessment.submittedCount > 0) && !(author.isEditable && (!author.editPubAssessmentRestricted || !publishedAssessment.hasAssessmentGradingData))}">
 		<f:selectItem itemLabel="#{authorMessages.select_action}" itemValue="select"/>
 		<f:selectItem itemLabel="#{authorMessages.action_scores}" itemValue="scores"/>
 		<f:selectItems value="#{author.publishedSelectActionList}" />
+		<f:selectItem itemLabel="#{commonMessages.remove_action}" itemValue="remove_published" itemDisabled="#{!author.canRemovePublishedAssessments || (author.canRemovePublishedAssessmentsAfterStarted && (publishedAssessment.submittedCount > 0 || publishedAssessment.inProgressCount > 0) && (publishedAssessment.retractDate == null || publishedAssessment.retractDate > author.currentTime))}"/>
 		<f:valueChangeListener	type="org.sakaiproject.tool.assessment.ui.listener.author.ActionSelectListener" />
 	  </h:selectOneMenu>
 	  <h:selectOneMenu id="publishedSelectAction3" value="select" onchange="clickPublishedSelectActionLink(this);" rendered="#{!(author.isGradeable && publishedAssessment.submittedCount > 0) && (author.isEditable && (!author.editPubAssessmentRestricted || !publishedAssessment.hasAssessmentGradingData))}">
 		<f:selectItem itemLabel="#{authorMessages.select_action}" itemValue="select"/>
-		<f:selectItem itemLabel="#{commonMessages.edit_action}" itemValue="edit_published"/>
+		<f:selectItem itemLabel="#{commonMessages.edit_action}" itemValue="edit_published" itemDisabled="#{author.editPubAssessmentRestrictedAfterStarted && (publishedAssessment.submittedCount > 0 || publishedAssessment.inProgressCount > 0) && (publishedAssessment.retractDate == null || publishedAssessment.retractDate > author.currentTime)}"/>
 		<f:selectItems value="#{author.publishedSelectActionList}" />
+		<f:selectItem itemLabel="#{commonMessages.remove_action}" itemValue="remove_published" itemDisabled="#{!author.canRemovePublishedAssessments || (author.canRemovePublishedAssessmentsAfterStarted && (publishedAssessment.submittedCount > 0 || publishedAssessment.inProgressCount > 0) && (publishedAssessment.retractDate == null || publishedAssessment.retractDate > author.currentTime))}"/>
 		<f:valueChangeListener	type="org.sakaiproject.tool.assessment.ui.listener.author.ActionSelectListener" />
 	  </h:selectOneMenu>
 	  <h:selectOneMenu id="publishedSelectAction4" value="select" onchange="clickPublishedSelectActionLink(this);" rendered="#{!(author.isGradeable && publishedAssessment.submittedCount > 0) && (author.isEditable && !(!author.editPubAssessmentRestricted || !publishedAssessment.hasAssessmentGradingData))}">
 		<f:selectItem itemLabel="#{authorMessages.select_action}" itemValue="select"/>
 		<f:selectItems value="#{author.publishedSelectActionList}" />
+		<f:selectItem itemLabel="#{commonMessages.remove_action}" itemValue="remove_published" itemDisabled="#{!author.canRemovePublishedAssessments || (author.canRemovePublishedAssessmentsAfterStarted && (publishedAssessment.submittedCount > 0 || publishedAssessment.inProgressCount > 0) && (publishedAssessment.retractDate == null || publishedAssessment.retractDate > author.currentTime))}"/>
 		<f:valueChangeListener	type="org.sakaiproject.tool.assessment.ui.listener.author.ActionSelectListener" />
 	  </h:selectOneMenu>
 

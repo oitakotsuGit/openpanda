@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/author/AuthorActionListener.java $
- * $Id: AuthorActionListener.java 311430 2014-07-31 02:23:57Z enietzel@anisakai.com $
+ * $Id: AuthorActionListener.java 319085 2015-05-20 22:49:23Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2008, 2009 The Sakai Foundation
@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -75,7 +76,7 @@ import org.sakaiproject.entity.api.ResourceProperties;
  * <p>Title: Samigo</p>2
  * <p>Description: Sakai Assessment Manager</p>
  * @author Ed Smiley
- * @version $Id: AuthorActionListener.java 311430 2014-07-31 02:23:57Z enietzel@anisakai.com $
+ * @version $Id: AuthorActionListener.java 319085 2015-05-20 22:49:23Z enietzel@anisakai.com $
  */
 
 public class AuthorActionListener
@@ -184,7 +185,10 @@ public class AuthorActionListener
 		author.setEditPubAssessmentRestricted(true);
 	}
     } 
-	
+
+	author.setEditPubAssessmentRestrictedAfterStarted(ServerConfigurationService.getBoolean("samigo.editPubAssessment.restricted.afterStart", false));
+	author.setCanRemovePublishedAssessmentsAfterStarted(ServerConfigurationService.getBoolean("samigo.removePubAssessment.restricted.afterStart", false));
+
 	AuthorizationBean authorizationBean = (AuthorizationBean) ContextUtil.lookupBean("authorization");
 	author.setIsGradeable(authorizationBean.getGradeAnyAssessment() || authorizationBean.getGradeOwnAssessment());
 	author.setIsEditable(authorizationBean.getEditAnyAssessment() || authorizationBean.getEditOwnAssessment());
@@ -369,15 +373,17 @@ public class AuthorActionListener
 				  PublishedAssessmentSettingsBean publishedAssessmentSettingsBean = (PublishedAssessmentSettingsBean) ContextUtil.lookupBean("publishedSettings");
 				  publishedAssessmentSettingsBean.setAssessmentId(f.getPublishedAssessmentId());
 				  String [] groupsAuthorized = publishedAssessmentSettingsBean.getGroupsAuthorized();
-                                  
+				  //Use a set to avoid duplicated entries in the userList
+				  HashSet<String> uuser = new HashSet<String>();                
 				  if(groupsAuthorized != null && groupsAuthorized.length > 0) {
 				  for (int i = 0; i < groupsAuthorized.length; i++) {
 					  if (groupUsersIdMap.get(groupsAuthorized[i]) != null) {
-						  for (String userId : groupUsersIdMap.get(groupsAuthorized[i])) {
-							  userIdList.add(userId);
+						  for (String userId : groupUsersIdMap.get(groupsAuthorized[i])) {							
+							  uuser.add(userId);
 						  }
 					  }
 				  }
+				  userIdList = new ArrayList<String>(uuser);
 			  }
 			  }
 			  else {

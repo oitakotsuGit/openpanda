@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-services/src/java/org/sakaiproject/tool/assessment/facade/SectionFacadeQueries.java $
- * $Id: SectionFacadeQueries.java 106521 2012-04-04 08:14:42Z david.horwitz@uct.ac.za $
+ * $Id: SectionFacadeQueries.java 319083 2015-05-20 22:24:13Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2008, 2009 The Sakai Foundation
@@ -36,7 +36,7 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 public class SectionFacadeQueries  extends HibernateDaoSupport implements SectionFacadeQueriesAPI {
-  private static Log log = LogFactory.getLog(SectionFacadeQueries.class);
+  private Log log = LogFactory.getLog(SectionFacadeQueries.class);
 
   public SectionFacadeQueries () {
   }

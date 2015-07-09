@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-services/src/java/org/sakaiproject/tool/assessment/facade/PublishedAssessmentFacade.java $
- * $Id: PublishedAssessmentFacade.java 311430 2014-07-31 02:23:57Z enietzel@anisakai.com $
+ * $Id: PublishedAssessmentFacade.java 319083 2015-05-20 22:24:13Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -49,7 +49,7 @@ public class PublishedAssessmentFacade
     implements java.io.Serializable, PublishedAssessmentIfc, Cloneable
 {
   private static final long serialVersionUID = 7526471155622776147L;
-  private static Log log = LogFactory.getLog(PublishedAssessmentFacade.class);
+  private Log log = LogFactory.getLog(PublishedAssessmentFacade.class);
   public static final Integer ACTIVE_STATUS =  Integer.valueOf(1);
   public static final Integer INACTIVE_STATUS = Integer.valueOf(0);
   public static final Integer ANY_STATUS = Integer.valueOf(2);
@@ -100,7 +100,7 @@ public class PublishedAssessmentFacade
   private Date lastNeedResubmitDate;
   private boolean activeStatus;
   private String releaseToGroups;
-  private ArrayList releaseToGroupsList = new ArrayList();
+  private List<String> releaseToGroupsList = new ArrayList<String>();
   private int enrolledStudentCount;
   private Integer timeLimit;
   private String lastModifiedDateForDisplay;
@@ -775,14 +775,16 @@ public class PublishedAssessmentFacade
   }
 
   public void setReleaseToGroupsList() {
-	  String [] groups = releaseToGroups.split(",");
-	  releaseToGroupsList = new ArrayList();
-	  for (int i = 0; i < groups.length; i++) {
-		  releaseToGroupsList.add(groups[i].trim());
+          
+          // SAM-2382
+          releaseToGroupsList = new ArrayList<String>();
+          for (String group : releaseToGroups.split(",")) {
+              releaseToGroupsList.add( group.trim());
 	  }
+          Collections.sort(releaseToGroupsList);
   }
   
-  public ArrayList getReleaseToGroupsList() {
+  public List<String> getReleaseToGroupsList() {
 	    return releaseToGroupsList;
   }
   

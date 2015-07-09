@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/portal/branches/sakai-10.x/portal-util/util/src/java/org/sakaiproject/portal/util/ToolUtils.java $
- * $Id: ToolUtils.java 132936 2013-12-29 16:13:46Z csev@umich.edu $
+ * $Id: ToolUtils.java 315821 2014-12-01 20:16:05Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2013 The Sakai Foundation

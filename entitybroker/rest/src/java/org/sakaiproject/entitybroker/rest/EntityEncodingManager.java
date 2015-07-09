@@ -1,5 +1,5 @@
 /**
- * $Id: EntityEncodingManager.java 306024 2014-02-17 11:34:32Z steve.swinsburg@gmail.com $
+ * $Id: EntityEncodingManager.java 315802 2014-12-01 17:40:02Z enietzel@anisakai.com $
  * $URL: https://source.sakaiproject.org/svn/entitybroker/branches/sakai-10.x/rest/src/java/org/sakaiproject/entitybroker/rest/EntityEncodingManager.java $
  * EntityEncodingManager.java - entity-broker - Jul 23, 2008 3:25:32 PM - azeckoski
  **************************************************************************
@@ -891,7 +891,8 @@ public class EntityEncodingManager {
         if (param == null || !(param instanceof String))
             return JSON_DEFAULT_CALLBACK;
         else
-            return param.toString();
+            // CVE-2014-4671 -- Mitigate 'Rosetta Flash' exploit by ensuring Flash embedded in callback will break
+            return "/**/" + param.toString();
     }
 
     /**

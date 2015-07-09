@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/bean/evaluation/ExportResponsesBean.java $
- * $Id: ExportResponsesBean.java 305964 2014-02-14 01:05:35Z ktsao@stanford.edu $
+ * $Id: ExportResponsesBean.java 318819 2015-05-13 14:37:43Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2007, 2008, 2009 The Sakai Foundation
@@ -193,8 +193,10 @@ public class ExportResponsesBean implements Serializable, PhaseAware {
         String responseString = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","response");
         String rationaleString = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","rationale");
         String itemGradingCommentsString = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","grader_comments");
+        String responseCommentsString = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","student_comments");
+        
         List exportResponsesDataList = gradingService.getExportResponsesData(assessmentId, anonymous, audioMessage, fileUploadMessage, noSubmissionMessage, 
-        		showPartAndTotalScoreSpreadsheetColumns, poolString, partString, questionString, responseString, rationaleString, itemGradingCommentsString, useridMap);
+        		showPartAndTotalScoreSpreadsheetColumns, poolString, partString, questionString, responseString, rationaleString, itemGradingCommentsString, useridMap, responseCommentsString);
         //SAM-1693 the returned list could be null -DH
         List<List<Object>> list = new ArrayList<List<Object>>();
         if (exportResponsesDataList != null) {
