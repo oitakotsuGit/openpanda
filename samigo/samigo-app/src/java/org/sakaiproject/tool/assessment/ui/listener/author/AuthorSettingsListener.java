@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/samigo-2.9.x/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/author/AuthorSettingsListener.java $
- * $Id: AuthorSettingsListener.java 71511 2010-01-15 22:35:10Z ktsao@stanford.edu $
+ * $Id: AuthorSettingsListener.java 320081 2015-07-09 15:33:35Z matthew.buckett@it.ox.ac.uk $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2007, 2008 The Sakai Foundation
@@ -47,7 +47,7 @@ import org.sakaiproject.util.FormattedText;
  * <p>Title: Samigo</p>
  * <p>Description: Sakai Assessment Manager</p>
  * @author Ed Smiley
- * @version $Id: AuthorSettingsListener.java 71511 2010-01-15 22:35:10Z ktsao@stanford.edu $
+ * @version $Id: AuthorSettingsListener.java 320081 2015-07-09 15:33:35Z matthew.buckett@it.ox.ac.uk $
  */
 
 public class AuthorSettingsListener implements ActionListener
@@ -61,32 +61,29 @@ public class AuthorSettingsListener implements ActionListener
   public void processAction(ActionEvent ae) throws AbortProcessingException
   {
     FacesContext context = FacesContext.getCurrentInstance();
-    //log.info("**debugging ActionEvent: " + ae);
-    //log.info("**debug requestParams: " + requestParams);
-    //log.info("**debug reqMap: " + reqMap);
-
-    AssessmentSettingsBean assessmentSettings = (AssessmentSettingsBean) ContextUtil.lookupBean(
-                                          "assessmentSettings");
+    
+    AssessmentSettingsBean assessmentSettings = (AssessmentSettingsBean) ContextUtil.lookupBean("assessmentSettings");
     // #1a - load the assessment
-    String assessmentId = (String) FacesContext.getCurrentInstance().
-        getExternalContext().getRequestParameterMap().get("assessmentId");
+    String assessmentId = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("assessmentId");
     if (assessmentId == null){
       assessmentId = assessmentSettings.getAssessmentId().toString();
     }
 
     AssessmentService assessmentService = new AssessmentService();
-    AssessmentFacade assessment = assessmentService.getAssessment(
-        assessmentId);
+    AssessmentFacade assessment = assessmentService.getAssessment(assessmentId);
 
     //#1b - permission checking before proceeding - daisyf
     AuthorBean author = (AuthorBean) ContextUtil.lookupBean("author");
     author.setOutcome("editAssessmentSettings");
-    if (!passAuthz(context, assessment.getCreatedBy())){
-	author.setOutcome("author");
-	return;
+    AuthorizationBean authzBean = (AuthorizationBean) ContextUtil.lookupBean("authorization");
+    if (!authzBean.isUserAllowedToEditAssessment(assessmentId, assessment.getCreatedBy(), false)) {
+      String err=(String)ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages", "denied_edit_assessment_error");
+      context.addMessage(null,new FacesMessage(err));
+      author.setOutcome("author");
+      return;
     }
 
-    // pass authz, move on
+    // passed authz checks, move on
     author.setIsEditPendingAssessmentFlow(true);
 
     assessmentSettings.setAssessment(assessment);
@@ -127,24 +124,4 @@ public class AuthorSettingsListener implements ActionListener
     }
   }
 
-  public boolean passAuthz(FacesContext context, String ownerId){
-    AuthorizationBean authzBean = (AuthorizationBean) ContextUtil.lookupBean("authorization");
-    boolean hasPrivilege_any = authzBean.getEditAnyAssessment();
-    boolean hasPrivilege_own0 = authzBean.getEditOwnAssessment();
-    boolean hasPrivilege_own = (hasPrivilege_own0 && isOwner(ownerId));
-    boolean hasPrivilege = (hasPrivilege_any || hasPrivilege_own);
-    if (!hasPrivilege){
-      String err=(String)ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages",
-		     "denied_edit_assessment_error");
-      context.addMessage(null,new FacesMessage(err));
-    }
-    return hasPrivilege;
-  }
-
-  public boolean isOwner(String ownerId){
-    boolean isOwner = false;
-    String agentId = AgentFacade.getAgentString();
-    isOwner = agentId.equals(ownerId);
-    return isOwner;
-  }
 }

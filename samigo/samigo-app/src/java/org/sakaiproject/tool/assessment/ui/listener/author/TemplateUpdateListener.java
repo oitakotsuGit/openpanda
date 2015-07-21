@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/samigo-2.9.x/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/author/TemplateUpdateListener.java $
- * $Id: TemplateUpdateListener.java 71511 2010-01-15 22:35:10Z ktsao@stanford.edu $
+ * $Id: TemplateUpdateListener.java 320081 2015-07-09 15:33:35Z matthew.buckett@it.ox.ac.uk $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2008, 2009 The Sakai Foundation
@@ -56,13 +56,14 @@ import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
 import org.sakaiproject.tool.assessment.ui.listener.author.TemplateListener;
 import org.sakaiproject.tool.assessment.util.TextFormat;
 import org.sakaiproject.util.FormattedText;
+import org.sakaiproject.user.cover.UserDirectoryService;
 
 /**
  * <p>Description: Action Listener for template updates</p>
  * <p>Copyright: Copyright (c) 2004</p>
  * <p>Organization: Sakai Project</p>
  * @author Ed Smiley
- * @version $Id: TemplateUpdateListener.java 71511 2010-01-15 22:35:10Z ktsao@stanford.edu $
+ * @version $Id: TemplateUpdateListener.java 320081 2015-07-09 15:33:35Z matthew.buckett@it.ox.ac.uk $
  */
 
 public class TemplateUpdateListener
@@ -182,14 +183,24 @@ public class TemplateUpdateListener
       }
       else
       {
-        template =
-          (delegate.getAssessmentTemplate(templateIdString)).getData();
+        template = (delegate.getAssessmentTemplate(templateIdString)).getData();
+        if (template == null) {
+          log.info("Can't find template " + templateIdString);
+          throw new AbortProcessingException("Can't find template ");
+         }
       }
 
       template.setTitle(templateBean.getTemplateName());
-      if (templateBean.getTemplateAuthor() != null)
-        templateBean.getValueMap().put
-          ("author", TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, templateBean.getTemplateAuthor()));
+      
+      // ignore any author set by the user
+      if (!"0".equals(templateIdString)) {
+        String author =  (String)template.getCreatedBy();
+        if (author == null || !author.equals(UserDirectoryService.getCurrentUser().getId())) {
+          log.info("trying to update template not your own " + author + " " + UserDirectoryService.getCurrentUser().getId());
+          throw new AbortProcessingException("Attempted to update template owned by another author " + author + " " + UserDirectoryService.getCurrentUser().getId());
+        }
+      }
+
       template.setDescription(templateBean.getTemplateDescription());
 
       // Assessment Access Control

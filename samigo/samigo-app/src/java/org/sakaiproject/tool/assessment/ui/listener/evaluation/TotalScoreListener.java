@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/samigo-2.9.x/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/evaluation/TotalScoreListener.java $
- * $Id: TotalScoreListener.java 127215 2013-07-18 14:29:30Z ottenhoff@longsight.com $
+ * $Id: TotalScoreListener.java 320081 2015-07-09 15:33:35Z matthew.buckett@it.ox.ac.uk $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -83,7 +83,7 @@ import org.sakaiproject.util.FormattedText;
  * <p>Copyright: Copyright (c) 2004</p>
  * <p>Organization: Sakai Project</p>
  * @author Ed Smiley
- * @version $Id: TotalScoreListener.java 127215 2013-07-18 14:29:30Z ottenhoff@longsight.com $
+ * @version $Id: TotalScoreListener.java 320081 2015-07-09 15:33:35Z matthew.buckett@it.ox.ac.uk $
  */
 
 public class TotalScoreListener
@@ -166,9 +166,12 @@ public class TotalScoreListener
     AuthorBean author = (AuthorBean) ContextUtil.lookupBean("author");
     author.setOutcome("totalScores");
 
-    if (pubAssessment != null && !passAuthz(context, pubAssessment.getCreatedBy())){
-      author.setOutcome("author");
-      return;
+    AuthorizationBean authzBean = (AuthorizationBean) ContextUtil.lookupBean("authorization");
+    if (pubAssessment != null && !authzBean.isUserAllowedToGradeAssessment(publishedId, pubAssessment.getCreatedBy(), true)) {
+       String err=(String)ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages", "denied_grade_assessment_error");
+       context.addMessage("authorIndexForm:grade_assessment_denied" ,new FacesMessage(err));
+       author.setOutcome("author");
+       return;
     }
 
     // set action mode
@@ -420,28 +423,6 @@ log.debug("totallistener: firstItem = " + bean.getFirstItem());
     }
 
     return true;
-  }
-
-
- public boolean passAuthz(FacesContext context, String ownerId){
-    AuthorizationBean authzBean = (AuthorizationBean) ContextUtil.lookupBean("authorization");
-    boolean hasPrivilege_any = authzBean.getGradeAnyAssessment();
-    boolean hasPrivilege_own0 = authzBean.getGradeOwnAssessment();
-    boolean hasPrivilege_own = (hasPrivilege_own0 && isOwner(ownerId));
-    boolean hasPrivilege = (hasPrivilege_any || hasPrivilege_own);
-    if (!hasPrivilege){
-       String err=(String)ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages", "denied_grade_assessment_error");
-       context.addMessage("authorIndexForm:grade_assessment_denied" ,new FacesMessage(err));
-    }
-    return hasPrivilege;
-  }
-
-  public boolean isOwner(String ownerId){
-    boolean isOwner = false;
-    String agentId = AgentFacade.getAgentString();
-    isOwner = agentId.equals(ownerId);
-    log.debug("***isOwner="+isOwner);
-    return isOwner;
   }
 
   public Integer getScoringType(PublishedAssessmentData pub){

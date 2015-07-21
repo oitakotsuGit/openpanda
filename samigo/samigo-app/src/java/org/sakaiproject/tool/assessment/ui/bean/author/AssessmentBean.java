@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/samigo-2.9.x/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/bean/author/AssessmentBean.java $
- * $Id: AssessmentBean.java 92360 2011-04-27 17:48:56Z ktsao@stanford.edu $
+ * $Id: AssessmentBean.java 320081 2015-07-09 15:33:35Z matthew.buckett@it.ox.ac.uk $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2007, 2008 The Sakai Foundation
@@ -59,7 +59,7 @@ public class AssessmentBean  implements Serializable {
   private String title;
   // ArrayList of SectionContentsBean
   private ArrayList sections = new ArrayList(); // this contains list of SectionFacde
-  private ArrayList sectionList = new ArrayList(); // this contains list of javax.faces.model.SelectItem
+  private ArrayList <SelectItem> sectionList = new ArrayList<SelectItem>(); // this contains list of javax.faces.model.SelectItem
   private ArrayList otherSectionList = new ArrayList(); // contains SectionItem of section except the current section
   private ArrayList partNumbers = new ArrayList();
   private int questionSize=0;
@@ -237,7 +237,7 @@ public class AssessmentBean  implements Serializable {
    */
   public void setSectionList(ArrayList list){
     //this.assessmentTemplateIter = new AssessmentTemplateIteratorFacade(list);
-    this.sectionList = new ArrayList();
+    this.sectionList = new ArrayList<SelectItem>();
     try{
       for (int i=0; i<list.size();i++){
         SectionDataIfc f = (SectionDataIfc) list.get(i);
@@ -257,7 +257,7 @@ public class AssessmentBean  implements Serializable {
     }
   }
 
-  public ArrayList getSectionList(){
+  public ArrayList<SelectItem> getSectionList(){
     return sectionList;
   }
 

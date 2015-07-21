@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/samigo-2.9.x/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/author/RemovePublishedAssessmentListener.java $
- * $Id: RemovePublishedAssessmentListener.java 101163 2011-11-29 15:48:04Z holladay@longsight.com $
+ * $Id: RemovePublishedAssessmentListener.java 320081 2015-07-09 15:33:35Z matthew.buckett@it.ox.ac.uk $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2007, 2008 The Sakai Foundation
@@ -45,22 +45,21 @@ import org.sakaiproject.tool.assessment.integration.helper.ifc.GradebookServiceH
 import org.sakaiproject.tool.assessment.services.assessment.PublishedAssessmentService;
 import org.sakaiproject.tool.assessment.ui.bean.author.AuthorBean;
 import org.sakaiproject.tool.assessment.ui.bean.author.PublishedAssessmentBean;
+import org.sakaiproject.tool.assessment.ui.bean.authz.AuthorizationBean;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
 /**
  * <p>Title: Samigo</p>
  * <p>Description: Sakai Assessment Manager</p>
  * @author Ed Smiley
- * @version $Id: RemovePublishedAssessmentListener.java 101163 2011-11-29 15:48:04Z holladay@longsight.com $
+ * @version $Id: RemovePublishedAssessmentListener.java 320081 2015-07-09 15:33:35Z matthew.buckett@it.ox.ac.uk $
  */
 
 public class RemovePublishedAssessmentListener
     implements ActionListener
 {
   private static Log log = LogFactory.getLog(RemovePublishedAssessmentListener.class);
-  private static final GradebookServiceHelper gbsHelper =
-		IntegrationContextFactory.getInstance().getGradebookServiceHelper();
-  private static final boolean integrated =
-		IntegrationContextFactory.getInstance().isIntegrated();
+  private static final GradebookServiceHelper gbsHelper = IntegrationContextFactory.getInstance().getGradebookServiceHelper();
+  private static final boolean integrated = IntegrationContextFactory.getInstance().isIntegrated();
   private CalendarServiceHelper calendarService = IntegrationContextFactory.getInstance().getCalendarServiceHelper();
 
   public RemovePublishedAssessmentListener()
@@ -76,8 +75,13 @@ public class RemovePublishedAssessmentListener
       log.debug("assessmentId = " + assessmentId); 	    
       PublishedAssessmentService assessmentService = new PublishedAssessmentService();
       //get assessment to see if it has a calendar event
-      PublishedAssessmentFacade assessment = assessmentService.getPublishedAssessment(
-				assessmentId.toString());
+      PublishedAssessmentFacade assessment = assessmentService.getPublishedAssessment(assessmentId.toString());
+
+      AuthorizationBean authzBean = (AuthorizationBean) ContextUtil.lookupBean("authorization"); 
+      if (!authzBean.isUserAllowedToDeleteAssessment(assessmentId, assessment.getCreatedBy(), true)) {
+        throw new IllegalArgumentException("User does not have permission to delete assessmentId " + assessmentId);
+      }
+
       assessmentService.removeAssessment(assessmentId, "remove");
       removeFromGradebook(assessmentId);
       

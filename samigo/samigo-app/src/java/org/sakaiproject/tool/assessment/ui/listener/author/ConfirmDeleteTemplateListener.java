@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/samigo-2.9.x/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/author/ConfirmDeleteTemplateListener.java $
- * $Id: ConfirmDeleteTemplateListener.java 59684 2009-04-03 23:33:27Z arwhyte@umich.edu $
+ * $Id: ConfirmDeleteTemplateListener.java 320081 2015-07-09 15:33:35Z matthew.buckett@it.ox.ac.uk $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2008 The Sakai Foundation
@@ -31,6 +31,7 @@ import javax.faces.event.ActionListener;
 import org.sakaiproject.tool.assessment.facade.AssessmentTemplateFacade;
 import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
 import org.sakaiproject.tool.assessment.ui.bean.author.TemplateBean;
+import org.sakaiproject.user.cover.UserDirectoryService;
 
 /**
  * <p> Stub</p>
@@ -38,14 +39,13 @@ import org.sakaiproject.tool.assessment.ui.bean.author.TemplateBean;
  * <p>Copyright: Copyright (c) 2004</p>
  * <p>Organization: Sakai Project</p>
  * @author Ed Smiley
- * @version $Id: ConfirmDeleteTemplateListener.java 59684 2009-04-03 23:33:27Z arwhyte@umich.edu $
+ * @version $Id: ConfirmDeleteTemplateListener.java 320081 2015-07-09 15:33:35Z matthew.buckett@it.ox.ac.uk $
  */
 
 public class ConfirmDeleteTemplateListener
   extends TemplateBaseListener
   implements ActionListener
 {
-  //private static Log log = LogFactory.getLog(ConfirmDeleteTemplateListener.class);
 
   public void processAction(ActionEvent ae) throws
     AbortProcessingException
@@ -61,6 +61,10 @@ public class ConfirmDeleteTemplateListener
     AssessmentTemplateFacade template = assessmentService.getAssessmentTemplate(templateId);
 
     TemplateBean templateBean = lookupTemplateBean(context);
+    String author =  (String)template.getCreatedBy();
+    if (author == null || !author.equals(UserDirectoryService.getCurrentUser().getId())) {
+        throw new AbortProcessingException("Attempted to delete template owned by another " + author + " " + UserDirectoryService.getCurrentUser().getId());
+    }
     templateBean.setIdString(templateId);
     templateBean.setTemplateName(template.getTitle());
   }

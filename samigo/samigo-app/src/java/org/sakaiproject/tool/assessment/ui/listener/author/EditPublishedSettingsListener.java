@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/samigo-2.9.x/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/author/EditPublishedSettingsListener.java $
- * $Id: EditPublishedSettingsListener.java 71511 2010-01-15 22:35:10Z ktsao@stanford.edu $
+ * $Id: EditPublishedSettingsListener.java 320081 2015-07-09 15:33:35Z matthew.buckett@it.ox.ac.uk $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2007, 2008 The Sakai Foundation
@@ -51,7 +51,7 @@ import org.sakaiproject.component.cover.ServerConfigurationService;
  * <p>Title: Samigo</p>
  * <p>Description: Sakai Assessment Manager</p>
  * @author Ed Smiley
- * @version $Id: EditPublishedSettingsListener.java 71511 2010-01-15 22:35:10Z ktsao@stanford.edu $
+ * @version $Id: EditPublishedSettingsListener.java 320081 2015-07-09 15:33:35Z matthew.buckett@it.ox.ac.uk $
  */
 
 public class EditPublishedSettingsListener
@@ -82,9 +82,19 @@ public class EditPublishedSettingsListener
         assessmentId);
 
     //## - permission checking before proceeding - daisyf
-    if (!passAuthz(context, assessment.getCreatedBy())){
-      author.setOutcome("author");
-      return;
+    AuthorizationBean authzBean = (AuthorizationBean) ContextUtil.lookupBean("authorization");
+    if (!authzBean.isUserAllowedToPublishAssessment(assessmentId, assessment.getCreatedBy(), true)) {
+        String err=(String)ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages",
+                                                 "denied_edit_publish_assessment_settings_error");
+        context.addMessage(null,new FacesMessage(err));
+        author.setOutcome("author");
+        return;
+    }
+    else if (!authzBean.isUserAllowedToEditAssessment(assessmentId, assessment.getCreatedBy(), true)) {
+          String err=(String)ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages", "denied_edit_assessment_error");
+          context.addMessage(null,new FacesMessage(err));
+          author.setOutcome("author");
+          return;
     }
     author.setOutcome("editPublishedAssessmentSettings");
     author.setIsEditPendingAssessmentFlow(false);
@@ -134,27 +144,6 @@ public class EditPublishedSettingsListener
     else {
     	assessmentSettings.setEditPubAnonyGradingRestricted(false);
     }
-  }
-
-  public boolean passAuthz(FacesContext context, String ownerId){
-    AuthorizationBean authzBean = (AuthorizationBean) ContextUtil.lookupBean("authorization");
-    boolean hasPrivilege_any = authzBean.getPublishAnyAssessment();
-    boolean hasPrivilege_own0 = authzBean.getPublishOwnAssessment();
-    boolean hasPrivilege_own = (hasPrivilege_own0 && isOwner(ownerId));
-    boolean hasPrivilege = (hasPrivilege_any || hasPrivilege_own);
-    if (!hasPrivilege){
-      String err=(String)ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages",
-                                               "denied_edit_publish_assessment_settings_error");
-      context.addMessage(null,new FacesMessage(err));
-    }
-    return hasPrivilege;
-  }
-
-  public boolean isOwner(String ownerId){
-    boolean isOwner = false;
-    String agentId = AgentFacade.getAgentString();
-    isOwner = agentId.equals(ownerId);
-    return isOwner;
   }
   
   private boolean isRetractedForEdit(PublishedAssessmentFacade publishedAssessmentFacade) {

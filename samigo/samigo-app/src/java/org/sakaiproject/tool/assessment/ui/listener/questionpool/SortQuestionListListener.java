@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/samigo-2.9.x/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/questionpool/SortQuestionListListener.java $
- * $Id: SortQuestionListListener.java 59684 2009-04-03 23:33:27Z arwhyte@umich.edu $
+ * $Id: SortQuestionListListener.java 320081 2015-07-09 15:33:35Z matthew.buckett@it.ox.ac.uk $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2008 The Sakai Foundation
@@ -23,6 +23,9 @@
 package org.sakaiproject.tool.assessment.ui.listener.questionpool;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import org.sakaiproject.tool.assessment.ui.bean.shared.PersonBean;
 
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
@@ -37,7 +40,7 @@ import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
 /**
  * <p>Title: Samigo</p>2
  * <p>Description: Sakai Assessment Manager</p>
- * @version $Id: SortQuestionListListener.java 59684 2009-04-03 23:33:27Z arwhyte@umich.edu $
+ * @version $Id: SortQuestionListListener.java 320081 2015-07-09 15:33:35Z matthew.buckett@it.ox.ac.uk $
  */
 
 public class SortQuestionListListener
@@ -65,7 +68,18 @@ public class SortQuestionListListener
     questionpoolbean.setSortQuestionAscending(Boolean.valueOf(ContextUtil.lookupParam("ascending")).booleanValue());
     
     String qpid=ContextUtil.lookupParam("qpid");
+
     QuestionPoolService delegate = new QuestionPoolService();
+
+    // Check permission to this pool
+    PersonBean person = (PersonBean) ContextUtil.lookupBean("person");
+    String userId = person.getId();
+
+    List<Long> poolsWithAccess = delegate.getPoolIdsByAgent(userId);
+    if (!poolsWithAccess.contains(Long.valueOf(qpid))) {
+        throw new IllegalArgumentException("userId " + userId + " does not have access to question pool id " + qpid);
+    }
+
     ArrayList list= null;
     if (qpid==null ||("").equals(qpid)){
      list = delegate.getAllItemsSorted(questionpoolbean.getCurrentPool().getId(), orderBy, ascending);

@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/samigo-2.9.x/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/author/AuthorAssessmentListener.java $
- * $Id: AuthorAssessmentListener.java 98413 2011-09-19 21:51:29Z ktsao@stanford.edu $
+ * $Id: AuthorAssessmentListener.java 320081 2015-07-09 15:33:35Z matthew.buckett@it.ox.ac.uk $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2007, 2008 The Sakai Foundation
@@ -54,7 +54,7 @@ import org.sakaiproject.util.FormattedText;
  * <p>Title: Samigo</p>2
  * <p>Description: Sakai Assessment Manager</p>
  * @author Ed Smiley
- * @version $Id: AuthorAssessmentListener.java 98413 2011-09-19 21:51:29Z ktsao@stanford.edu $
+ * @version $Id: AuthorAssessmentListener.java 320081 2015-07-09 15:33:35Z matthew.buckett@it.ox.ac.uk $
  */
 
 public class AuthorAssessmentListener
@@ -83,10 +83,13 @@ public class AuthorAssessmentListener
     lookupBean("assessmentSettings");
     author.setOutcome("createAssessment");
     author.setFirstFromPage("editAssessment");
-    if (!passAuthz(context)){
-      author.setOutcome("author");
-      return;
-    }
+    AuthorizationBean authzBean = (AuthorizationBean) ContextUtil.lookupBean("authorization");
+    if (!authzBean.isUserAllowedToCreateAssessment()) {
+        String err=(String)ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages", "denied_create_assessment_error");
+        context.addMessage(null,new FacesMessage(err));
+        author.setOutcome("author");
+        return;
+	}
 
     // pass authz test, move on
     AssessmentBean assessmentBean = (AssessmentBean) ContextUtil.lookupBean(
@@ -170,17 +173,5 @@ public class AuthorAssessmentListener
     catch(Exception e){
       throw new Exception(e);
     }
-  }
-
-  public boolean passAuthz(FacesContext context){
-    AuthorizationBean authzBean = (AuthorizationBean) ContextUtil.lookupBean(
-                         "authorization");
-    boolean hasPrivilege = authzBean.getCreateAssessment();
-    if (!hasPrivilege){
-      String err=(String)ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages",
-                  "denied_create_assessment_error");
-      context.addMessage(null,new FacesMessage(err));
-    }
-    return hasPrivilege;
   }
 }

@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/samigo-2.9.x/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/author/TemplateLoadListener.java $
- * $Id: TemplateLoadListener.java 100218 2011-10-28 05:48:28Z ktsao@stanford.edu $
+ * $Id: TemplateLoadListener.java 320081 2015-07-09 15:33:35Z matthew.buckett@it.ox.ac.uk $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2008 The Sakai Foundation
@@ -39,19 +39,21 @@ import org.sakaiproject.tool.assessment.data.dao.assessment.AssessmentFeedback;
 import org.sakaiproject.tool.assessment.data.dao.assessment.EvaluationModel;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentAccessControlIfc;
 import org.sakaiproject.tool.assessment.facade.AssessmentTemplateFacade;
+import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
+import org.sakaiproject.tool.assessment.data.dao.shared.TypeD;
 import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
 import org.sakaiproject.tool.assessment.ui.bean.author.TemplateBean;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
 import org.sakaiproject.tool.assessment.ui.bean.shared.BackingBean;
 import org.sakaiproject.util.FormattedText;
-
+import org.sakaiproject.user.cover.UserDirectoryService;
 
 /**
  * <p>Description: Action Listener for loading a template</p>
  * <p>Copyright: Copyright (c) 2004</p>
  * <p>Organization: Sakai Project</p>
  * @author Ed Smiley
- * @version $Id: TemplateLoadListener.java 100218 2011-10-28 05:48:28Z ktsao@stanford.edu $
+ * @version $Id: TemplateLoadListener.java 320081 2015-07-09 15:33:35Z matthew.buckett@it.ox.ac.uk $
  */
 
 public class TemplateLoadListener
@@ -72,6 +74,15 @@ public class TemplateLoadListener
     TemplateBean templateBean = lookupTemplateBean(context);
     //log.info("id=" + cu.lookupParam("templateId"));
     String templateId = cu.lookupParam("templateId");
+
+    AssessmentService assessmentService = new AssessmentService();
+    AssessmentTemplateFacade template = assessmentService.getAssessmentTemplate(templateId);
+    String author = template.getCreatedBy();
+    if (!(author != null && author.equals(UserDirectoryService.getCurrentUser().getId())) && !template.getTypeId().equals(TypeIfc.TEMPLATE_SYSTEM_DEFINED)) {
+        log.error("User attempted to load template owned by another author " + author + " " + UserDirectoryService.getCurrentUser().getId());
+        throw new AbortProcessingException("Attempted to load template owned by another author " + author + " " + UserDirectoryService.getCurrentUser().getId());
+     }
+
     loadAssessment(templateBean, templateId);
   }
 

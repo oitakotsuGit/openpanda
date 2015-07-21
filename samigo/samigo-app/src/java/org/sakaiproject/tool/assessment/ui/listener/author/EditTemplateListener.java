@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/samigo-2.9.x/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/author/EditTemplateListener.java $
- * $Id: EditTemplateListener.java 75259 2010-03-24 22:37:25Z lydial@stanford.edu $
+ * $Id: EditTemplateListener.java 320081 2015-07-09 15:33:35Z matthew.buckett@it.ox.ac.uk $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2007, 2008 The Sakai Foundation
@@ -87,6 +87,7 @@ public class EditTemplateListener
     templateBean.setTypeId(null); //new template
     templateBean.setValueMap(getMetaDataMap());
     templateBean.setMarkForReview(Boolean.FALSE);
+
   }
 
   // meta data contains the list of "can edit" option and we want to set

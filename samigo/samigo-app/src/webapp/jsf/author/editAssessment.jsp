@@ -8,7 +8,7 @@
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <!--
-* $Id: editAssessment.jsp 118584 2013-01-22 18:19:46Z ktsao@stanford.edu $
+* $Id: editAssessment.jsp 320081 2015-07-09 15:33:35Z matthew.buckett@it.ox.ac.uk $
 <%--
 ***********************************************************************************
 *
@@ -126,7 +126,7 @@ document.links[newindex].onclick();
 
  </div>
   <p class="navViewAction">
-      <h:commandLink  title="#{authorMessages.t_preview}" action="beginAssessment">
+      <h:commandLink  title="#{commonMessages.action_preview}" action="beginAssessment" rendered="#{assessmentBean.assessmentId > 0}">
         <h:outputText value="#{authorMessages.t_preview}"/>
         <f:param name="assessmentId" value="#{assessmentBean.assessmentId}"/>
         <f:param name="actionString" value="previewAssessment" />
@@ -149,7 +149,7 @@ document.links[newindex].onclick();
 
     <h:outputText value=" #{authorMessages.separator} " />
 	
-	<h:commandLink title="#{authorMessages.t_settings}" id="editAssessmentSettings_editAssessment" action="editAssessmentSettings" immediate="true" rendered="#{author.isEditPendingAssessmentFlow}">
++	<h:commandLink title="#{authorMessages.t_settings}" id="editAssessmentSettings_editAssessment" action="editAssessmentSettings" immediate="true" rendered="#{author.isEditPendingAssessmentFlow && assessmentBean.assessmentId > 0}">
         <h:outputText value="#{commonMessages.settings_action}" />
 	    <f:param name="assessmentId" value="#{assessmentBean.assessmentId}"/>
 	    <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.AuthorSettingsListener" />

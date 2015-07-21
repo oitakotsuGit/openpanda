@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/samigo-2.9.x/samigo-api/src/java/org/sakaiproject/tool/assessment/data/ifc/shared/TypeIfc.java $
- * $Id: TypeIfc.java 95934 2011-07-29 22:13:46Z ktsao@stanford.edu $
+ * $Id: TypeIfc.java 320081 2015-07-09 15:33:35Z matthew.buckett@it.ox.ac.uk $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2008, 2009 The Sakai Foundation
@@ -41,6 +41,7 @@ public interface TypeIfc extends java.io.Serializable {
   // these are section type available in this site,
   public static Long DEFAULT_SECTION = Long.valueOf(21);
   // these are assessment template type available in this site,
+  public static final Long TEMPLATE_SYSTEM_DEFINED = Long.valueOf(142);
   public static Long TEMPLATE_QUIZ = Long.valueOf(41);
   public static Long TEMPLATE_HOMEWORK = Long.valueOf(42);
   public static Long TEMPLATE_MIDTERM = Long.valueOf(43);
