@@ -1,7 +1,7 @@
 /**********************************************************************************
 
  * $URL: https://source.sakaiproject.org/svn/site-manage/branches/sakai-10.x/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java $
- * $Id: SiteAction.java 315797 2014-12-01 17:30:10Z enietzel@anisakai.com $
+ * $Id: SiteAction.java 320406 2015-08-05 13:58:05Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2003, 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -747,6 +747,9 @@ public class SiteAction extends PagedResourceActionII {
 	private final static String SAK_PROP_SKIP_MANUAL_COURSE_CREATION = "wsetup.skipManualCourseCreation";
 	private final static String SAK_PROP_SKIP_COURSE_SECTION_SELECTION = "wsetup.skipCourseSectionSelection";
 	private static final String SAK_PROP_FILTER_TERMS = "worksitesetup.filtertermdropdowns";
+
+    //SAK-22432 Template descriptions are not copied
+    private final static String SAK_PROP_COPY_TEMPLATE_DESCRIPTION = "site.setup.copy.template.description";
 
 	private List prefLocales = new ArrayList();
 	
@@ -14216,8 +14219,12 @@ private Map<String,List> getTools(SessionState state, String type, Site site) {
 			siteInfo.title = StringUtils.trimToNull(params.getString("siteTitleField"));
 			siteInfo.term = StringUtils.trimToNull(params.getString("selectTermTemplate"));
 			siteInfo.iconUrl = templateSite.getIconUrl();
-			// description is site-specific. Shouldn't come from template
-			// siteInfo.description = templateSite.getDescription();
+			
+			Boolean copyTemplateDescription = ServerConfigurationService.getBoolean(SAK_PROP_COPY_TEMPLATE_DESCRIPTION, Boolean.TRUE);
+			if(copyTemplateDescription.booleanValue()){
+				siteInfo.description = templateSite.getDescription();
+			}
+			
 			siteInfo.short_description = templateSite.getShortDescription();
 			siteInfo.joinable = templateSite.isJoinable();
 			siteInfo.joinerRole = templateSite.getJoinerRole();

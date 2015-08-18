@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/kernel/branches/sakai-10.x/api/src/main/java/org/sakaiproject/event/api/NotificationService.java $
- * $Id: NotificationService.java 105077 2012-02-24 22:54:29Z ottenhoff@longsight.com $
+ * $Id: NotificationService.java 320149 2015-07-14 20:20:03Z matthew@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2008 Sakai Foundation

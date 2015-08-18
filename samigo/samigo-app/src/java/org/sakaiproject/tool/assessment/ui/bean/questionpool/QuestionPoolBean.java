@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/bean/questionpool/QuestionPoolBean.java $
- * $Id: QuestionPoolBean.java 319771 2015-06-04 21:09:24Z matthew@longsight.com $
+ * $Id: QuestionPoolBean.java 320245 2015-07-23 14:31:37Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -73,12 +73,15 @@ import org.sakaiproject.user.api.UserNotDefinedException;
 import org.sakaiproject.user.cover.UserDirectoryService;
 import org.sakaiproject.util.ResourceLoader;
 import org.sakaiproject.event.cover.EventTrackingService;
+import org.sakaiproject.tool.assessment.facade.AssessmentFacade;
+import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
+import org.sakaiproject.tool.assessment.ui.bean.authz.AuthorizationBean;
 
 
 /**
  * This holds question pool information.
  *
- * $Id: QuestionPoolBean.java 319771 2015-06-04 21:09:24Z matthew@longsight.com $
+ * $Id: QuestionPoolBean.java 320245 2015-07-23 14:31:37Z enietzel@anisakai.com $
  */
 public class QuestionPoolBean implements Serializable
 {
@@ -1311,6 +1314,20 @@ public String getAddOrEdit()
 		    err=rb.getString("no_pools_error");
 		    context.addMessage(null, new FacesMessage(err));
 		    return "editAssessment";
+		}
+		
+		// permission check to ensure the user should have access to the questions being copied
+		AuthorizationBean authzBean = (AuthorizationBean) ContextUtil.lookupBean("authorization");
+		AssessmentService assessmentService = new AssessmentService();
+		AssessmentFacade af = assessmentService.getBasicInfoOfAnAssessmentFromSectionId(new Long(sectionId));
+		String assessmentId = af.getAssessmentBaseId().toString();
+		String createdBy = af.getCreatedBy();
+		if (!authzBean.isUserAllowedToEditAssessment(assessmentId, createdBy, false))
+		{
+			FacesContext context = FacesContext.getCurrentInstance();
+			String err = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages", "denied_edit_assessment_error");
+			context.addMessage(null, new FacesMessage(err));
+			return "editAssessment";
 		}
 
 		if (iter.hasNext()) {

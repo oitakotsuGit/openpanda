@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/author/SavePartListener.java $
- * $Id: SavePartListener.java 128687 2013-08-20 18:46:26Z ktsao@stanford.edu $
+ * $Id: SavePartListener.java 320245 2015-07-23 14:31:37Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -58,6 +58,7 @@ import org.sakaiproject.tool.assessment.services.assessment.PublishedAssessmentS
 import org.sakaiproject.tool.assessment.ui.bean.author.AssessmentBean;
 import org.sakaiproject.tool.assessment.ui.bean.author.AuthorBean;
 import org.sakaiproject.tool.assessment.ui.bean.author.SectionBean;
+import org.sakaiproject.tool.assessment.ui.bean.authz.AuthorizationBean;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
 import org.sakaiproject.tool.assessment.util.TextFormat;
 import org.sakaiproject.util.FormattedText;
@@ -66,7 +67,7 @@ import org.sakaiproject.util.FormattedText;
  * <p>Title: Samigo</p>2
  * <p>Description: Sakai Assessment Manager</p>
  * @author Ed Smiley
- * @version $Id: SavePartListener.java 128687 2013-08-20 18:46:26Z ktsao@stanford.edu $
+ * @version $Id: SavePartListener.java 320245 2015-07-23 14:31:37Z enietzel@anisakai.com $
  */
 
 public class SavePartListener
@@ -107,7 +108,7 @@ public class SavePartListener
     
     AuthorBean author = (AuthorBean) ContextUtil.lookupBean("author");
     isEditPendingAssessmentFlow = author.getIsEditPendingAssessmentFlow();
-
+	
     // #1a. prepare sectionBean
     AssessmentService assessmentService = null;
     SectionFacade section = null;
@@ -119,9 +120,21 @@ public class SavePartListener
     	EventTrackingService.post(EventTrackingService.newEvent("sam.pubassessment.revise", "siteId=" + AgentFacade.getCurrentSiteId() + ", sectionId=" + sectionId, true));
     	assessmentService = new PublishedAssessmentService();
     }
-    
-    boolean addItemsFromPool = false;
+	
+    // permission check
+    AssessmentFacade a = assessmentService.getBasicInfoOfAnAssessment(assessmentId);
+    String creator = a.getCreatedBy();
+    AuthorizationBean authzBean = (AuthorizationBean) ContextUtil.lookupBean("authorization");
+    if (!authzBean.isUserAllowedToEditAssessment(assessmentId, creator, !isEditPendingAssessmentFlow))
+    {
+        String err = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages", "denied_edit_assessment_error");
+        context.addMessage(null, new FacesMessage(err));
+        sectionBean.setOutcome("editPart");
+        return;
+    }
 
+    boolean addItemsFromPool = false;
+	
     sectionBean.setOutcome("editAssessment");
    
     if((sectionBean.getType().equals("2"))&& (sectionBean.getSelectedPool().equals(""))){

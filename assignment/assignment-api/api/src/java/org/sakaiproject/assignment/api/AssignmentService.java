@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/assignment/branches/sakai-10.x/assignment-api/api/src/java/org/sakaiproject/assignment/api/AssignmentService.java $
- * $Id: AssignmentService.java 315364 2014-11-12 15:42:20Z enietzel@anisakai.com $
+ * $Id: AssignmentService.java 320132 2015-07-13 17:50:24Z matthew@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2003, 2004, 2005, 2006, 2007, 2008 The Sakai Foundation
@@ -862,9 +862,14 @@ public interface AssignmentService extends EntityProducer
 	public boolean getAllowGroupAssignmentsInGradebook();
 	
 	/**
+	 * Whether a specific user can submit
+	 */
+	public boolean canSubmit(String context, Assignment a, String userId);
+	/**
 	 * Whether the current user can submit
 	 */
 	public boolean canSubmit(String context, Assignment a);
+
 	
 	public Collection<Group> getSubmitterGroupList(String searchFilterOnly, String allOrOneGroup, String searchString, String aRef, String contextString);
 	/**
