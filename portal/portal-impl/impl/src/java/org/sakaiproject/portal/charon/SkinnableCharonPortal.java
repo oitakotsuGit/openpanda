@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/portal/branches/sakai-10.x/portal-impl/impl/src/java/org/sakaiproject/portal/charon/SkinnableCharonPortal.java $
- * $Id: SkinnableCharonPortal.java 320283 2015-07-29 15:13:13Z matthew@longsight.com $
+ * $Id: SkinnableCharonPortal.java 321794 2015-11-12 15:37:33Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2005, 2006, 2007, 2008 The Sakai Foundation
@@ -137,7 +137,7 @@ import au.com.flyingkite.mobiledetect.UAgentInfo;
  * </p>
  * 
  * @since Sakai 2.4
- * @version $Rev: 320283 $
+ * @version $Rev: 321794 $
  * 
  */
 @SuppressWarnings("deprecation")
@@ -1594,7 +1594,23 @@ public class SkinnableCharonPortal extends HttpServlet implements Portal
 			// Fall back to default of using the page Id.
 			page = p.getPageId();
 		}
-		return "/site/" + p.getSiteId() + "/page/" + page;
+		
+		Session session = SessionManager.getCurrentSession();
+		boolean isMobileDevice = (Boolean)session.getAttribute("is_mobile_device");
+		
+		StringBuilder portalPageUrl = new StringBuilder();
+		
+		//SAK-26625 direct tool links need to be prefixed with pda instead of site to remain inside the pda portal
+		if(isMobileDevice) {
+			portalPageUrl.append("/pda/");
+		} else {
+			portalPageUrl.append("/site/");
+		}
+		portalPageUrl.append(p.getSiteId());
+		portalPageUrl.append("/page/");
+		portalPageUrl.append(page);
+
+		return portalPageUrl.toString();
 	}
 
 	/**

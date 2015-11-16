@@ -82,6 +82,7 @@
     <kernel.hibernate.jpa.version>1.0.1.Final</kernel.hibernate.jpa.version>
     <!-- Standard dependency versions -->
     <sakai.commons.lang.version>2.5</sakai.commons.lang.version>
+    <sakai.commons.lang3.version>3.4</sakai.commons.lang3.version>
     <sakai.commons-logging.version>1.2</sakai.commons-logging.version>
     <sakai.commons.fileupload.version>1.3.1</sakai.commons.fileupload.version>
     <sakai.ehcache.groupId>net.sf.ehcache</sakai.ehcache.groupId>
@@ -105,6 +106,7 @@
     <sakai.spring.version>3.2.3.RELEASE</sakai.spring.version>
     <sakai.spring.test.artifactId>spring-test</sakai.spring.test.artifactId>
     <sakai.spring.test.version>3.2.3.RELEASE</sakai.spring.test.version>
+    <sakai.tika.version>1.9</sakai.tika.version>
     <sakai.tomcat.version>7.0.59</sakai.tomcat.version>
     <sakai.velocity.version>1.6.4</sakai.velocity.version>
     <sakai.xerces.impl.version>2.6.2</sakai.xerces.impl.version>
@@ -500,6 +502,12 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>${sakai.commons.lang3.version}</version>
+        <scope>provided</scope>
+     </dependency>
+     <dependency>
         <groupId>zing</groupId>
         <artifactId>cql-java-0.7</artifactId>
         <version>0.7</version>

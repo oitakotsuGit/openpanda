@@ -1,4 +1,4 @@
-<!-- $Id: chef_assignments_instructor_list_submissions.vm 320334 2015-07-31 18:48:27Z matthew@longsight.com $ -->
+<!-- $Id: chef_assignments_instructor_list_submissions.vm 321148 2015-09-11 01:01:02Z matthew@longsight.com $ -->
 <!-- start: chef_assignments_instructor_list_submissions.vm  -->
 #set( $H = '-' )
 <script type="text/javascript" src="/library/js/jquery/ui/1.10.3/jquery-ui.1.10.3.full.min.js"></script>
@@ -898,7 +898,7 @@
 			</th>
 			<td>
 				## get gradeScale
-				#set ($gradeScale = $assignmentContent.getTypeOfGradeString())
+				#set ($gradeScale = $assignment.getContent().getTypeOfGradeString($assignment.getContent().getTypeOfGrade()))
 				$gradeScale
 				#if ($!gradeType == 3)
 					($tlang.getString("grade.max") $assignmentContent.getMaxGradePointDisplay())

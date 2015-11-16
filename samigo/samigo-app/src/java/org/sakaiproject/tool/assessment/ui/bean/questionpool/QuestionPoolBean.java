@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/bean/questionpool/QuestionPoolBean.java $
- * $Id: QuestionPoolBean.java 320245 2015-07-23 14:31:37Z enietzel@anisakai.com $
+ * $Id: QuestionPoolBean.java 321188 2015-09-14 22:50:08Z matthew@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -81,7 +81,7 @@ import org.sakaiproject.tool.assessment.ui.bean.authz.AuthorizationBean;
 /**
  * This holds question pool information.
  *
- * $Id: QuestionPoolBean.java 320245 2015-07-23 14:31:37Z enietzel@anisakai.com $
+ * $Id: QuestionPoolBean.java 321188 2015-09-14 22:50:08Z matthew@longsight.com $
  */
 public class QuestionPoolBean implements Serializable
 {
@@ -187,6 +187,10 @@ public class QuestionPoolBean implements Serializable
   public QuestionPoolBean()
   {
     resetFields();
+  }
+
+  public int getRowIndex() {
+      return qpDataModel.getRowIndex();
   }
 
   public QuestionPoolDataModel getQpools()

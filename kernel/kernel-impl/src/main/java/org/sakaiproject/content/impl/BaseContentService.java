@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/kernel/branches/sakai-10.x/kernel-impl/src/main/java/org/sakaiproject/content/impl/BaseContentService.java $
- * $Id: BaseContentService.java 320224 2015-07-21 15:05:02Z ottenhoff@longsight.com $
+ * $Id: BaseContentService.java 321518 2015-10-15 22:11:31Z ottenhoff@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2003, 2004, 2005, 2006, 2007, 2008 Sakai Foundation
@@ -13978,7 +13978,8 @@ SiteContentAdvisorProvider, SiteContentAdvisorTypeRegistry, EntityTransferrerRef
                 throw new OverQuotaException(resource.getReference());
             }
             // zip files are not too large to extract so do the extract
-			extractZipArchive.extractArchive(resourceId);
+            extractZipArchive.extractArchive(resourceId);
+            cancelResource(resource); //commitResource(resource); // KNL-1220
         }
     }
     
