@@ -1,7 +1,7 @@
 /**********************************************************************************
 
  * $URL: https://source.sakaiproject.org/svn/site-manage/tags/sakai-10.6/site-manage-tool/tool/src/java/org/sakaiproject/site/tool/SiteAction.java $
- * $Id: SiteAction.java 320872 2015-08-21 16:51:48Z matthew@longsight.com $
+ * $Id: SiteAction.java 322948 2016-03-14 18:23:55Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2003, 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -6407,6 +6407,8 @@ private Map<String,List> getTools(SessionState state, String type, Site site) {
 			}
 
 			sendSiteNotification(state, getStateSite(state), providerCourseList);
+			//Track add changes
+			trackRosterChanges(org.sakaiproject.site.api.SiteService.EVENT_SITE_ROSTER_ADD,providerCourseList);
 		}
 
 		if (manualAddNumber != 0) {
@@ -7992,6 +7994,10 @@ private Map<String,List> getTools(SessionState state, String type, Site site) {
 	 * 
 	 */
 	public void doUpdate_participant(RunData data) {
+		if (!"POST".equals(data.getRequest().getMethod())) {
+			M_log.warn("Ignoring non-POST request to update site access.");
+			return;
+		}
 		SessionState state = ((JetspeedRunData) data)
 				.getPortletSessionState(((JetspeedRunData) data).getJs_peid());
 		ParameterParser params = data.getParameters();
@@ -8314,6 +8320,9 @@ private Map<String,List> getTools(SessionState state, String type, Site site) {
 		
 		boolean publishUnpublish = state.getAttribute(STATE_SITE_ACCESS_PUBLISH) != null ? ((Boolean) state.getAttribute(STATE_SITE_ACCESS_PUBLISH)).booleanValue() : false;
 		
+		// the site publish status before update
+		boolean currentSitePublished = sEdit != null ? sEdit.isPublished():false;
+		
 		boolean include = state.getAttribute(STATE_SITE_ACCESS_INCLUDE) != null ? ((Boolean) state.getAttribute(STATE_SITE_ACCESS_INCLUDE)).booleanValue() : false;
 
 		if (sEdit != null) {
@@ -8338,6 +8347,16 @@ private Map<String,List> getTools(SessionState state, String type, Site site) {
 
 			if (state.getAttribute(STATE_MESSAGE) == null) {
 				commitSite(sEdit);
+				if (currentSitePublished && !publishUnpublish)
+				{
+					// unpublishing a published site
+					EventTrackingService.post(EventTrackingService.newEvent(SiteService.EVENT_SITE_UNPUBLISH, sEdit.getReference(), true));
+				}
+				else if (!currentSitePublished && publishUnpublish)
+				{
+					// publishing a published site
+					EventTrackingService.post(EventTrackingService.newEvent(SiteService.EVENT_SITE_PUBLISH, sEdit.getReference(), true));
+				}
 				state.setAttribute(STATE_TEMPLATE_INDEX, "12");
 
 				// TODO: hard coding this frame id is fragile, portal dependent,
@@ -9024,6 +9043,9 @@ private Map<String,List> getTools(SessionState state, String type, Site site) {
 							.listIterator(); i.hasNext();) {
 						providerCourseList.remove((String) i.next());
 					}
+
+					//Track provider deletes, seems like the only place to do it. If a confirmation is ever added somewhere, don't do this.
+					trackRosterChanges(org.sakaiproject.site.api.SiteService.EVENT_SITE_ROSTER_REMOVE,providerCourseDeleteList);
 					state.setAttribute(SITE_PROVIDER_COURSE_LIST,
 							providerCourseList);
 				}
@@ -9117,6 +9139,23 @@ private Map<String,List> getTools(SessionState state, String type, Site site) {
 		}
 
 	}// actionFor Template
+	
+	/**
+	 * 
+	 * @param action
+	 * @param providers
+	 */
+	private void trackRosterChanges(String event, List <String> rosters) {
+		if (ServerConfigurationService.getBoolean(
+				SiteHelper.WSETUP_TRACK_ROSTER_CHANGE, false)) {
+			// event for each individual update
+			if (rosters != null) {
+				for (String roster : rosters) {
+					EventTrackingService.post(EventTrackingService.newEvent(event, "roster="+roster, true));
+				}
+			}
+		}
+	}
 
 	/**
 	 * import not-provided users from selected sites

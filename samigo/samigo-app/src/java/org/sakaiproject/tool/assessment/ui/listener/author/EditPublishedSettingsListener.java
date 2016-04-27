@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.6/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/author/EditPublishedSettingsListener.java $
- * $Id: EditPublishedSettingsListener.java 318753 2015-05-08 20:19:11Z ottenhoff@longsight.com $
+ * $Id: EditPublishedSettingsListener.java 322953 2016-03-14 19:19:01Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2007, 2008 The Sakai Foundation
@@ -31,6 +31,7 @@ import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentBaseIfc;
@@ -51,7 +52,7 @@ import org.sakaiproject.component.cover.ServerConfigurationService;
  * <p>Title: Samigo</p>
  * <p>Description: Sakai Assessment Manager</p>
  * @author Ed Smiley
- * @version $Id: EditPublishedSettingsListener.java 318753 2015-05-08 20:19:11Z ottenhoff@longsight.com $
+ * @version $Id: EditPublishedSettingsListener.java 322953 2016-03-14 19:19:01Z enietzel@anisakai.com $
  */
 
 public class EditPublishedSettingsListener
@@ -111,8 +112,8 @@ public class EditPublishedSettingsListener
     assessmentSettings.setKeywords(FormattedText.convertFormattedTextToPlaintext(assessment.getAssessmentMetaDataByLabel(AssessmentMetaDataIfc.KEYWORDS)));
     assessmentSettings.setObjectives(FormattedText.convertFormattedTextToPlaintext(assessment.getAssessmentMetaDataByLabel(AssessmentMetaDataIfc.OBJECTIVES)));
     assessmentSettings.setRubrics(FormattedText.convertFormattedTextToPlaintext(assessment.getAssessmentMetaDataByLabel(AssessmentMetaDataIfc.RUBRICS)));
-    assessmentSettings.setUsername(FormattedText.convertFormattedTextToPlaintext(assessment.getAssessmentAccessControl().getUsername()));
-    assessmentSettings.setPassword(FormattedText.convertFormattedTextToPlaintext(assessment.getAssessmentAccessControl().getPassword()));        
+    assessmentSettings.setUsername(FormattedText.convertFormattedTextToPlaintext(StringUtils.trim(assessment.getAssessmentAccessControl().getUsername())));
+    assessmentSettings.setPassword(FormattedText.convertFormattedTextToPlaintext(StringUtils.trim(assessment.getAssessmentAccessControl().getPassword())));
     assessmentSettings.setBlockDivs("");
 
     AssessmentBean assessmentBean = (AssessmentBean) ContextUtil.lookupBean("assessmentBean");

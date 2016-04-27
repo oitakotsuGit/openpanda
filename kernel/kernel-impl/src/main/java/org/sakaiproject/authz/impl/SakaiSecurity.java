@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/kernel/tags/sakai-10.6/kernel-impl/src/main/java/org/sakaiproject/authz/impl/SakaiSecurity.java $
- * $Id: SakaiSecurity.java 309582 2014-05-16 14:12:51Z enietzel@anisakai.com $
+ * $Id: SakaiSecurity.java 322810 2016-02-23 16:52:30Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2003, 2004, 2005, 2006, 2007, 2008 Sakai Foundation
@@ -966,8 +966,10 @@ public abstract class SakaiSecurity implements SecurityService
 		String realmRef = org.sakaiproject.authz.api.AuthzGroupService.REFERENCE_ROOT + Entity.SEPARATOR + azGroupId;
 		eventTrackingService().post(eventTrackingService().newEvent(EVENT_ROLESWAP_CLEAR, realmRef, true));
 
-		if (!legacyCaching) { // TODO remove the if block so this runs all the time after 10
-			cacheRealmPermsChanged(realmRef, null, null);
+		if (legacyCaching) { // TODO remove the if block so this runs all the time after 10 
+			m_callCache.clear(); // for 10
+		} else {
+			cacheRealmPermsChanged(realmRef, null, null); // for 11
 		}
 
 		return;

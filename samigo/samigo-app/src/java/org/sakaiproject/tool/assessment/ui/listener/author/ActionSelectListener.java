@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.6/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/author/ActionSelectListener.java $
- * $Id: ActionSelectListener.java 106463 2012-04-02 12:20:09Z david.horwitz@uct.ac.za $
+ * $Id: ActionSelectListener.java 322931 2016-03-14 14:27:14Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006 The Sakai Foundation.
@@ -41,7 +41,7 @@ import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
  * <p>Description: Sakai Assessment Manager</p>
  * <p>Copyright: Copyright (c) 2004 Sakai Project</p>
  * <p>Organization: Sakai Project</p>
- * @version $Id: ActionSelectListener.java 106463 2012-04-02 12:20:09Z david.horwitz@uct.ac.za $
+ * @version $Id: ActionSelectListener.java 322931 2016-03-14 14:27:14Z enietzel@anisakai.com $
  */
 public class ActionSelectListener implements ValueChangeListener {
 	private static Log log = LogFactory.getLog(ActionSelectListener.class);
@@ -57,6 +57,7 @@ public class ActionSelectListener implements ValueChangeListener {
 		DeliveryBean delivery = (DeliveryBean) ContextUtil.lookupBean("delivery");
 		PersonBean person = (PersonBean) ContextUtil.lookupBean("person");
 		String newValue = ae.getNewValue().toString();
+		String publishedID = ContextUtil.lookupParam( "publishedId" );
 		log.debug("**** ae.getNewValue : " + newValue);
 
 		
@@ -142,11 +143,12 @@ public class ActionSelectListener implements ValueChangeListener {
 			totalScoreListener.processAction(null);
 			author.setJustPublishedAnAssessment(true);
 		}
-		if ("edit_published".equals(newValue)) {
+		else if ("edit_published".equals(newValue)) {
 			ConfirmEditPublishedAssessmentListener confirmEditPublishedAssessmentListener = new ConfirmEditPublishedAssessmentListener();
 			confirmEditPublishedAssessmentListener.processAction(null);
 			author.setOutcome("confirmEditPublishedAssessment");
 			author.setFromPage("author");
+			author.setEditPublishedAssessmentID( publishedID );
 			author.setJustPublishedAnAssessment(true);
 		}
 		else if ("preview_published".equals(newValue)) {

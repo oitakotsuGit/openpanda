@@ -1,6 +1,6 @@
 /**
  * $URL: https://source.sakaiproject.org/svn/basiclti/tags/sakai-10.6/basiclti-impl/src/java/org/sakaiproject/basiclti/impl/BasicLTISecurityServiceImpl.java $
- * $Id: BasicLTISecurityServiceImpl.java 309356 2014-05-08 21:13:08Z enietzel@anisakai.com $
+ * $Id: BasicLTISecurityServiceImpl.java 322935 2016-03-14 14:40:38Z enietzel@anisakai.com $
  * 
  * Copyright (c) 2009 The Sakai Foundation
  *
@@ -333,12 +333,7 @@ public class BasicLTISecurityServiceImpl implements EntityProducer {
 										   }
 									   }
 								   }
-
-								   // Adjust the content items based on the tool items
-								   if ( tool != null || content != null ) 
-								   {
-									   ltiService.filterContent(content, tool);
-								   }
+								   ltiService.filterContent(content, tool);
 							   }
 							   String splash = null;
 							   if ( tool != null ) splash = (String) tool.get("splash");

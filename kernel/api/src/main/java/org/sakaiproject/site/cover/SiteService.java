@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/kernel/tags/sakai-10.6/api/src/main/java/org/sakaiproject/site/cover/SiteService.java $
- * $Id: SiteService.java 313738 2014-09-19 01:01:00Z enietzel@anisakai.com $
+ * $Id: SiteService.java 322947 2016-03-14 18:18:51Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2003, 2004, 2005, 2006, 2007, 2008 Sakai Foundation
@@ -120,6 +120,10 @@ public class SiteService
 	public static java.lang.String EVENT_SITE_DUPLICATE_START = org.sakaiproject.site.api.SiteService.EVENT_SITE_DUPLICATE_START;
 	
 	public static java.lang.String EVENT_SITE_DUPLICATE_END = org.sakaiproject.site.api.SiteService.EVENT_SITE_DUPLICATE_END;
+	
+	public static java.lang.String EVENT_SITE_PUBLISH = org.sakaiproject.site.api.SiteService.EVENT_SITE_PUBLISH;
+	
+	public static java.lang.String EVENT_SITE_UNPUBLISH = org.sakaiproject.site.api.SiteService.EVENT_SITE_UNPUBLISH;
 
 	public static boolean allowAccessSite(java.lang.String param0)
 	{

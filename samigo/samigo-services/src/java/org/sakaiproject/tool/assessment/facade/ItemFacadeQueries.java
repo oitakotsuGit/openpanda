@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.6/samigo-services/src/java/org/sakaiproject/tool/assessment/facade/ItemFacadeQueries.java $
- * $Id: ItemFacadeQueries.java 319083 2015-05-20 22:24:13Z enietzel@anisakai.com $
+ * $Id: ItemFacadeQueries.java 322944 2016-03-14 16:23:55Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -597,7 +597,8 @@ public class ItemFacadeQueries extends HibernateDaoSupport implements ItemFacade
 	    };
 	    List list = getHibernateTemplate().executeFind(hcb);
 	    log.debug("list.size() = " + list.size());
-	    Long itemTextId = (Long) list.get(0);
+	    Long itemTextId = -1l;
+	    if (!list.isEmpty()) itemTextId = (Long) list.get(0);
 	    log.debug("itemTextId" + itemTextId);
 	    return itemTextId;
   }
