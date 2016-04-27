@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.6/samigo-app/src/java/org/sakaiproject/tool/assessment/jsf/validator/FinQuestionValidator.java $
+ * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.7/samigo-app/src/java/org/sakaiproject/tool/assessment/jsf/validator/FinQuestionValidator.java $
  * $Id: FinQuestionValidator.java 320402 2015-08-05 13:33:14Z enietzel@anisakai.com $
  ***********************************************************************************
  *

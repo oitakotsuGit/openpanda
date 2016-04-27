@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.6/samigo-hibernate/src/java/org/sakaiproject/tool/assessment/data/dao/assessment/PublishedItemData.java $
+ * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.7/samigo-hibernate/src/java/org/sakaiproject/tool/assessment/data/dao/assessment/PublishedItemData.java $
  * $Id: PublishedItemData.java 320395 2015-08-05 13:25:46Z enietzel@anisakai.com $
  ***********************************************************************************
  *

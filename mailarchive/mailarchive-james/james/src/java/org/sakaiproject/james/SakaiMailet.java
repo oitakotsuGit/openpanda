@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/mailarchive/tags/sakai-10.6/mailarchive-james/james/src/java/org/sakaiproject/james/SakaiMailet.java $
+ * $URL: https://source.sakaiproject.org/svn/mailarchive/tags/sakai-10.7/mailarchive-james/james/src/java/org/sakaiproject/james/SakaiMailet.java $
  * $Id: SakaiMailet.java 321223 2015-09-17 13:59:39Z enietzel@anisakai.com $
  ***********************************************************************************
  *

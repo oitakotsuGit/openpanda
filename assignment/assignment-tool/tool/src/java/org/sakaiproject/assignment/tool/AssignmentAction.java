@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/assignment/tags/sakai-10.6/assignment-tool/tool/src/java/org/sakaiproject/assignment/tool/AssignmentAction.java $
+ * $URL: https://source.sakaiproject.org/svn/assignment/tags/sakai-10.7/assignment-tool/tool/src/java/org/sakaiproject/assignment/tool/AssignmentAction.java $
  * $Id: AssignmentAction.java 322192 2015-12-22 21:20:19Z enietzel@anisakai.com $
  ***********************************************************************************
  *

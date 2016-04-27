@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/assignment/tags/sakai-10.6/assignment-impl/impl/src/java/org/sakaiproject/assignment/impl/BaseAssignmentService.java $
+ * $URL: https://source.sakaiproject.org/svn/assignment/tags/sakai-10.7/assignment-impl/impl/src/java/org/sakaiproject/assignment/impl/BaseAssignmentService.java $
  * $Id: BaseAssignmentService.java 323105 2016-04-01 23:07:43Z matthew@longsight.com $
  ***********************************************************************************
  *

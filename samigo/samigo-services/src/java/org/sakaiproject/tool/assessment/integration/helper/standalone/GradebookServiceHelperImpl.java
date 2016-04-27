@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.6/samigo-services/src/java/org/sakaiproject/tool/assessment/integration/helper/standalone/GradebookServiceHelperImpl.java $
+ * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.7/samigo-services/src/java/org/sakaiproject/tool/assessment/integration/helper/standalone/GradebookServiceHelperImpl.java $
  * $Id: GradebookServiceHelperImpl.java 320405 2015-08-05 13:46:11Z enietzel@anisakai.com $
  ***********************************************************************************
  *

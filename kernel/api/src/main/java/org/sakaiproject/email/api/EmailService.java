@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/kernel/tags/sakai-10.6/api/src/main/java/org/sakaiproject/email/api/EmailService.java $
+ * $URL: https://source.sakaiproject.org/svn/kernel/tags/sakai-10.7/api/src/main/java/org/sakaiproject/email/api/EmailService.java $
  * $Id: EmailService.java 322712 2016-02-11 16:45:33Z enietzel@anisakai.com $
  ***********************************************************************************
  *

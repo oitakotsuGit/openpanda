@@ -1,5 +1,5 @@
 /**
- * $URL: https://source.sakaiproject.org/svn/basiclti/tags/sakai-10.6/basiclti-impl/src/java/org/sakaiproject/basiclti/impl/BasicLTISecurityServiceImpl.java $
+ * $URL: https://source.sakaiproject.org/svn/basiclti/tags/sakai-10.7/basiclti-impl/src/java/org/sakaiproject/basiclti/impl/BasicLTISecurityServiceImpl.java $
  * $Id: BasicLTISecurityServiceImpl.java 322935 2016-03-14 14:40:38Z enietzel@anisakai.com $
  * 
  * Copyright (c) 2009 The Sakai Foundation

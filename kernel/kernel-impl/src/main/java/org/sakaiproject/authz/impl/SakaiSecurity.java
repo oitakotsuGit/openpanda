@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/kernel/tags/sakai-10.6/kernel-impl/src/main/java/org/sakaiproject/authz/impl/SakaiSecurity.java $
+ * $URL: https://source.sakaiproject.org/svn/kernel/tags/sakai-10.7/kernel-impl/src/main/java/org/sakaiproject/authz/impl/SakaiSecurity.java $
  * $Id: SakaiSecurity.java 322810 2016-02-23 16:52:30Z enietzel@anisakai.com $
  ***********************************************************************************
  *

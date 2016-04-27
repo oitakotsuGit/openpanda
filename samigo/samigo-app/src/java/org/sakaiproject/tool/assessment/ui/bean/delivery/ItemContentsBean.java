@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.6/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/bean/delivery/ItemContentsBean.java $
+ * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.7/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/bean/delivery/ItemContentsBean.java $
  * $Id: ItemContentsBean.java 322125 2015-12-15 20:06:16Z ottenhoff@longsight.com $
  ***********************************************************************************
  *

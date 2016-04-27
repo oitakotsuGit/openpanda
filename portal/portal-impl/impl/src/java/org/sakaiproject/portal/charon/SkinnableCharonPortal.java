@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/portal/tags/sakai-10.6/portal-impl/impl/src/java/org/sakaiproject/portal/charon/SkinnableCharonPortal.java $
+ * $URL: https://source.sakaiproject.org/svn/portal/tags/sakai-10.7/portal-impl/impl/src/java/org/sakaiproject/portal/charon/SkinnableCharonPortal.java $
  * $Id: SkinnableCharonPortal.java 321794 2015-11-12 15:37:33Z enietzel@anisakai.com $
  ***********************************************************************************
  *

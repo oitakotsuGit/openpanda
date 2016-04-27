@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/kernel/tags/sakai-10.6/api/src/main/java/org/sakaiproject/site/api/SiteService.java $
+ * $URL: https://source.sakaiproject.org/svn/kernel/tags/sakai-10.7/api/src/main/java/org/sakaiproject/site/api/SiteService.java $
  * $Id: SiteService.java 322947 2016-03-14 18:18:51Z enietzel@anisakai.com $
  ***********************************************************************************
  *

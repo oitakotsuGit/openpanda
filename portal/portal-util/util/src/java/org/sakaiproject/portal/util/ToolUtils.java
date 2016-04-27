@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/portal/tags/sakai-10.6/portal-util/util/src/java/org/sakaiproject/portal/util/ToolUtils.java $
+ * $URL: https://source.sakaiproject.org/svn/portal/tags/sakai-10.7/portal-util/util/src/java/org/sakaiproject/portal/util/ToolUtils.java $
  * $Id: ToolUtils.java 322784 2016-02-18 23:05:45Z matthew@longsight.com $
  ***********************************************************************************
  *

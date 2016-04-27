@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/kernel/tags/sakai-10.6/kernel-util/src/main/java/org/sakaiproject/util/EmailNotification.java $
+ * $URL: https://source.sakaiproject.org/svn/kernel/tags/sakai-10.7/kernel-util/src/main/java/org/sakaiproject/util/EmailNotification.java $
  * $Id: EmailNotification.java 323018 2016-03-22 22:26:42Z matthew@longsight.com $
  ***********************************************************************************
  *

@@ -1,5 +1,5 @@
 /**
- * $URL: https://source.sakaiproject.org/svn/sitestats/tags/sakai-10.6/sitestats-impl/src/test/org/sakaiproject/sitestats/test/StatsUpdateManagerTest.java $
+ * $URL: https://source.sakaiproject.org/svn/sitestats/tags/sakai-10.7/sitestats-impl/src/test/org/sakaiproject/sitestats/test/StatsUpdateManagerTest.java $
  * $Id: StatsUpdateManagerTest.java 322937 2016-03-14 14:45:09Z enietzel@anisakai.com $
  *
  * Copyright (c) 2006-2009 The Sakai Foundation

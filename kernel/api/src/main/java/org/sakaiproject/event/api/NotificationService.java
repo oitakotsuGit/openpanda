@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/kernel/tags/sakai-10.6/api/src/main/java/org/sakaiproject/event/api/NotificationService.java $
+ * $URL: https://source.sakaiproject.org/svn/kernel/tags/sakai-10.7/api/src/main/java/org/sakaiproject/event/api/NotificationService.java $
  * $Id: NotificationService.java 320149 2015-07-14 20:20:03Z matthew@longsight.com $
  ***********************************************************************************
  *

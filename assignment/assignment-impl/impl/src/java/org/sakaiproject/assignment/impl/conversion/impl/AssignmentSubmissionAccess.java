@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/assignment/tags/sakai-10.6/assignment-impl/impl/src/java/org/sakaiproject/assignment/impl/conversion/impl/AssignmentSubmissionAccess.java $
+ * $URL: https://source.sakaiproject.org/svn/assignment/tags/sakai-10.7/assignment-impl/impl/src/java/org/sakaiproject/assignment/impl/conversion/impl/AssignmentSubmissionAccess.java $
  * $Id: AssignmentSubmissionAccess.java 322531 2016-01-22 21:14:35Z matthew@longsight.com $
  ***********************************************************************************
  *

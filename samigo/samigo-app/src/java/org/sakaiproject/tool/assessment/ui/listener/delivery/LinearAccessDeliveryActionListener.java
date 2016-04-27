@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.6/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/delivery/LinearAccessDeliveryActionListener.java $
+ * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.7/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/delivery/LinearAccessDeliveryActionListener.java $
  * $Id: LinearAccessDeliveryActionListener.java 322929 2016-03-14 13:51:29Z enietzel@anisakai.com $
  ***********************************************************************************
  *

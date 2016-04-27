@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.6/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/author/AuthorSettingsListener.java $
+ * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.7/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/author/AuthorSettingsListener.java $
  * $Id: AuthorSettingsListener.java 322953 2016-03-14 19:19:01Z enietzel@anisakai.com $
  ***********************************************************************************
  *

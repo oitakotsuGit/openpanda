@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/kernel/tags/sakai-10.6/kernel-impl/src/main/java/org/sakaiproject/site/impl/DbSiteService.java $
+ * $URL: https://source.sakaiproject.org/svn/kernel/tags/sakai-10.7/kernel-impl/src/main/java/org/sakaiproject/site/impl/DbSiteService.java $
  * $Id: DbSiteService.java 322941 2016-03-14 15:14:02Z enietzel@anisakai.com $
  ***********************************************************************************
  *

@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/velocity/tags/sakai-10.6/tool/src/java/org/sakaiproject/cheftool/VelocityPortletPaneledAction.java $
+ * $URL: https://source.sakaiproject.org/svn/velocity/tags/sakai-10.7/tool/src/java/org/sakaiproject/cheftool/VelocityPortletPaneledAction.java $
  * $Id: VelocityPortletPaneledAction.java 321628 2015-10-27 17:15:30Z hedrick@rutgers.edu $
  ***********************************************************************************
  *

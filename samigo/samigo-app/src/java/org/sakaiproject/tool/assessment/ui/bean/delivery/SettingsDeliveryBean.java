@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.6/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/bean/delivery/SettingsDeliveryBean.java $
+ * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.7/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/bean/delivery/SettingsDeliveryBean.java $
  * $Id: SettingsDeliveryBean.java 322952 2016-03-14 19:18:17Z enietzel@anisakai.com $
  ***********************************************************************************
  *

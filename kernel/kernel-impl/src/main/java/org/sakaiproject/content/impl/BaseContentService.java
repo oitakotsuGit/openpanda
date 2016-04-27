@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/kernel/tags/sakai-10.6/kernel-impl/src/main/java/org/sakaiproject/content/impl/BaseContentService.java $
+ * $URL: https://source.sakaiproject.org/svn/kernel/tags/sakai-10.7/kernel-impl/src/main/java/org/sakaiproject/content/impl/BaseContentService.java $
  * $Id: BaseContentService.java 322323 2016-01-04 21:06:26Z ottenhoff@longsight.com $
  ***********************************************************************************
  *

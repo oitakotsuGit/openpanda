@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.6/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/servlet/delivery/DownloadAllMediaServlet.java $
+ * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.7/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/servlet/delivery/DownloadAllMediaServlet.java $
  * $Id: DownloadAllMediaServlet.java 323065 2016-03-30 13:38:04Z matthew@longsight.com $
  ***********************************************************************************
  *

@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/user/tags/sakai-10.6/user-tool-prefs/tool/src/java/org/sakaiproject/user/tool/UserPrefsTool.java $
+ * $URL: https://source.sakaiproject.org/svn/user/tags/sakai-10.7/user-tool-prefs/tool/src/java/org/sakaiproject/user/tool/UserPrefsTool.java $
  * $Id: UserPrefsTool.java 320351 2015-08-04 14:16:57Z ottenhoff@longsight.com $
  ***********************************************************************************
  *

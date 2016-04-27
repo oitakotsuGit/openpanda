@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/message/tags/sakai-10.6/message-util/util/src/java/org/sakaiproject/message/util/BaseMessage.java $
+ * $URL: https://source.sakaiproject.org/svn/message/tags/sakai-10.7/message-util/util/src/java/org/sakaiproject/message/util/BaseMessage.java $
  * $Id: BaseMessage.java 320150 2015-07-14 20:24:18Z matthew@longsight.com $
  ***********************************************************************************
  *

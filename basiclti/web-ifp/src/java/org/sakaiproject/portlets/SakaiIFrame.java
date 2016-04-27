@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/basiclti/tags/sakai-10.6/web-ifp/src/java/org/sakaiproject/portlets/SakaiIFrame.java $
+ * $URL: https://source.sakaiproject.org/svn/basiclti/tags/sakai-10.7/web-ifp/src/java/org/sakaiproject/portlets/SakaiIFrame.java $
  * $Id: SakaiIFrame.java 322935 2016-03-14 14:40:38Z enietzel@anisakai.com $
  ***********************************************************************************
  *

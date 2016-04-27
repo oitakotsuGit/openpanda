@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/kernel/tags/sakai-10.6/component-manager/src/main/java/org/sakaiproject/util/ComponentsLoader.java $
+ * $URL: https://source.sakaiproject.org/svn/kernel/tags/sakai-10.7/component-manager/src/main/java/org/sakaiproject/util/ComponentsLoader.java $
  * $Id: ComponentsLoader.java 322037 2015-12-07 20:52:10Z enietzel@anisakai.com $
  ***********************************************************************************
  *
