@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/bean/delivery/ItemContentsBean.java $
- * $Id: ItemContentsBean.java 321816 2015-11-12 16:48:19Z enietzel@anisakai.com $
+ * $Id: ItemContentsBean.java 322125 2015-12-15 20:06:16Z ottenhoff@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -1237,10 +1237,8 @@ public class ItemContentsBean implements Serializable {
 	 */
 	public String getPointsDisplayString() {
 		String pointsDisplayString = "";
-System.out.println("zz01: " + points);
 		if (showStudentQuestionScore) {
-			pointsDisplayString = MathUtils.round(points, 2)
-					+ "/";
+			pointsDisplayString = MathUtils.round(points, 2) + "/";
 		}
 		return pointsDisplayString;
 	}

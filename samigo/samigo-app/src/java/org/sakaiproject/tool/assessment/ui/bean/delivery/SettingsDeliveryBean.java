@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/bean/delivery/SettingsDeliveryBean.java $
- * $Id: SettingsDeliveryBean.java 106463 2012-04-02 12:20:09Z david.horwitz@uct.ac.za $
+ * $Id: SettingsDeliveryBean.java 322952 2016-03-14 19:18:17Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2008, 2009 The Sakai Foundation
@@ -152,6 +152,8 @@ public class SettingsDeliveryBean implements Serializable
    */
   public String getPassword()
   {
+    if (password == null)
+    	return "";	  
     return password;
   }
 

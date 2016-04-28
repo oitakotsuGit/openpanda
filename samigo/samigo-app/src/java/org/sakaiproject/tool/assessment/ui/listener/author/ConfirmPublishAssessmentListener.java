@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/author/ConfirmPublishAssessmentListener.java $
- * $Id: ConfirmPublishAssessmentListener.java 318814 2015-05-12 23:16:53Z enietzel@anisakai.com $
+ * $Id: ConfirmPublishAssessmentListener.java 322955 2016-03-14 19:33:08Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2007, 2008 The Sakai Foundation
@@ -33,6 +33,7 @@ import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.component.cover.ServerConfigurationService;
@@ -62,7 +63,7 @@ import org.sakaiproject.util.FormattedText;
  * <p>Title: Samigo</p>2
  * <p>Description: Sakai Assessment Manager</p>
  * @author Ed Smiley
- * @version $Id: ConfirmPublishAssessmentListener.java 318814 2015-05-12 23:16:53Z enietzel@anisakai.com $
+ * @version $Id: ConfirmPublishAssessmentListener.java 322955 2016-03-14 19:33:08Z enietzel@anisakai.com $
  */
 
 public class ConfirmPublishAssessmentListener
@@ -173,8 +174,11 @@ public class ConfirmPublishAssessmentListener
     // if late submissions not allowed and retract date is null, set retract date to due date
     if (assessmentSettings.getLateHandling() != null && AssessmentAccessControlIfc.NOT_ACCEPT_LATE_SUBMISSION.toString().equals(assessmentSettings.getLateHandling()) &&
     		retractDate == null && dueDate != null && assessmentSettings.getAutoSubmit()) {
-    	retractDate = dueDate;
-    	assessmentSettings.setRetractDate(dueDate);
+    	boolean autoSubmitEnabled = ServerConfigurationService.getBoolean("samigo.autoSubmit.enabled", false);
+    	if (autoSubmitEnabled) {
+    		retractDate = dueDate;
+    		assessmentSettings.setRetractDate(dueDate);
+    	}
     }
     // if auto-submit is enabled, make sure retract date is set
     if (assessmentSettings.getAutoSubmit() && retractDate == null) {
@@ -336,8 +340,8 @@ public class ConfirmPublishAssessmentListener
     	assessmentSettings.setKeywords(FormattedText.convertFormattedTextToPlaintext(assessmentSettings.getKeywords()));
     	assessmentSettings.setObjectives(FormattedText.convertFormattedTextToPlaintext(assessmentSettings.getObjectives()));
     	assessmentSettings.setRubrics(FormattedText.convertFormattedTextToPlaintext(assessmentSettings.getRubrics()));
-    	assessmentSettings.setUsername(FormattedText.convertFormattedTextToPlaintext(assessmentSettings.getUsername()));
-    	assessmentSettings.setPassword(FormattedText.convertFormattedTextToPlaintext(assessmentSettings.getPassword()));
+    	assessmentSettings.setUsername(FormattedText.convertFormattedTextToPlaintext(StringUtils.trim(assessmentSettings.getUsername())));
+    	assessmentSettings.setPassword(FormattedText.convertFormattedTextToPlaintext(StringUtils.trim(assessmentSettings.getPassword())));
     }
     
     if (error){

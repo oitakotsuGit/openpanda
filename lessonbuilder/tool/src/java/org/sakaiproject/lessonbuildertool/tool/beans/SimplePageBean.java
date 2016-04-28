@@ -267,7 +267,7 @@ public class SimplePageBean {
 
     // almost ISO format. real thing can't be done until Java 7. uses -0400 rather than -04:00
     //        SimpleDateFormat isoDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-        SimpleDateFormat isoDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+	SimpleDateFormat isoDateFormat = getIsoDateFormat();
 	
 	public void setPeerEval(boolean peerEval) {
 		this.peerEval = peerEval;
@@ -362,10 +362,11 @@ public class SimplePageBean {
 	private Map<Long, List<SimplePageItem>> itemsCache = new HashMap<Long, List<SimplePageItem>> ();
 	private Map<String, SimplePageLogEntry> logCache = new HashMap<String, SimplePageLogEntry>();
 	private Map<Long, Boolean> completeCache = new HashMap<Long, Boolean>();
-    private Map<Long, Boolean> visibleCache = new HashMap<Long, Boolean>();
-    // this one needs to be global
-	private static Cache groupCache = null;   // itemId => grouplist
-	private static Cache resourceCache = null;
+	private Map<Long, Boolean> visibleCache = new HashMap<Long, Boolean>();
+	// this one needs to be global
+	static MemoryService memoryService = (MemoryService)org.sakaiproject.component.cover.ComponentManager.get("org.sakaiproject.memory.api.MemoryService");
+	private static Cache groupCache = memoryService.newCache("org.sakaiproject.lessonbuildertool.tool.beans.SimplePageBean.groupCache");  // itemId => grouplist
+	private static Cache resourceCache = memoryService.newCache("org.sakaiproject.lessonbuildertool.tool.beans.SimplePageBean.resourceCache");
 	protected static final int DEFAULT_EXPIRATION = 10 * 60;
 
 	public static class PathEntry {
@@ -534,10 +535,6 @@ public class SimplePageBean {
 	    return messageLocator;
 	}
 
-	static MemoryService memoryService = null;
-	public void setMemoryService(MemoryService m) {
-	    memoryService = m;
-	}
 
         private HttpServletResponse httpServletResponse;
 	public void setHttpServletResponse(HttpServletResponse httpServletResponse) {
@@ -573,18 +570,16 @@ public class SimplePageBean {
 	    }
 	}
 
+	SimpleDateFormat getIsoDateFormat() {
+	    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+	    TimeZone tz = TimeService.getLocalTimeZone();
+	    format.setTimeZone(tz);
+	    return format;
+	}
 
+
+    // Don't put things here. It isn't always called.
 	public void init () {	
-		TimeZone tz = TimeService.getLocalTimeZone();
-		isoDateFormat.setTimeZone(tz);
-
-		if (groupCache == null) {
-			groupCache = memoryService.newCache("org.sakaiproject.lessonbuildertool.tool.beans.SimplePageBean.groupCache");
-		}
-		
-		if (resourceCache == null) {
-			resourceCache = memoryService.newCache("org.sakaiproject.lessonbuildertool.tool.beans.SimplePageBean.resourceCache");
-		}
 	}
 
 	static PagePickerProducer pagePickerProducer = null;
@@ -4460,6 +4455,14 @@ public class SimplePageBean {
 		    if (itemPage.getReleaseDate() != null && itemPage.getReleaseDate().after(new Date()))
 			return false;
 		} else if (page != null && page.getOwner() != null && (item.getType() == SimplePageItem.RESOURCE || item.getType() == SimplePageItem.MULTIMEDIA)) {
+
+		    // check for inline types. No resource to check. Since this section is for student page, no groups either
+		    if (item.getType() == SimplePageItem.MULTIMEDIA) {
+			String displayType = item.getAttribute("multimediaDisplayType");
+			if ("1".equals(displayType) || "3".equals(displayType))
+			    return true;
+		    }
+
 		    // This code is taken from LessonBuilderAccessService, mostly
 
 		    // for student pages, we give people access to files in the owner's worksite

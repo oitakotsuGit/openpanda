@@ -107,7 +107,7 @@
     <sakai.spring.test.artifactId>spring-test</sakai.spring.test.artifactId>
     <sakai.spring.test.version>3.2.3.RELEASE</sakai.spring.test.version>
     <sakai.tika.version>1.9</sakai.tika.version>
-    <sakai.tomcat.version>7.0.59</sakai.tomcat.version>
+    <sakai.tomcat.version>7.0.65</sakai.tomcat.version>
     <sakai.velocity.version>1.6.4</sakai.velocity.version>
     <sakai.xerces.impl.version>2.6.2</sakai.xerces.impl.version>
     <sakai.xerces.api.version>2.6.2</sakai.xerces.api.version>
@@ -281,6 +281,17 @@
         <enabled>true</enabled>
         <checksumPolicy>ignore</checksumPolicy>
       </snapshots>
+    </repository>
+    <repository>
+        <id>opencast</id>
+        <name>Opencast Repo</name>
+        <url>http://nexus.opencast.org/nexus/content/groups/public</url>
+        <snapshots>
+            <enabled>false</enabled>
+        </snapshots>
+        <releases>
+            <enabled>true</enabled>
+        </releases>
     </repository>
   </repositories>
 
@@ -1438,6 +1449,16 @@
         <version>${sakai.lombok.version}</version>
         <scope>provided</scope><!-- Lombok only needed at build time -->
       </dependency>
+      <dependency>
+          <groupId>mysql</groupId>
+          <artifactId>mysql-connector-java</artifactId>
+          <version>5.1.36</version>
+      </dependency>
+      <dependency>
+          <groupId>org.mariadb.jdbc</groupId>
+          <artifactId>mariadb-java-client</artifactId>
+          <version>1.2.2</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -1717,7 +1738,7 @@
                   <version>3.0.5</version>
                 </requireMavenVersion>
                 <requireJavaVersion>
-                  <version>${sakai.jdk.version}</version>
+                  <version>[${sakai.jdk.version},1.8)</version>
                 </requireJavaVersion>
               </rules>
             </configuration>

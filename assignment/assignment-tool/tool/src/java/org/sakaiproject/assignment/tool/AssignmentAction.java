@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/assignment/branches/sakai-10.x/assignment-tool/tool/src/java/org/sakaiproject/assignment/tool/AssignmentAction.java $
- * $Id: AssignmentAction.java 321796 2015-11-12 15:45:53Z enietzel@anisakai.com $
+ * $Id: AssignmentAction.java 322192 2015-12-22 21:20:19Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  *
@@ -14654,10 +14654,9 @@ public class AssignmentAction extends PagedResourceActionII
 		}
 		else 
 		{	
-			String contentType = fileFromUpload.getContentType();
+			String fname = StringUtils.lowerCase(fileFromUpload.getFileName());
 			
-			if (fileFromUpload.getFileName() == null || fileFromUpload.getFileName().length() == 0 
-					|| (!"application/zip".equals(contentType) &&  !"application/x-zip-compressed".equals(contentType))) 
+			if (!StringUtils.endsWithAny(fname, new String[] {".zip", ".sit"}))
 			{
 				// no file
 				addAlert(state, rb.getString("uploadall.alert.zipFile"));

@@ -10,7 +10,7 @@
 <!--
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-app/src/webapp/jsf/author/publishedSettings.jsp $
- * $Id: publishedSettings.jsp 311095 2014-07-24 00:17:13Z enietzel@anisakai.com $
+ * $Id: publishedSettings.jsp 322032 2015-12-07 15:37:22Z ottenhoff@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2006, 2007, 2008 Sakai Foundation
@@ -58,6 +58,7 @@
           lockdownMarkForReview(navVal);
           showHideReleaseGroups();
           checkUncheckTimeBox();
+          checkLastHandling();
         });
       </script>
 
@@ -231,7 +232,7 @@
     <h:outputText value="#{assessmentSettingsMessages.late_accept}" />
     <h:panelGrid columns="4" border="0" columnClasses="alignBottom">
       <f:verbatim>&nbsp;&nbsp;</f:verbatim>
-      <h:selectOneRadio id="lateHandling" value="#{publishedSettings.lateHandling}"  layout="pageDirection">
+      <h:selectOneRadio id="lateHandling" onclick="checkLastHandling();" value="#{publishedSettings.lateHandling}"  layout="pageDirection">
         <f:selectItem itemValue="2" itemLabel="#{assessmentSettingsMessages.no_late}"/>
         <f:selectItem itemValue="1" itemLabel="#{assessmentSettingsMessages.yes_late}"/>
       </h:selectOneRadio>

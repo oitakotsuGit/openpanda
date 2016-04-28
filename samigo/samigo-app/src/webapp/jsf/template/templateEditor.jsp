@@ -7,7 +7,7 @@
      PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<!-- $Id: templateEditor.jsp 133525 2014-01-22 00:26:29Z ktsao@stanford.edu $
+<!-- $Id: templateEditor.jsp 322926 2016-03-11 21:38:30Z ottenhoff@longsight.com $
 <%--
 ***********************************************************************************
 *
@@ -347,7 +347,7 @@
     <div class="longtext"><h:outputLabel value="#{templateMessages.late_handling}"/></div>
         <div class="tier3">
      <h:panelGrid columns="2"
-      summary="#{templateMessages.late_handling_sub">
+      summary="#{templateMessages.late_handling_sub}">
 
         <h:selectBooleanCheckbox id="late_handling"
           value="#{template.valueMap.lateHandling_isInstructorEditable}"/>
@@ -369,7 +369,7 @@
     <div class="longtext"><h:outputLabel value="#{templateMessages.automatic_submission}" rendered="#{templateIndex.automaticSubmissionEnabled}"/></div>
         <div class="tier3">
      <h:panelGrid columns="2"
-      summary="#{templateMessages.automatic_submission" rendered="#{templateIndex.automaticSubmissionEnabled}">
+      summary="#{templateMessages.automatic_submission}" rendered="#{templateIndex.automaticSubmissionEnabled}">
 
         <h:selectBooleanCheckbox id="automatic_submission"
           value="#{template.valueMap.automaticSubmission_isInstructorEditable}"/>

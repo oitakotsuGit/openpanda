@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/author/SaveAssessmentSettings.java $
- * $Id: SaveAssessmentSettings.java 305964 2014-02-14 01:05:35Z ktsao@stanford.edu $
+ * $Id: SaveAssessmentSettings.java 322954 2016-03-14 19:32:10Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.event.cover.EventTrackingService;
@@ -73,7 +74,7 @@ import org.sakaiproject.util.ResourceLoader;
  * <p>Title: Samigo</p>2
  * <p>Description: Sakai Assessment Manager</p>
  * @author Ed Smiley
- * @version $Id: SaveAssessmentSettings.java 305964 2014-02-14 01:05:35Z ktsao@stanford.edu $
+ * @version $Id: SaveAssessmentSettings.java 322954 2016-03-14 19:32:10Z enietzel@anisakai.com $
  */
 
 public class SaveAssessmentSettings
@@ -192,9 +193,9 @@ public class SaveAssessmentSettings
     // e. set Submission Messages
     control.setSubmissionMessage(assessmentSettings.getSubmissionMessage());
     // f. set username
-    control.setUsername(TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, assessmentSettings.getUsername()));
+    control.setUsername(TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, StringUtils.trim(assessmentSettings.getUsername())));
     // g. set password
-    control.setPassword(TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, assessmentSettings.getPassword()));
+    control.setPassword(TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, StringUtils.trim(assessmentSettings.getPassword())));
     // h. set finalPageUrl
 
     String finalPageUrl = "";

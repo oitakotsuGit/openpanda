@@ -1,6 +1,6 @@
 /**
  * $URL: https://source.sakaiproject.org/svn/basiclti/branches/sakai-10.x/basiclti-common/src/java/org/sakaiproject/basiclti/util/SakaiBLTIUtil.java $
- * $Id: SakaiBLTIUtil.java 315908 2014-12-04 15:07:59Z enietzel@anisakai.com $
+ * $Id: SakaiBLTIUtil.java 322935 2016-03-14 14:40:38Z enietzel@anisakai.com $
  *
  * Copyright (c) 2006-2009 The Sakai Foundation
  *
@@ -1354,10 +1354,7 @@ public class SakaiBLTIUtil {
 			if ( tool == null ) return null;
 
 			// Adjust the content items based on the tool items
-			if ( tool != null || content != null )
-			{
-				ltiService.filterContent(content, tool);
-			}
+			ltiService.filterContent(content, tool);
 
 			for (String formInput : LTIService.TOOL_MODEL) {
 				Properties info = parseFormString(formInput);

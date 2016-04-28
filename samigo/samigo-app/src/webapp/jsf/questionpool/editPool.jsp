@@ -1,12 +1,13 @@
 <%@ page contentType="text/html;charset=utf-8" pageEncoding="utf-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
+<%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="t" %>
 <%@ taglib uri="http://www.sakaiproject.org/samigo" prefix="samigo" %>
 <!DOCTYPE html
      PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<!-- $Id: editPool.jsp 319103 2015-05-21 13:52:58Z enietzel@anisakai.com $
+<!-- $Id: editPool.jsp 322911 2016-03-10 13:23:39Z matthew@longsight.com $
 <%--
 ***********************************************************************************
 *

@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/delivery/SubmitToGradingActionListener.java $
- * $Id: SubmitToGradingActionListener.java 321392 2015-09-29 16:22:28Z enietzel@anisakai.com $
+ * $Id: SubmitToGradingActionListener.java 323249 2016-04-12 14:14:28Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -36,6 +36,7 @@ import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -791,8 +792,8 @@ public class SubmitToGradingActionListener implements ActionListener {
 			answerModified = false;
 			for (int m = 0; m < grading.size(); m++) {
 				ItemGradingData itemgrading = grading.get(m);
-				if ((itemgrading !=null && itemgrading.getItemGradingId() == null) || itemgrading.getItemGradingId().intValue() <= 0) {
-					if (itemgrading.getPublishedAnswerId() != null || (itemgrading.getRationale() != null && !itemgrading.getRationale().trim().equals(""))) { 
+				if (itemgrading !=null && (itemgrading.getItemGradingId() == null || itemgrading.getItemGradingId().intValue() <= 0)) {
+					if (itemgrading.getPublishedAnswerId() != null || (itemgrading.getRationale() != null && StringUtils.isNotBlank(itemgrading.getRationale()))) { 
 						answerModified = true;
 						break;
 					}
@@ -811,10 +812,10 @@ public class SubmitToGradingActionListener implements ActionListener {
 						removes.add(itemgrading);
 					} else {
 						// add new answer
-						if (itemgrading.getPublishedAnswerId() != null
+						if (itemgrading !=null && (itemgrading.getPublishedAnswerId() != null
 							|| itemgrading.getAnswerText() != null
 							|| (itemgrading.getRationale() != null 
-							&& !itemgrading.getRationale().trim().equals(""))) { 
+							&& StringUtils.isNotBlank(itemgrading.getRationale())))) { 
 							itemgrading.setAgentId(AgentFacade.getAgentString());
 							itemgrading.setSubmittedDate(new Date());
 							if (itemgrading.getRationale() != null && itemgrading.getRationale().length() > 0) {
@@ -826,7 +827,7 @@ public class SubmitToGradingActionListener implements ActionListener {
 				}
 			}
 			else{
-				handleMarkForReview(grading, adds);
+				updateItemGradingData(grading, adds);
 			}
 			break;
 
@@ -904,6 +905,15 @@ public class SubmitToGradingActionListener implements ActionListener {
 	return ret;
    }
 
+    private void updateItemGradingData(List<ItemGradingData> grading, HashSet<ItemGradingData> adds){
+        for (int m = 0; m < grading.size(); m++) {
+          ItemGradingData itemgrading = grading.get(m);
+          if (itemgrading.getItemGradingId() != null && itemgrading.getItemGradingId().intValue() > 0)  {
+        	  adds.add(itemgrading);
+          }
+        }
+      }
+    
     private void handleMarkForReview(List<ItemGradingData> grading, HashSet<ItemGradingData> adds){
       for (int m = 0; m < grading.size(); m++) {
         ItemGradingData itemgrading = grading.get(m);

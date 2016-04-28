@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/delivery/LinearAccessDeliveryActionListener.java $
- * $Id: LinearAccessDeliveryActionListener.java 321391 2015-09-29 16:20:06Z enietzel@anisakai.com $
+ * $Id: LinearAccessDeliveryActionListener.java 322929 2016-03-14 13:51:29Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -298,7 +298,6 @@ public class LinearAccessDeliveryActionListener extends DeliveryActionListener
   public void saveLastVisitedPosition(DeliveryBean delivery, int partNumber, int questionNumber) {
 	  GradingService gradingService = new GradingService();
 	  AssessmentGradingData assessmentGradingData = delivery.getAssessmentGrading();
-	  assessmentGradingData.setStatus(2);
 	  assessmentGradingData.setLastVisitedPart(partNumber);
 	  assessmentGradingData.setLastVisitedQuestion(questionNumber);
 	  gradingService.saveOrUpdateAssessmentGradingOnly(assessmentGradingData);

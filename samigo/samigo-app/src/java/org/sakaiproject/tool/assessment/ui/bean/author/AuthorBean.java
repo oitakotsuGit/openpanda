@@ -1,6 +1,6 @@
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/branches/sakai-10.x/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/bean/author/AuthorBean.java $
- * $Id: AuthorBean.java 319085 2015-05-20 22:49:23Z enietzel@anisakai.com $
+ * $Id: AuthorBean.java 322931 2016-03-14 14:27:14Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2008 The Sakai Foundation
@@ -30,6 +30,7 @@ import java.util.Date;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import org.apache.commons.lang.StringUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,7 +45,7 @@ import org.sakaiproject.component.cover.ServerConfigurationService;
  * General authoring information.
  * @author Ed Smiley
  *
- * @version $Id: AuthorBean.java 319085 2015-05-20 22:49:23Z enietzel@anisakai.com $
+ * @version $Id: AuthorBean.java 322931 2016-03-14 14:27:14Z enietzel@anisakai.com $
  */
 public class AuthorBean implements Serializable
 {
@@ -57,6 +58,7 @@ public class AuthorBean implements Serializable
   private String assessmentTypeId;
   private String assessmentDescription;
   private String assessmentID;
+  private String editPublishedAssessmentID;
   private AssessmentFacade assessment;
   private ArrayList assessmentTemplateList;
   private ArrayList assessments;
@@ -123,6 +125,14 @@ public class AuthorBean implements Serializable
   public String getAssessmentID()
   {
     return assessmentID;
+  }
+
+  /**
+   * @return the id for the published assessment being edited.
+   */
+  public String getEditPublishedAssessmentID()
+  {
+    return StringUtils.trimToEmpty( editPublishedAssessmentID );
   }
 
   public AssessmentFacade getAssessment()
@@ -298,6 +308,14 @@ public class AuthorBean implements Serializable
   public void setAssessTitle(String string)
   {
     assessTitle = string;
+  }
+
+  /**
+   * @param string the id
+   */
+  public void setEditPublishedAssessmentID( String string )
+  {
+    editPublishedAssessmentID = string;
   }
 
   /**
