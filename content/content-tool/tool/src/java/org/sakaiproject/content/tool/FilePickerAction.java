@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/content/tags/sakai-10.6/content-tool/tool/src/java/org/sakaiproject/content/tool/FilePickerAction.java $
+ * $URL: https://source.sakaiproject.org/svn/content/tags/sakai-10.7/content-tool/tool/src/java/org/sakaiproject/content/tool/FilePickerAction.java $
  * $Id: FilePickerAction.java 321821 2015-11-12 19:25:19Z enietzel@anisakai.com $
  ***********************************************************************************
  *

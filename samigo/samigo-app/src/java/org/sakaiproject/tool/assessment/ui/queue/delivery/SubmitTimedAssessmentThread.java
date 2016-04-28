@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.6/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/queue/delivery/SubmitTimedAssessmentThread.java $
+ * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.7/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/queue/delivery/SubmitTimedAssessmentThread.java $
  * $Id: SubmitTimedAssessmentThread.java 322188 2015-12-22 21:07:54Z enietzel@anisakai.com $
  ***********************************************************************************
  *

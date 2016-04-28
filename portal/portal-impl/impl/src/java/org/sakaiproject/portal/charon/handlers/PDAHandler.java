@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/portal/tags/sakai-10.6/portal-impl/impl/src/java/org/sakaiproject/portal/charon/handlers/PDAHandler.java $
+ * $URL: https://source.sakaiproject.org/svn/portal/tags/sakai-10.7/portal-impl/impl/src/java/org/sakaiproject/portal/charon/handlers/PDAHandler.java $
  * $Id: PDAHandler.java 320283 2015-07-29 15:13:13Z matthew@longsight.com $
  ***********************************************************************************
  *

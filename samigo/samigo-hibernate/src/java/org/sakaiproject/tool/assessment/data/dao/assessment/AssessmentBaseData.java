@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.6/samigo-hibernate/src/java/org/sakaiproject/tool/assessment/data/dao/assessment/AssessmentBaseData.java $
+ * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.7/samigo-hibernate/src/java/org/sakaiproject/tool/assessment/data/dao/assessment/AssessmentBaseData.java $
  * $Id: AssessmentBaseData.java 321817 2015-11-12 16:49:20Z enietzel@anisakai.com $
  ***********************************************************************************
  *

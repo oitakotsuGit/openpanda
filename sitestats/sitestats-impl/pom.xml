@@ -14,7 +14,7 @@
     <parent>
         <groupId>org.sakaiproject.sitestats</groupId>
         <artifactId>sitestats</artifactId>
-        <version>10.6</version><!-- sitestats.version -->
+        <version>10.7</version><!-- sitestats.version -->
     </parent>
 
     <!-- Packaging -->
@@ -296,7 +296,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
-                        <version>2.6</version>
                         <configuration>
                             <includes>
                                 <include>**/*Test.java</include>

@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.6/samigo-services/src/java/org/sakaiproject/tool/assessment/facade/QuestionPoolFacadeQueries.java $
+ * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.7/samigo-services/src/java/org/sakaiproject/tool/assessment/facade/QuestionPoolFacadeQueries.java $
  * $Id: QuestionPoolFacadeQueries.java 321814 2015-11-12 16:42:15Z enietzel@anisakai.com $
  ***********************************************************************************
  *

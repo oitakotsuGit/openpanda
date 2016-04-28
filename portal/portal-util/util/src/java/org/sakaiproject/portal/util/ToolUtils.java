@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/portal/tags/sakai-10.6/portal-util/util/src/java/org/sakaiproject/portal/util/ToolUtils.java $
- * $Id: ToolUtils.java 315821 2014-12-01 20:16:05Z enietzel@anisakai.com $
+ * $URL: https://source.sakaiproject.org/svn/portal/tags/sakai-10.7/portal-util/util/src/java/org/sakaiproject/portal/util/ToolUtils.java $
+ * $Id: ToolUtils.java 322784 2016-02-18 23:05:45Z matthew@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2013 The Sakai Foundation
@@ -55,10 +55,15 @@ public class ToolUtils
 	 */
 	public static boolean isInlineRequest(HttpServletRequest req)
 	{
-		String option = URLUtils.getSafePathInfo(req);
-		String[] parts = option.split("/");
-		if ((parts.length >= 5) ) {
-			return parts[3].equals("tool");
+		// Note that with wrapped requests, URLUtils.getSafePathInfo may return null
+		// so we use the request URI
+		String uri = req.getRequestURI();
+		if ( uri != null ) {
+			String[] parts = uri.split("/");
+			if ((parts.length >= 6) ) {
+				return parts[4].equals("tool");
+			}
+			return false;
 		}
 		return false;
 	}

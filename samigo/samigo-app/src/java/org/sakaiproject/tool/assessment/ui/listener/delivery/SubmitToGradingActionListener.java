@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.6/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/delivery/SubmitToGradingActionListener.java $
- * $Id: SubmitToGradingActionListener.java 322028 2015-12-04 15:59:47Z matthew@longsight.com $
+ * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.7/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/delivery/SubmitToGradingActionListener.java $
+ * $Id: SubmitToGradingActionListener.java 323249 2016-04-12 14:14:28Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -827,7 +827,7 @@ public class SubmitToGradingActionListener implements ActionListener {
 				}
 			}
 			else{
-				handleMarkForReview(grading, adds);
+				updateItemGradingData(grading, adds);
 			}
 			break;
 
@@ -905,6 +905,15 @@ public class SubmitToGradingActionListener implements ActionListener {
 	return ret;
    }
 
+    private void updateItemGradingData(List<ItemGradingData> grading, HashSet<ItemGradingData> adds){
+        for (int m = 0; m < grading.size(); m++) {
+          ItemGradingData itemgrading = grading.get(m);
+          if (itemgrading.getItemGradingId() != null && itemgrading.getItemGradingId().intValue() > 0)  {
+        	  adds.add(itemgrading);
+          }
+        }
+      }
+    
     private void handleMarkForReview(List<ItemGradingData> grading, HashSet<ItemGradingData> adds){
       for (int m = 0; m < grading.size(); m++) {
         ItemGradingData itemgrading = grading.get(m);

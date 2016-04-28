@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.6/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/select/SelectActionListener.java $
+ * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.7/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/select/SelectActionListener.java $
  * $Id: SelectActionListener.java 321483 2015-10-13 21:38:33Z enietzel@anisakai.com $
  ***********************************************************************************
  *

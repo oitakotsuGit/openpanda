@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.6/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/author/SavePublishedSettingsListener.java $
- * $Id: SavePublishedSettingsListener.java 320405 2015-08-05 13:46:11Z enietzel@anisakai.com $
+ * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.7/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/author/SavePublishedSettingsListener.java $
+ * $Id: SavePublishedSettingsListener.java 322955 2016-03-14 19:33:08Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -36,6 +36,7 @@ import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.component.cover.ServerConfigurationService;
@@ -84,7 +85,7 @@ import org.sakaiproject.tool.assessment.ui.bean.author.PublishRepublishNotificat
  * <p>Title: Samigo</p>2
  * <p>Description: Sakai Assessment Manager</p>
  * @author Ed Smiley
- * @version $Id: SavePublishedSettingsListener.java 320405 2015-08-05 13:46:11Z enietzel@anisakai.com $
+ * @version $Id: SavePublishedSettingsListener.java 322955 2016-03-14 19:33:08Z enietzel@anisakai.com $
  */
 
 public class SavePublishedSettingsListener
@@ -288,7 +289,10 @@ implements ActionListener
 	    // if late submissions not allowed and retract date is null, set retract date to due date
 	    if (assessmentSettings.getLateHandling() != null && AssessmentAccessControlIfc.NOT_ACCEPT_LATE_SUBMISSION.equals(assessmentSettings.getLateHandling()) &&
 	    		retractDate == null && dueDate != null && assessmentSettings.getAutoSubmit()) {
-	    	assessmentSettings.setRetractDate(dueDate);
+	    	boolean autoSubmitEnabled = ServerConfigurationService.getBoolean("samigo.autoSubmit.enabled", false);
+	    	if (autoSubmitEnabled) {
+	    		assessmentSettings.setRetractDate(dueDate);
+	    	}
 	    }
 
 	    // if auto-submit is enabled, make sure retract date is set
@@ -508,9 +512,9 @@ implements ActionListener
 		// e. set Submission Messages
 	    control.setSubmissionMessage(assessmentSettings.getSubmissionMessage());
 	    // f. set username
-	    control.setUsername(TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, assessmentSettings.getUsername()));
+	    control.setUsername(TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, StringUtils.trim(assessmentSettings.getUsername())));
 	    // g. set password
-	    control.setPassword(TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, assessmentSettings.getPassword()));
+	    control.setPassword(TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, StringUtils.trim(assessmentSettings.getPassword())));
 	    // h. set finalPageUrl
 	    String finalPageUrl = "";
 	    if (assessmentSettings.getFinalPageUrl() != null) {

@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.6/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/servlet/delivery/DownloadAllMediaServlet.java $
- * $Id: DownloadAllMediaServlet.java 318753 2015-05-08 20:19:11Z ottenhoff@longsight.com $
+ * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.7/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/servlet/delivery/DownloadAllMediaServlet.java $
+ * $Id: DownloadAllMediaServlet.java 323065 2016-03-30 13:38:04Z matthew@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2005, 2006, 2007, 2008, 2009 The Sakai Foundation
@@ -64,7 +64,7 @@ import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
  * <p>Title: Samigo</p>
  * <p>Description: Sakai Assessment Manager</p>
  * @author Ed Smiley
- * @version $Id: DownloadAllMediaServlet.java 318753 2015-05-08 20:19:11Z ottenhoff@longsight.com $
+ * @version $Id: DownloadAllMediaServlet.java 323065 2016-03-30 13:38:04Z matthew@longsight.com $
  */
 
 public class DownloadAllMediaServlet extends HttpServlet
@@ -90,7 +90,8 @@ public class DownloadAllMediaServlet extends HttpServlet
       throws ServletException, IOException
   {
     String publishedItemId = req.getParameter("publishedItemId");
-    log.debug("publishedItemId = " + publishedItemId);
+    String publishedId  = req.getParameter("publishedId");
+    log.debug("publishedItemId = " + publishedItemId + " publishedId = " + publishedId);
     
     // who can access the zip file? You can,
     // if you have a assessment.grade.any or assessment.grade.own permission
@@ -110,7 +111,7 @@ public class DownloadAllMediaServlet extends HttpServlet
     String assessmentCreatedBy = req.getParameter("createdBy");
     
     AuthorizationBean authzBean = (AuthorizationBean) ContextUtil.lookupBeanFromExternalServlet("authorization", req, res);
-    if (authzBean.isUserAllowedToGradeAssessment(publishedItemId, assessmentCreatedBy, true)) {
+    if (authzBean.isUserAllowedToGradeAssessment(publishedId, assessmentCreatedBy, true, currentSiteId)) {
     	accessDenied = false;
     }
     

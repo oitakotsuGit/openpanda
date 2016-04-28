@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/web/tags/sakai-10.6/web-portlet/src/java/org/sakaiproject/portlets/PortletIFrame.java $
+ * $URL: https://source.sakaiproject.org/svn/web/tags/sakai-10.7/web-portlet/src/java/org/sakaiproject/portlets/PortletIFrame.java $
  * $Id: PortletIFrame.java 320872 2015-08-21 16:51:48Z matthew@longsight.com $
  ***********************************************************************************
  *

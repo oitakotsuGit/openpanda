@@ -1,5 +1,5 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.6/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/bean/author/TemplateBean.java $
+ * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai-10.7/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/bean/author/TemplateBean.java $
  * $Id: TemplateBean.java 322031 2015-12-07 15:35:55Z ottenhoff@longsight.com $
  ***********************************************************************************
  *

@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/kernel/tags/sakai-10.6/kernel-impl/src/main/java/org/sakaiproject/site/impl/DbSiteService.java $
- * $Id: DbSiteService.java 319099 2015-05-21 01:10:37Z matthew@longsight.com $
+ * $URL: https://source.sakaiproject.org/svn/kernel/tags/sakai-10.7/kernel-impl/src/main/java/org/sakaiproject/site/impl/DbSiteService.java $
+ * $Id: DbSiteService.java 322941 2016-03-14 15:14:02Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2003, 2004, 2005, 2006, 2007, 2008 Sakai Foundation

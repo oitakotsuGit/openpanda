@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/kernel/tags/sakai-10.6/api/src/main/java/org/sakaiproject/site/api/SiteService.java $
- * $Id: SiteService.java 319098 2015-05-21 01:10:05Z matthew@longsight.com $
+ * $URL: https://source.sakaiproject.org/svn/kernel/tags/sakai-10.7/api/src/main/java/org/sakaiproject/site/api/SiteService.java $
+ * $Id: SiteService.java 322947 2016-03-14 18:18:51Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2003, 2004, 2005, 2006, 2007, 2008 Sakai Foundation
@@ -191,6 +191,16 @@ public interface SiteService extends EntityProducer
 	static final String EVENT_SITE_IMPORT_END = "site.import.end";
 
 	/**
+	 * An event tracking roster add
+	 */
+	static final String EVENT_SITE_ROSTER_ADD = "site.roster.add";
+	
+	/**
+	 * An event for tracking roster remove
+	 */
+	static final String EVENT_SITE_ROSTER_REMOVE = "site.roster.remove";
+
+	/**
 	 * An event for starting the site duplication
 	 */
 	static final String EVENT_SITE_DUPLICATE_START = "site.duplicate.start";
@@ -200,11 +210,12 @@ public interface SiteService extends EntityProducer
 	 */
 	static final String EVENT_SITE_DUPLICATE_END = "site.duplicate.end";
 
-	/**
-	 * An event tracking roster add
-	 */
-	static final String EVENT_SITE_ROSTER_ADD = "site.roster.add";
+	/** An event for publishing a site. */
+	static final String EVENT_SITE_PUBLISH = "site.publish";
 	
+	/** An event for unpublishing a site. */
+	static final String EVENT_SITE_UNPUBLISH = "site.unpublish";
+
 	/**
 	 * <p>
 	 * SelectionType enumerates different supported types of selection criteria for getting / counting sites.

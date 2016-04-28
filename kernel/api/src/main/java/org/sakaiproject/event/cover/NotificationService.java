@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/kernel/tags/sakai-10.6/api/src/main/java/org/sakaiproject/event/cover/NotificationService.java $
- * $Id: NotificationService.java 105077 2012-02-24 22:54:29Z ottenhoff@longsight.com $
+ * $URL: https://source.sakaiproject.org/svn/kernel/tags/sakai-10.7/api/src/main/java/org/sakaiproject/event/cover/NotificationService.java $
+ * $Id: NotificationService.java 323020 2016-03-23 14:34:33Z ottenhoff@longsight.com $
  ***********************************************************************************
  *
  * Copyright (c) 2005, 2006, 2008 Sakai Foundation
@@ -64,6 +64,8 @@ public class NotificationService
 	public static java.lang.String SECURE_UPDATE_NOTIFICATION = org.sakaiproject.event.api.NotificationService.SECURE_UPDATE_NOTIFICATION;
 
 	public static java.lang.String SECURE_REMOVE_NOTIFICATION = org.sakaiproject.event.api.NotificationService.SECURE_REMOVE_NOTIFICATION;
+
+	public static final int NOTI_IGNORE = -1; // SAK-30200 direct Sakai 10.x modification to avoid API changes
 
 	public static int NOTI_NONE = org.sakaiproject.event.api.NotificationService.NOTI_NONE;
 

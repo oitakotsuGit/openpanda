@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/kernel/tags/sakai-10.6/api/src/main/java/org/sakaiproject/email/api/EmailService.java $
- * $Id: EmailService.java 133314 2014-01-15 19:29:10Z matthew@longsight.com $
+ * $URL: https://source.sakaiproject.org/svn/kernel/tags/sakai-10.7/api/src/main/java/org/sakaiproject/email/api/EmailService.java $
+ * $Id: EmailService.java 322712 2016-02-11 16:45:33Z enietzel@anisakai.com $
  ***********************************************************************************
  *
  * Copyright (c) 2003, 2004, 2005, 2006, 2008 Sakai Foundation
@@ -97,17 +97,17 @@ public interface EmailService
 	 * Creates and sends a generic text MIME message to the address contained in to.
 	 * 
 	 * @param fromStr
-	 *        The address this message is to be listed as coming from.
+	 *        The address this message is to be listed as coming from, cannot be blank.
 	 * @param toStr
-	 *        The address(es) this message should be sent to.
+	 *        The address(es) this message should be sent to. cannot be blank.
 	 * @param subject
-	 *        The subject of this message.
+	 *        The subject of this message, may be null.
 	 * @param content
-	 *        The body of the message.
+	 *        The body of the message, cannot be blank.
 	 * @param headerToStr
-	 *        If specified, this is placed into the message header, but "too" is used for the recipients.
+	 *        If specified, the address(es) are placed into the message header otherwise toStr is used.
 	 * @param replyToStr
-	 *        If specified, the reply-to header value.
+	 *        If specified, the address(es) are placed into the reply-to header value, may be null.
 	 * @param additionalHeaders
 	 *        Additional email headers to send (List of String). For example, content type or forwarded headers (may be null)
 	 */
