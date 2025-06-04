@@ -11,7 +11,8 @@ CKEDITOR.addPluginLang = function( plugin, lang, obj )
 }
 
 CKEDITOR.addPluginLang('wordcount','en',
-		{
-				'WordCountTxt':'Word Count'
-		}
+                {
+                                'WordCountTxt':'Word Count',
+                                'CharCountTxt':'Character Count'
+                }
 );

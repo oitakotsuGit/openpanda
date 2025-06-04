@@ -42,20 +42,27 @@
     * @return int word count
     */
 
-		function getWordCount(htmlData) {
-				var matches = htmlData
-				matches = matches.replace(/<[^<|>]+?>|&nbsp;/gi,' ')
-				matches = matches.replace(/[\u0080-\u202e\u2030-\u205f\u2061-\ufefe\uff00-\uffff]/g,'x')
-				//Quote should still be matched
-				matches = matches.replace(/&quot;/g,'"')
-				//Match on word boundary followed by spaces or punctuations
-				matches = matches.match(/\b[\s?!,.):"]+/g);
-				var count = 0;
-				if(matches) {
-						count = matches.length;
-				}
-				return count;
-		}
+                function getWordCount(htmlData) {
+                                var matches = htmlData;
+                                matches = matches.replace(/<[^<|>]+?>|&nbsp;/gi,' ');
+                                matches = matches.replace(/[\u0080-\u202e\u2030-\u205f\u2061-\ufefe\uff00-\uffff]/g,'x');
+                                //Quote should still be matched
+                                matches = matches.replace(/&quot;/g,'"');
+                                //Match on word boundary followed by spaces or punctuations
+                                matches = matches.match(/\b[\s?!,.):"]+/g);
+                                var count = 0;
+                                if(matches) {
+                                                count = matches.length;
+                                }
+                                return count;
+                }
+
+                function getCharCount(htmlData) {
+                                var text = htmlData.replace(/<[^<|>]+?>|&nbsp;/gi,'');
+                                text = text.replace(/&quot;/g,'"');
+                                text = text.replace(/&amp;/g,'&');
+                                return text.length;
+                }
     /**
     * Adds the plugin to CKEditor
     */
@@ -71,32 +78,32 @@
 								return spaceElement;
 						}
 
-						/**
-						* Shows word count
-						*/
-						var ShowWordCount = function (evt) {
-								if (evt && evt.data) {
-								//var key = evt.data.getKeystroke();
-								var key = evt.data.keyCode;
-									if (!isModifier(key)) {
-										var editor = evt.editor;
-										space = getSpaceElement(editor);
-										//use getSnapshot because WIRIS is listening for getData. It looks like getData(true) actually doesn't return anything! Hmm!
-										editordata = editor.getSnapshot();
-										space.setHtml( editor.lang.wordcount.WordCountTxt + " : " + getWordCount(editordata) );
-									}
-								}
-						}
+                                                /**
+                                                * Shows word and character count
+                                                */
+                                                var ShowCounts = function (evt) {
+                                                                if (evt && evt.data) {
+                                                                var key = evt.data.keyCode;
+                                                                        if (!isModifier(key)) {
+                                                                               var editor = evt.editor;
+                                                                               space = getSpaceElement(editor);
+                                                                               //use getSnapshot because WIRIS is listening for getData. It looks like getData(true) actually doesn't return anything! Hmm!
+                                                                               editordata = editor.getSnapshot();
+                                                                               space.setHtml( editor.lang.wordcount.WordCountTxt + " : " + getWordCount(editordata) +
+                                                                                                      " | " + editor.lang.wordcount.CharCountTxt + " : " + getCharCount(editordata) );
+                                                                        }
+                                                                }
+                                                }
 
 						editor.on('instanceReady', function(evt){
 										//Word count div needs to exist?? themeSpace can wait for it now
 										//Show initial count
-										ShowWordCount(evt)
+                                                                               ShowCounts(evt)
 								});
 
 
-            editor.on('key', ShowWordCount);
-            editor.on('paste', ShowWordCount);
+            editor.on('key', ShowCounts);
+            editor.on('paste', ShowCounts);
 
 	    var createBottom = function (evt) {
 		//Creating bottom
